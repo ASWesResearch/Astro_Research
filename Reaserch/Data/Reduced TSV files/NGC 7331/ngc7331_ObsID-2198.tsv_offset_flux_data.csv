@@ -1,0 +1,121 @@
+# Column	name	(A20)	Source name in the format 'CXO Jhhmmss.s +/- ddmmss'	(master_source.name)	[""]	[meta.id;meta.main]
+# Column	ra	(F9.5)	Source position, ICRS right ascension	(master_source.ra)	["deg"]	[pos.eq.ra;meta.main]
+# Column	dec	(F9.5)	Source position, ICRS declination	(master_source.dec)	["deg"]	[pos.eq.dec;meta.main]
+# Column	err_ellipse_r0	(F7.2)	Major radius of the 95% confidence level error ellipse	(master_source.err_ellipse_r0)	["arcsec"]	[phys.angSize.smaj;pos.errorEllipse]
+# Column	conf_flag	(A5)	Source regions overlap (source is confused)	(master_source.conf_flag)	[""]	[meta.code]
+# Column	sat_src_flag	(A5)	Source is saturated in all observations; source properties are unreliable	(master_source.sat_src_flag)	[""]	[meta.code.qual;instr.saturation]
+# Column	significance	(F7.2)	Highest source flux significance across all observations	(master_source.significance)	[""]	[stat.snr]
+# Column	flux_aper_b	(E9.3)	Aperture-corrected net energy flux inferred from the source region aperture, calculated by counting X-ray events; ACIS broad energy band	(master_source.flux_aper_b)	["erg/s/cm^2"]	[phot.flux;src.net;em.X-ray]
+# Column	flux_aper_lolim_b	(E9.3)	Aperture-corrected net energy flux inferred from the source region aperture, calculated by counting X-ray events (68% lower confidence limit); ACIS broad energy band	(master_source.flux_aper_lolim_b)	["erg/s/cm^2"]	[stat.error;phot.flux;src.net;stat.min;em.X-ray]
+# Column	flux_aper_hilim_b	(E9.3)	Aperture-corrected net energy flux inferred from the source region aperture, calculated by counting X-ray events (68% upper confidence limit); ACIS broad energy band	(master_source.flux_aper_hilim_b)	["erg/s/cm^2"]	[stat.error;phot.flux;src.net;stat.max;em.X-ray]
+# Column	flux_aper_w	(E9.3)	Aperture-corrected net energy flux inferred from the source region aperture, calculated by counting X-ray events; HRC wide energy band	(master_source.flux_aper_w)	["erg/s/cm^2"]	[phot.flux;src.net;em.X-ray]
+# Column	flux_aper_lolim_w	(E9.3)	Aperture-corrected net energy flux inferred from the source region aperture, calculated by counting X-ray events (68% lower confidence limit); HRC wide energy band	(master_source.flux_aper_lolim_w)	["erg/s/cm^2"]	[stat.error;phot.flux;src.net;stat.min;em.X-ray]
+# Column	flux_aper_hilim_w	(E9.3)	Aperture-corrected net energy flux inferred from the source region aperture, calculated by counting X-ray events (68% upper confidence limit); HRC wide energy band	(master_source.flux_aper_hilim_w)	["erg/s/cm^2"]	[stat.error;phot.flux;src.net;stat.max;em.X-ray]
+# Column	extent_flag	(A5)	Deconvolved source extent is inconsistent with a point source at the 90% confidence level	(master_source.extent_flag)	[""]	[meta.code;phys.angSize]
+# Column	hard_hm	(F9.4)	Spectral hardness ratio measured between ACIS energy bands 'h' and 'm'; hard_hm = (flux_aper_h - flux_aper_m)/flux_aper_b	(master_source.hard_hm)	[""]	[phot.color;em.X-ray]
+# Column	hard_hm_lolim	(F9.4)	Spectral hardness ratio measured between ACIS energy bands 'h' and 'm'; hard_hm = (flux_aper_h - flux_aper_m)/flux_aper_b (68% lower confidence limit)	(master_source.hard_hm_lolim)	[""]	[stat.error;phot.color;stat.min;em.X-ray]
+# Column	hard_hm_hilim	(F9.4)	Spectral hardness ratio measured between ACIS energy bands 'h' and 'm'; hard_hm = (flux_aper_h - flux_aper_m)/flux_aper_b (68% upper confidence limit)	(master_source.hard_hm_hilim)	[""]	[stat.error;phot.color;stat.max;em.X-ray]
+# Column	hard_ms	(F9.4)	Spectral hardness ratio measured between ACIS energy bands 'm' and 's'; hard_ms = (flux_aper_m - flux_aper_s)/flux_aper_b	(master_source.hard_ms)	[""]	[phot.color;em.X-ray]
+# Column	hard_ms_lolim	(F9.4)	Spectral hardness ratio measured between ACIS energy bands 'm' and 's'; hard_ms = (flux_aper_m - flux_aper_s)/flux_aper_b (68% lower confidence limit)	(master_source.hard_ms_lolim)	[""]	[stat.error;phot.color;stat.min;em.X-ray]
+# Column	hard_ms_hilim	(F9.4)	Spectral hardness ratio measured between ACIS energy bands 'm' and 's'; hard_ms = (flux_aper_m - flux_aper_s)/flux_aper_b (68% upper confidence limit)	(master_source.hard_ms_hilim)	[""]	[stat.error;phot.color;stat.max;em.X-ray]
+# Column	var_intra_index_b	(I6)	Intra-observation Gregory-Loredo variability index in the range [0, 10] (highest value across all observations); ACIS broad energy band	(master_source.var_intra_index_b)	[""]	[src.var.index;em.X-ray]
+# Column	var_inter_index_b	(I6)	Inter-observation variability index in the range [0, 10]; indicates whether the source region photon flux is constant between observations; ACIS broad energy band	(master_source.var_inter_index_b)	[""]	[src.var.index;em.X-ray]
+# Column	var_intra_index_w	(I6)	Intra-observation Gregory-Loredo variability index in the range [0, 10] (highest value across all observations); HRC wide energy band	(master_source.var_intra_index_w)	[""]	[src.var.index;em.X-ray]
+# Column	var_inter_index_w	(I6)	Inter-observation variability index in the range [0, 10]; indicates whether the source region photon flux is constant between observations; HRC wide energy band	(master_source.var_inter_index_w)	[""]	[src.var.index;em.X-ray]
+# Column	match_type	(A1)	A Source Observation association with a single Master Source is unique ('u'), with more than one is ambiguous ('a').	(master_obi_assoc.match_type)	[""]	[meta.code]
+# Column	obsid	(I5)	Observation identifier	(obi_source.obsid)	[""]	[meta.id;obs.param]
+# Column	obi	(I3)	Observation interval number	(obi_source.obi)	[""]	[meta.id;obs.param]
+# Column	region_id	(I4)	Source region identifier	(obi_source.region_id)	[""]	[meta.id;instr.fov]
+# Column	instrument	(A4)	Instrument used for the observation; 'ACIS' or 'HRC'	(obi_source.instrument)	[""]	[meta.id;instr]
+# Column	theta	(F9.3)	Source aperture position, off-axis angle	(obi_source.theta)	["arcmin"]	[instr.offset]
+# Column	phi	(F9.2)	Source aperture position, azimuthal angle	(obi_source.phi)	["deg"]	[pos.posAng]
+# Column	livetime	(F9.1)	Effective exposure time after applying the good time intervals and the deadtime correction factor	(obi_source.livetime)	["s"]	[time.duration;obs.exposure]
+# Column	conf_code	(I3)	Source regions overlap (source is confused; bit-coded value)	(obi_source.conf_code)	[""]	[meta.code]
+# Column	obi_sat_src_flag	(A5)	Source is saturated; source properties are unreliable	(obi_source.obi_sat_src_flag)	[""]	[meta.code.qual;instr.saturation]
+# Column	flux_significance_b	(F9.2)	Significance of the source determined from the ratio of the source flux to the estimated error in the local background; ACIS broad energy band	(obi_source.flux_significance_b)	[""]	[stat.snr;em.X-ray]
+# Column	flux_significance_w	(F9.2)	Significance of the source determined from the ratio of the source flux to the estimated error in the local background; HRC wide energy band	(obi_source.flux_significance_w)	[""]	[stat.snr;em.X-ray]
+# Column	detector	(A16)	Detector elements over which the background region bounding box dithers during the observation	(obi_source.detector)	[""]	[meta.id;instr.det]
+# Column	extent_code	(I3)	Deconvolved source extent is inconsistent with a point source at the 90% confidence level (bit-coded value)	(obi_source.extent_code)	[""]	[meta.code;phys.angSize]
+# Column	mjr_axis_raw_b	(F9.3)	1 sigma radius along the major axis of the ellipse defining the observed source extent; ACIS broad energy band	(obi_source.mjr_axis_raw_b)	["arcsec"]	[phys.angSize.smajAxis;em.X-ray]
+# Column	mnr_axis_raw_b	(F9.3)	1 sigma radius along the minor axis of the ellipse defining the observed source extent; ACIS broad energy band	(obi_source.mnr_axis_raw_b)	["arcsec"]	[phys.angSize.sminAxis;em.X-ray]
+# Column	pos_angle_raw_b	(F5.1)	Position angle of the major axis of the ellipse defining the observed source extent; ACIS broad energy band	(obi_source.pos_angle_raw_b)	["deg"]	[pos.posAng;em.X-ray]
+# Column	mjr_axis_raw_w	(F9.3)	1 sigma radius along the major axis of the ellipse defining the observed source extent; HRC wide energy band	(obi_source.mjr_axis_raw_w)	["arcsec"]	[phys.angSize.smajAxis;em.X-ray]
+# Column	mnr_axis_raw_w	(F9.3)	1 sigma radius along the minor axis of the ellipse defining the observed source extent; HRC wide energy band	(obi_source.mnr_axis_raw_w)	["arcsec"]	[phys.angSize.sminAxis;em.X-ray]
+# Column	pos_angle_raw_w	(F5.1)	Position angle of the major axis of the ellipse defining the observed source extent; HRC wide energy band	(obi_source.pos_angle_raw_w)	["deg"]	[pos.posAng;em.X-ray]
+# Column	cnts_aper_b	(I11)	Total counts observed in the modified source region aperture; ACIS broad energy band	(obi_source.cnts_aper_b)	["counts"]	[phot.count;em.X-ray]
+# Column	cnts_aper_w	(I11)	Total counts observed in the modified source region aperture; HRC wide energy band	(obi_source.cnts_aper_w)	["counts"]	[phot.count;em.X-ray]
+# Column	src_rate_aper_b	(F9.5)	Aperture-corrected net count rate inferred from the source region aperture; ACIS broad energy band	(obi_source.src_rate_aper_b)	["counts/s"]	[arith.rate;phot.count;src.net;em.X-ray]
+# Column	src_rate_aper_w	(F9.5)	Aperture-corrected net count rate inferred from the source region aperture; HRC wide energy band	(obi_source.src_rate_aper_w)	["counts/s"]	[arith.rate;phot.count;src.net;em.X-ray]
+# Column	obi_flux_aper_b	(E9.3)	Aperture-corrected net energy flux inferred from the source region aperture, calculated by counting X-ray events; ACIS broad energy band	(obi_source.obi_flux_aper_b)	["erg/s/cm^2"]	[phot.flux;src.net;em.X-ray]
+# Column	obi_flux_aper_lolim_b	(E9.3)	Aperture-corrected net energy flux inferred from the source region aperture, calculated by counting X-ray events (68% lower confidence limit); ACIS broad energy band	(obi_source.obi_flux_aper_lolim_b)	["erg/s/cm^2"]	[stat.error;phot.flux;src.net;stat.min;em.X-ray]
+# Column	obi_flux_aper_hilim_b	(E9.3)	Aperture-corrected net energy flux inferred from the source region aperture, calculated by counting X-ray events (68% upper confidence limit); ACIS broad energy band	(obi_source.obi_flux_aper_hilim_b)	["erg/s/cm^2"]	[stat.error;phot.flux;src.net;stat.max;em.X-ray]
+# Column	obi_flux_aper_w	(E9.3)	Aperture-corrected net energy flux inferred from the source region aperture, calculated by counting X-ray events; HRC wide energy band	(obi_source.obi_flux_aper_w)	["erg/s/cm^2"]	[phot.flux;src.net;em.X-ray]
+# Column	obi_flux_aper_lolim_w	(E9.3)	Aperture-corrected net energy flux inferred from the source region aperture, calculated by counting X-ray events (68% lower confidence limit); HRC wide energy band	(obi_source.obi_flux_aper_lolim_w)	["erg/s/cm^2"]	[stat.error;phot.flux;src.net;stat.min;em.X-ray]
+# Column	obi_flux_aper_hilim_w	(E9.3)	Aperture-corrected net energy flux inferred from the source region aperture, calculated by counting X-ray events (68% upper confidence limit); HRC wide energy band	(obi_source.obi_flux_aper_hilim_w)	["erg/s/cm^2"]	[stat.error;phot.flux;src.net;stat.max;em.X-ray]
+# Column	obi_hard_hm	(F9.4)	Spectral hardness ratio measured between ACIS energy bands 'h' and 'm'; hard_hm = (flux_aper_h - flux_aper_m)/flux_aper_b	(obi_source.obi_hard_hm)	[""]	[phot.color;em.X-ray]
+# Column	obi_hard_hm_lolim	(F9.4)	Spectral hardness ratio measured between ACIS energy bands 'h' and 'm'; hard_hm = (flux_aper_h - flux_aper_m)/flux_aper_b (68% lower confidence limit)	(obi_source.obi_hard_hm_lolim)	[""]	[stat.error;phot.color;stat.min;em.X-ray]
+# Column	obi_hard_hm_hilim	(F9.4)	Spectral hardness ratio measured between ACIS energy bands 'h' and 'm'; hard_hm = (flux_aper_h - flux_aper_m)/flux_aper_b (68% upper confidence limit)	(obi_source.obi_hard_hm_hilim)	[""]	[stat.error;phot.color;stat.max;em.X-ray]
+# Column	obi_hard_ms	(F9.4)	Spectral hardness ratio measured between ACIS energy bands 'm' and 's'; hard_ms = (flux_aper_m - flux_aper_s)/flux_aper_b	(obi_source.obi_hard_ms)	[""]	[phot.color;em.X-ray]
+# Column	obi_hard_ms_hilim	(F9.4)	Spectral hardness ratio measured between ACIS energy bands 'm' and 's'; hard_ms = (flux_aper_m - flux_aper_s)/flux_aper_b (68% upper confidence limit)	(obi_source.obi_hard_ms_hilim)	[""]	[stat.error;phot.color;stat.max;em.X-ray]
+# Column	obi_hard_ms_lolim	(F9.4)	Spectral hardness ratio measured between ACIS energy bands 'm' and 's'; hard_ms = (flux_aper_m - flux_aper_s)/flux_aper_b (68% lower confidence limit)	(obi_source.obi_hard_ms_lolim)	[""]	[stat.error;phot.color;stat.min;em.X-ray]
+# Column	var_index_b	(I6)	Gregory-Loredo variability index in the range [0, 10]; ACIS broad energy band	(obi_source.var_index_b)	[""]	[src.var.index;em.X-ray]
+# Column	var_index_w	(I6)	Gregory-Loredo variability index in the range [0, 10]; HRC wide energy band	(obi_source.var_index_w)	[""]	[src.var.index;em.X-ray]
+theta flux_aper_b
+17.832 2.397e-13
+8.84 3.641e-14
+5.933 7.271e-15
+4.482 1.063e-14
+3.309 2.251e-14
+2.674 3.664e-15
+3.11 8.743e-15
+3.375 3.556e-15
+8.207 5.78e-15
+1.612 4.671e-15
+8.956 2.071e-14
+2.785 5.491e-15
+3.214 1.282e-14
+1.614 2.898e-15
+0.934 1.7e-14
+1.404 5.373e-15
+12.544 2.211e-14
+2.691 2.876e-15
+0.687 1.93e-14
+1.478 6.184e-15
+0.571 1.715e-14
+0.643 4.709e-15
+0.873 9.068e-15
+0.558 5.56e-15
+0.777 6.111e-15
+0.497 3.057e-15
+1.404 2.062e-15
+0.602 3.35e-14
+0.513 4.35e-15
+0.8 6.135e-15
+0.899 7.441e-15
+0.664 4.284e-15
+1.31 2.805e-15
+0.468 9.499e-15
+0.667 8.744e-15
+0.771 3.878e-15
+1.04 1.237e-14
+1.609 5.404e-15
+0.147 8.604e-15
+2.355 3.446e-14
+0.324 7.015e-15
+0.456 6.623e-15
+2.08 1.085e-14
+0.292 3.994e-15
+0.973 6.076e-15
+1.799 4.073e-14
+1.514 4.148e-14
+0.849 1.837e-14
+1.114 2.035e-14
+1.594 5.876e-15
+9.515 7.805e-15
+3.585 9.542e-15
+3.496 5.914e-15
+4.498 3.758e-15
+4.836 4.365e-15
+5.324 4.45e-15
+6.73 3.722e-15
+6.998 7.282e-14

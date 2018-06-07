@@ -1,0 +1,133 @@
+Last login: Wed Jun 22 11:36:03 on ttys014
+ss433-1: ciao
+CIAO configuration is complete... 
+CIAO 4.8 Monday, February 22 2016
+  bindir      : /soft/ciao-4.8/bin
+  CALDB       : 4.7.1
+ss433-2: ipython
+Python 2.7.10 (default, Jul 28 2015, 16:44:31) 
+Type "copyright", "credits" or "license" for more information.
+
+IPython 3.0.0 -- An enhanced Interactive Python.
+?         -> Introduction and overview of IPython's features.
+%quickref -> Quick reference.
+help      -> Python's own help system.
+object?   -> Details about 'object', use 'object??' for extra details.
+
+In [1]: from ciao_contrib.runtool import *
+
+In [2]: from region import *
+
+In [3]: def Area_Calc_Frac_B_4(xc,yc,polyfname,inner_r,num_cir,outer_r,CCD_amt,B):
+   ...:     cur_r=inner_r
+   ...:     n=1
+   ...:     a_tot=0
+   ...:     a_L=[]
+   ...:     polystring_L=[]
+   ...:     polyfile=open("/home/asantini/Desktop/Polygons/"+str(polyfname),"r")   ...:     polystring=polyfile.read()
+   ...:     rchange=(float(outer_r)-float(inner_r))/num_cir
+   ...:     for i in range(1,CCD_amt+1):
+   ...:         cur_polys=polystring.split("\n")[i]
+   ...:         polystring_L.append(cur_polys)
+   ...:     while(n<=num_cir):
+   ...:         cur_r=(n*rchange) + inner_r
+   ...:         shape1 ='circle(' + str(xc) +','+ str(yc)+','+ str(cur_r)+')'
+   ...:         r1 = regParse(shape1)
+   ...:         a_tot=0
+   ...:         a1_cur = regArea(r1,0,0,8192,8192,B)
+   ...:         for s in polystring_L:
+   ...:             shape2 =s
+   ...:             r2 = regParse(shape2)
+   ...:             r3 = regParse(shape2 + "-" + shape1)
+   ...:             cur_a= regArea(r2,0,0,8192,8192,B) - regArea(r3,0,0,8192,8192,B)
+   ...:             a_tot=a_tot+cur_a
+   ...:             a_ratio=float(a_tot)/float(a1_cur)
+   ...:             a_L.append(a_ratio)
+   ...:             n=n+1
+   ...:             
+
+In [4]: def Area_Calc_Frac_B_4(xc,yc,polyfname,inner_r,num_cir,outer_r,CCD_amt,B):
+   ...:     cur_r=inner_r
+   ...:     n=1
+   ...:     a_tot=0
+   ...:     a_L=[]
+   ...:     polystring_L=[]
+   ...:     polyfile=open("/home/asantini/Desktop/Polygons/"+str(polyfname),"r")   ...:     polystring=polyfile.read()
+   ...:     rchange=(float(outer_r)-float(inner_r))/num_cir
+   ...:     for i in range(1,CCD_amt+1):
+   ...:         cur_polys=polystring.split("\n")[i]
+   ...:         polystring_L.append(cur_polys)
+   ...:     while(n<=num_cir):
+   ...:         cur_r=(n*rchange) + inner_r
+   ...:         shape1 ='circle(' + str(xc) +','+ str(yc)+','+ str(cur_r)+')'
+   ...:         r1 = regParse(shape1)
+   ...:         a_tot=0
+   ...:         a1_cur = regArea(r1,0,0,8192,8192,B)
+   ...:         for s in polystring_L:
+   ...:             shape2 =s
+   ...:             r2 = regParse(shape2)
+   ...:             r3 = regParse(shape2 + "-" + shape1)
+   ...:             cur_a= regArea(r2,0,0,8192,8192,B) - regArea(r3,0,0,8192,8192,B)
+   ...:             a_tot=a_tot+cur_a
+   ...:         a_ratio=float(a_tot)/float(a1_cur)
+   ...:         a_L.append(a_ratio)
+   ...:         n=n+1
+   ...:     return a_L
+   ...: 
+
+In [5]: Area_Calc_Frac_B_4(3797.138,3570.1891,'acisf00790_repro_simple_region_no_header_modifed',0,14,3570,1,1)
+Out[5]: 
+[0.9999333309685474,
+ 0.9999635232458371,
+ 0.8179683990104862,
+ 0.6420450048906977,
+ 0.5235383690399872,
+ 0.4406418924637318,
+ 0.3769136753949014,
+ 0.31024401975684285,
+ 0.2619873399983269,
+ 0.22583267424845013,
+In [6]: 03224346476,
+In [6]: 917308679834,              5,yc,polyfname,inner_r,num_cir,outer_r,CCD_amt,B)
+---------------------------------------------------------------------------D_amt,B)
+NameError                                 Traceback (most recent call last)_amt,B)
+<ipython-input-6-672d1e3455ab> in <module>()me,inner_r,num_cir,outer_r,CCD_amt,B)
+----> 1 Area_Calc_Frac_B_4(4122.2575,yc,polyfname,inner_r,num_cir,outer_r,CCD_amt,B)
+
+In [7]: 
+In [7]:                               ,polyfname,inner_r,num_cir,outer_r,CCD_amt,B)
+---------------------------------------------------------------------------CD_amt,B)
+NameError                                 Traceback (most recent call last)D_amt,B)
+<ipython-input-7-72a7ffc87165> in <module>()ame,inner_r,num_cir,outer_r,CCD_amt,B)
+----> 1 Area_Calc_Frac_B_4(4122.2575,y,polyfname,inner_r,num_cir,outer_r,CCD_amt,B)
+In [7]: Area_Calc_Frac_B_4(4122.,yc,polyfname,inner_r,num_cir,outer_r,CCD_amt,B) 
+NameError: name 'y' is not defined
+
+o_header_modifed'0Frac_B_4(4122.2575,4166.4162,'acisf00969_repro_simple_region_n 
+   ...: 
+   ...: sdg
+   ...: ag
+   ...: ajgj
+   ...: RJ
+   ...: G
+   ...: RN ER
+   ...: ABHe
+   ...: h,EHJKA,E T,M 
+<   ...: <ARHR;E;j4rt42\t42653627783#$%^&*()
+  File "<ipython-input-8-40de57d653eb>", line 1
+    Area_Calc_Frac_B_4(4122.2575,4166.4162,'acisf00969_repro_simple_region_no_header_modifed'0
+                                                                                             ^
+SyntaxError: invalid syntax
+
+
+
+In [9]: 
+
+
+
+
+
+
+
+
+
