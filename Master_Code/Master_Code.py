@@ -221,6 +221,8 @@ def Pipeline_C(Gname_L):
     from Source_Region_Generator import Source_Region_Generator_Radius_Modifed_V3
     from Background_Finder import Background_Finder_10
     from Detection_Probablity_Calc import Detection_Probability_Calc_7
+    from Known_Flux_Finder import Known_Flux_Finder
+    from Counts_To_Flux_Converter import Counts_To_Flux_Converter_3
     for Gname in Gname_L:
         #Pipeline_C Code
         Gname_List=Gname.split(" ")
@@ -300,9 +302,16 @@ def Pipeline_C(Gname_L):
                     #print "Output : ",Detection_Probability_Calc_7.D_P_C_Big_Input_90_Per_Check(Background_Ratio_L)
                     C_90_Per_First_L_H=Detection_Probability_Calc_7.D_P_C_Big_Input_90_Per_Check(Background_Ratio_L)
                     print "C_90_Per_First_L_H : ", C_90_Per_First_L_H
-                    os.chdir(path_Obs)
-                    print "THE PWD AT END IS :"
-                    system('pwd')
+                    #os.chdir(path_Obs)
+                    #print "THE PWD AT END IS :"
+                    #system('pwd')
+                    #Known_Flux_Finder('NGC2403','acisf02014_repro_evt2.fits')
+                    Known_Flux=Known_Flux_Finder.Known_Flux_Finder(Gname,Cur_Evt2_Filepath)
+                    print "Known_Flux : ",Known_Flux
+                    Known_Flux_L=[Known_Flux]
+                    print "Known_Flux_L : ",Known_Flux_L
+                    Flux_90_L_H=Counts_To_Flux_Converter_3.Counts_To_Flux_Converter(C_90_Per_First_L_H,Known_Flux_L)
+                    print "Flux_90_L_H : ", Flux_90_L_H
 """
 def Pipeline_D(Gname_L):
     for Gname in Gname_L:
