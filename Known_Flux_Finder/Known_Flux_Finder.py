@@ -5,17 +5,17 @@ from astropy.io import fits
 import pandas as pd
 import os
 #from os import system
-def Known_Flux_Finder(gname,evtfname,PIMMSfname='PIMMS_Data.csv'):
+def Known_Flux_Finder(gname,evtfilepath,PIMMSfname='PIMMS_Data.csv'):
     G_Data = Ned.query_object(gname) #G_Data:-astropy.table.table.Table, Galaxy_Data, The queryed data of the galaxy from NED in the form of a astropy table
     #print G_Data
     #print type(G_Data)
     raGC=float(G_Data['RA(deg)']) #raGC:-float, Right Ascension of Galatic Center, The right ascension of the galatic center of the current galaxy in degrees.
     decGC=float(G_Data['DEC(deg)']) #decGC:-float, Declination of Galatic Center, The declination of the galatic center of the current galaxy in degrees.
-    dmcoords(infile=str(evtfname),ra=str(raGC), dec=str(decGC), option='cel', verbose=0, celfmt='deg') # Runs the dmcoords CIAO tool, which converts coordinates like CHIP_ID to SKY, the tool is now being used to convert the RA and Dec of the GC to SKY coodinates in pixels (?)
+    dmcoords(infile=str(evtfilepath),ra=str(raGC), dec=str(decGC), option='cel', verbose=0, celfmt='deg') # Runs the dmcoords CIAO tool, which converts coordinates like CHIP_ID to SKY, the tool is now being used to convert the RA and Dec of the GC to SKY coodinates in pixels (?)
     X_Phys=dmcoords.x #X_Phys:-float, X_Physical, The sky plane X pixel coordinate in units of pixels of the galatic center
     Y_Phys=dmcoords.y #Y_Phys:-float, Y_Physical, The sky plane Y pixel coordinate in units of pixels of the galatic center
     Chip_ID=dmcoords.chip_id #Chip_ID:-int, Chip_ID, The Chip ID number the GC is on
-    hdulist = fits.open(evtfname)
+    hdulist = fits.open(evtfilepath)
     Obs_Date_Str=hdulist[1].header['DATE-OBS']
     #print Obs_Date_Str
     #print type(Obs_Date_Str)
@@ -57,4 +57,4 @@ def Known_Flux_Finder(gname,evtfname,PIMMSfname='PIMMS_Data.csv'):
 
 #Known_Flux_Finder('NGC2403','acisf02014_repro_evt2.fits','PIMMS_Data.csv')
 #print Known_Flux_Finder('NGC2403','acisf02014_repro_evt2.fits','PIMMS_Data.csv')
-print Known_Flux_Finder('NGC2403','acisf02014_repro_evt2.fits')
+#print Known_Flux_Finder('NGC2403','acisf02014_repro_evt2.fits')
