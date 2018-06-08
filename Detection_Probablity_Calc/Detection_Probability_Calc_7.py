@@ -199,7 +199,7 @@ def D_P_C_Big_Input_90_Per_Check(Backgrounds,Off_Angs=[0,1,2,3,4,5,6,7,8,9,10],C
             #print Count_90_Per_First # Prints the minimum count value required to get 90% probablity
             Count_90_Per_First_L.append(Count_90_Per_First)
             #print Prob_L
-        print "Count_90_Per_First_L : ",Count_90_Per_First_L
+        #print "Count_90_Per_First_L : ",Count_90_Per_First_L
         Count_90_Per_First_L_H.append(Count_90_Per_First_L)
     return Count_90_Per_First_L_H
 
@@ -230,4 +230,4 @@ def Count_Range_Generator(C_Min,C_Max,Step):
 #D_P_C_Big_Input_90_Per_Check([0.04]) #This is the current working version's input
 #D_P_C_Big_Input_90_Per_Check([0.03]) #This is the current working version's input
 #D_P_C_Big_Input_90_Per_Check([0.0005,0.0007,0.005,0.03,0.05,0.1]) #This is the current working version's input
-print D_P_C_Big_Input_90_Per_Check([0.0005,0.0007,0.005,0.03,0.05,0.1]) #This is the current working version's input
+#print D_P_C_Big_Input_90_Per_Check([0.0005,0.0007,0.001,0.002,0.005,0.03,0.05,0.1]) #This is the current working version's input
