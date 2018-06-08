@@ -207,8 +207,12 @@ def Pipeline_C(Gname_L):
     dir = os.path.dirname(__file__)
     path=os.path.realpath('../')
     #print "Path=",path
-    system('pwd')
+    #system('pwd')
+    #print "Before : "
+    #print sys.path
     sys.path.append(os.path.abspath(path))
+    #print "After : "
+    #print sys.path
     #print "Modules PWD : "
     #system('pwd')
     #print sys.path
@@ -266,8 +270,8 @@ def Pipeline_C(Gname_L):
                     #Cur_Evt2_Filepath_Full=path_Obs+Cur_Evt2_Filename
                     print "path_Obs : ", path_Obs
                     #print "Cur_Evt2_Filepath_Full : ", Cur_Evt2_Filepath_Full
-                    print "THE PWD AT END IS :"
-                    system('pwd')
+                    #print "THE PWD AT END IS :"
+                    #system('pwd')
                     Source_Region_Generator_Radius_Modifed_V3.Source_Region_Generator_Radius_Modifed_V3(Gname,path_Obs)
                     if(Gname[3]==" "):
                         Gname_Underscore=Gname.replace(Gname[3], "_", 1)
@@ -288,7 +292,17 @@ def Pipeline_C(Gname_L):
                     print "Background_Ratio : ", Background_Ratio
                     Background_Ratio_L=[Background_Ratio]
                     #D_P_C_Big_Input_90_Per_Check(Backgrounds,Off_Angs,C_Min=2,C_Max=110)
-                    Detection_Probability_Calc_7.D_P_C_Big_Input_90_Per_Check(Background_Ratio_L,Off_Angs)
+                    #print "THE PWD AT END IS :"
+                    #system('pwd')
+                    path_4=os.path.realpath('../../../../')
+                    #print "path_4 : ",path_4
+                    os.chdir(path_4)
+                    #print "Output : ",Detection_Probability_Calc_7.D_P_C_Big_Input_90_Per_Check(Background_Ratio_L)
+                    C_90_Per_First_L_H=Detection_Probability_Calc_7.D_P_C_Big_Input_90_Per_Check(Background_Ratio_L)
+                    print "C_90_Per_First_L_H : ", C_90_Per_First_L_H
+                    os.chdir(path_Obs)
+                    print "THE PWD AT END IS :"
+                    system('pwd')
 """
 def Pipeline_D(Gname_L):
     for Gname in Gname_L:
