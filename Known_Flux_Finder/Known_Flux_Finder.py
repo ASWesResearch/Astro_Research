@@ -3,7 +3,9 @@ from ciao_contrib.runtool import *
 from astropy.io.fits import Header
 from astropy.io import fits
 import pandas as pd
-def Known_Flux_Finder(gname,evtfname,PIMMSfname):
+import os
+#from os import system
+def Known_Flux_Finder(gname,evtfname,PIMMSfname='PIMMS_Data.csv'):
     G_Data = Ned.query_object(gname) #G_Data:-astropy.table.table.Table, Galaxy_Data, The queryed data of the galaxy from NED in the form of a astropy table
     #print G_Data
     #print type(G_Data)
@@ -21,7 +23,10 @@ def Known_Flux_Finder(gname,evtfname,PIMMSfname):
     #print Obs_Date_L
     Obs_Year_Str=Obs_Date_L[0]
     Obs_Year=int(Obs_Year_Str)
-    PIMMS_A=pd.read_csv('~/Desktop/PIMMS/'+PIMMSfname)
+    #PIMMS_A=pd.read_csv('~/Desktop/PIMMS/'+PIMMSfname) #This Works but the path should be changed to the one in Research_Git, Not the Desktop Path
+    PIMMS_filepath=os.path.realpath('../PIMMS/'+PIMMSfname)
+    #print "PIMMS_filepath : ",PIMMS_filepath
+    PIMMS_A=pd.read_csv(PIMMS_filepath)
     #print PIMMS_A
     Cycle_A=PIMMS_A['Cycle']
     #print Cycle_A
@@ -51,4 +56,5 @@ def Known_Flux_Finder(gname,evtfname,PIMMSfname):
     return Flux
 
 #Known_Flux_Finder('NGC2403','acisf02014_repro_evt2.fits','PIMMS_Data.csv')
-print Known_Flux_Finder('NGC2403','acisf02014_repro_evt2.fits','PIMMS_Data.csv')
+#print Known_Flux_Finder('NGC2403','acisf02014_repro_evt2.fits','PIMMS_Data.csv')
+print Known_Flux_Finder('NGC2403','acisf02014_repro_evt2.fits')
