@@ -209,6 +209,8 @@ def Pipeline_C(Gname_L):
     #print "Path=",path
     system('pwd')
     sys.path.append(os.path.abspath(path))
+    #print "Modules PWD : "
+    #system('pwd')
     #print sys.path
     #Import Desktop Modules Here !!!
     from File_Query_Code import File_Query_Code_5

@@ -163,10 +163,12 @@ def D_P_C_Big_Input_90_Per_Check(Backgrounds,Off_Angs=[0,1,2,3,4,5,6,7,8,9,10],C
     """
     #counts=[10,20]
     #Off_Angs=[0,2,5,10]
+    Count_90_Per_First_L_H=[] #Count_90_Per_First_L_H:-hlist,Counts 90 Percent First High List The list of Count_90_Per_First_L lists for each background in Backgrounds, This is the ultimate desired output of this Module
     for Background in Backgrounds: # Background:-float, Background, The current background (of one of multiple observations?)
         Prob_L=[] # Prob_L:-list, Probablity List, A list of the probablity of detecting an object given the background, counts and offaxis angle
         Count_90_Per_L=[] # Count_90_Per_L:-list, Count 90 Percent List, A list of all count vaules that give a detection probablity greater than 90% given the background and offaxis
         print '\n'+str(Background)+'\n' # Prints the current background
+        Count_90_Per_First_L=[] #Count_90_Per_First_L:-list, Counts 90 Percent First List, The list of the minimum amount of counts need to obtain a 90% probablity of detection for a given offaxis angle for each interpolated offaxis angle in the order of the offaxis angles in the Off_Angs input list
         for Off_Ang in Off_Angs: # Off_Ang:-int, Offaxis Angle, The current offaxis angle
             Prob_L=[] # Prob_L:-list, Probablity List, A list of the probablity of detecting an object given the background, counts and offaxis angle
             Count_90_Per_L=[] # Count_90_Per_L:-list, Count 90 Percent List, A list of all count vaules that give a detection probablity greater than 90% given the background and offaxis
@@ -194,8 +196,12 @@ def D_P_C_Big_Input_90_Per_Check(Backgrounds,Off_Angs=[0,1,2,3,4,5,6,7,8,9,10],C
                             Count_Min=0 # This sets the lower limit to 0 counts
                     #print Count_90_Per_L
             #print Count_90_Per_L
-            print Count_90_Per_First # Prints the minimum count value required to get 90% probablity
+            #print Count_90_Per_First # Prints the minimum count value required to get 90% probablity
+            Count_90_Per_First_L.append(Count_90_Per_First)
             #print Prob_L
+        print "Count_90_Per_First_L : ",Count_90_Per_First_L
+        Count_90_Per_First_L_H.append(Count_90_Per_First_L)
+    return Count_90_Per_First_L_H
 
 #Counts_L=[10,20,30,40,50,60,70,80,90,100]
 #D_P_C_Big_Input_90_Per_Check([0.0411256372949457,0.135727335468768,0.13725522292245054,0.153680013049534],[10,20,30,40,50,60,70,80,90,100],[0,2,5,10])
@@ -222,4 +228,6 @@ def Count_Range_Generator(C_Min,C_Max,Step):
 #D_P_C_Big_Input_90_Per_Check([0.0411256372949457]) #This is the current working version's input
 #D_P_C_Big_Input_90_Per_Check([0.07]) #This is the current working version's input
 #D_P_C_Big_Input_90_Per_Check([0.04]) #This is the current working version's input
-D_P_C_Big_Input_90_Per_Check([0.03]) #This is the current working version's input
+#D_P_C_Big_Input_90_Per_Check([0.03]) #This is the current working version's input
+#D_P_C_Big_Input_90_Per_Check([0.0005,0.0007,0.005,0.03,0.05,0.1]) #This is the current working version's input
+print D_P_C_Big_Input_90_Per_Check([0.0005,0.0007,0.005,0.03,0.05,0.1]) #This is the current working version's input
