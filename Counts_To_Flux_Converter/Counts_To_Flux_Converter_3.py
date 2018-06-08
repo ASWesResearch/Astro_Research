@@ -47,6 +47,6 @@ def Counts_To_Flux_Converter(C_L_H,F_K_L,C_K=10):
 #print Counts_To_Flux_Converter(Counts_L_H,10,Fluxes_10_Cnts_L,4) # Note: This is a test
 #print Counts_To_Flux_Converter(Counts,10,Fluxes_10_Cnts_L,4) # Note: There is an index error I need to figure out here, Why are the counts grouped wrong? Are the counts grouped wrong?
 #print Counts_To_Flux_Converter(Counts_L_H,10,Fluxes_10_Cnts_L) # Note: This is a test #Note: The input of the function has changed from Counts_To_Flux_Converter(C_L_H,C_K,F_K_L) to Counts_To_Flux_Converter(C_L_H,F_K_L,C_K=10)
-Counts_L_H_2=[[12,17,31,61]] #From Detection_Probability_Calc_7.py using "D_P_C_Big_Input_90_Per_Check([0.0411256372949457],2,110,[1,3,4,9])" Note: Detection_Probability_Calc_7 is not outputing the high list yet, it is only printing the values which I manually copy and paste them, This will be fixed to output later
-Fluxes_10_Cnts_L_2=[7.633e-14] #From Known_Flux_Finder.py using Known_Flux_Finder('NGC2403','acisf02014_repro_evt2.fits','PIMMS_Data.csv') Note: Known_Flux_Finder.py is not outputing yet, it is only printing the value for the flux which I manually copy and paste, This will be fixed to output later
-print Counts_To_Flux_Converter(Counts_L_H_2,Fluxes_10_Cnts_L_2)
+#Counts_L_H_2=[[12,17,31,61]] #From Detection_Probability_Calc_7.py using "D_P_C_Big_Input_90_Per_Check([0.0411256372949457],2,110,[1,3,4,9])" Note: Detection_Probability_Calc_7 is not outputing the high list yet, it is only printing the values which I manually copy and paste them, This will be fixed to output later
+#Fluxes_10_Cnts_L_2=[7.633e-14] #From Known_Flux_Finder.py using Known_Flux_Finder('NGC2403','acisf02014_repro_evt2.fits','PIMMS_Data.csv') Note: Known_Flux_Finder.py is not outputing yet, it is only printing the value for the flux which I manually copy and paste, This will be fixed to output later
+#print Counts_To_Flux_Converter(Counts_L_H_2,Fluxes_10_Cnts_L_2)
