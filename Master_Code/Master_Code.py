@@ -312,6 +312,11 @@ def Pipeline_C(Gname_L):
                     print "Known_Flux_L : ",Known_Flux_L
                     Flux_90_L_H=Counts_To_Flux_Converter_3.Counts_To_Flux_Converter(C_90_Per_First_L_H,Known_Flux_L)
                     print "Flux_90_L_H : ", Flux_90_L_H
+                    #print "THE PWD AT END IS :"
+                    system('pwd')
+                    os.chdir(path_Obs)
+                    print "THE PWD AT END IS :"
+                    system('pwd')
 """
 def Pipeline_D(Gname_L):
     for Gname in Gname_L:
