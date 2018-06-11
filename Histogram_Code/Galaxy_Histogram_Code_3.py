@@ -7,7 +7,11 @@ import os
 from os import system
 from astropy.io import fits
 from astroquery.ned import Ned
-#from Galaxy_Name_Reducer
+import sys
+path_GR=os.path.realpath('../')
+print "path_GR=",path_GR
+sys.path.append(os.path.abspath(path_GR))
+from Galaxy_Name_Reducer import Galaxy_Name_Reducer
 
 def Area_GC_R_N_F_2(Gname):
     """
@@ -182,12 +186,15 @@ def Area_GC_R_N_F_2(Gname):
     os.chdir(path_Hist)
     """
     #system('mkdir '+Gname) #Creates Current Galaxy's Folder, Folder Named after Galaxy, Note: will have to remove space from "NGC #" to change to "NGC_#", I Don't know if this works
+    """
     Gname_L=Gname.split(" ")
     print "Gname_L: ", Gname_L
     if(len(Gname_L)>1):
         Gname_Modifed=Gname_L[0]+"_"+Gname_L[1] #Adds underscore to remove space from "NGC #" to change to "NGC_#" if there is a space in the name
     else:
         Gname_Modifed=Gname # Does nothing if the galaxy name has no space, ie. NGC#, For example NGC253 instead of NGC 253 or NGC_253
+    """
+    Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
     print Gname_Modifed
     path_3=path_2+'/'+Gname_Modifed+'/'
     directory = os.path.dirname(path_3)
@@ -385,12 +392,15 @@ def Area_GC_R_N(Gname):
     os.chdir(path_Hist)
     """
     #system('mkdir '+Gname) #Creates Current Galaxy's Folder, Folder Named after Galaxy, Note: will have to remove space from "NGC #" to change to "NGC_#", I Don't know if this works
+    """
     Gname_L=Gname.split(" ")
     print "Gname_L: ", Gname_L
     if(len(Gname_L)>1):
         Gname_Modifed=Gname_L[0]+"_"+Gname_L[1] #Adds underscore to remove space from "NGC #" to change to "NGC_#" if there is a space in the name
     else:
         Gname_Modifed=Gname # Does nothing if the galaxy name has no space, ie. NGC#, For example NGC253 instead of NGC 253 or NGC_253
+    """
+    Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
     print Gname_Modifed
     path_3=path_2+'/'+Gname_Modifed+'/'
     directory = os.path.dirname(path_3)
