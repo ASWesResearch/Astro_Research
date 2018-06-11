@@ -7,6 +7,7 @@ import os
 from os import system
 from astropy.io import fits
 from astroquery.ned import Ned
+#from Galaxy_Name_Reducer
 
 def Area_GC_R_N_F_2(Gname):
     """
