@@ -2,8 +2,8 @@ from astropy.io import ascii
 import os
 from os import system
 def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(UnboundLocalError: local variable 'File_Path_With_Filename_Str' referenced before assignment), Update(I fixed this bug, but I need to bug check more)
-    #Code_Path=system("pwd")
-    #print "Code_Path ", Code_Path
+    Code_Path=os.path.realpath('.')
+    print "Code_Path ", Code_Path
     File_Path_With_Filename_Str="Some Filepath"
     dir = os.path.dirname(__file__)
     path=os.path.realpath('../SQL_Standard_File/SQL_Standard_File.csv')
@@ -147,7 +147,8 @@ def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(Unbound
         #print "File_Path_With_Filename_Str ", File_Path_With_Filename_Str
         #return File_Path_With_Filename_Str #Should not return first filenames but instead all the filenames as a list
     #print fname_L_H
-    os.chdir("/Network/Servers/vimes.astro.wesleyan.edu/Volumes/vvodata/home/asantini/Desktop/File_Query_Code") #Changes directory back to the codes pwd, so when the code is run twice in a row it still works
+    #os.chdir("/Network/Servers/vimes.astro.wesleyan.edu/Volumes/vvodata/home/asantini/Desktop/File_Query_Code") #Changes directory back to the codes pwd, so when the code is run twice in a row it still works
+    os.chdir(Code_Path) #Changes directory back to the codes pwd, so when the code is run twice in a row it still works
     return fname_L_H
 
 
