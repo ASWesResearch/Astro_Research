@@ -5,7 +5,7 @@ import os
 from os import system
 import sys
 import gzip
-import time
+#import time
 def Pipeline_A(Gname_L):
     #Imports alaxy_Histogram_Code_2
     #os.system('python Hello_World.py')
@@ -151,9 +151,9 @@ def Pipeline_B(Gname_L):
                     XPA_DS9_Region_Generator_3.XPA_DS9_Region_Generator(Cur_Evt2_Filepath,Cur_Fov_Filepath)
                     print "The Filepath Before End is : "
                     system('pwd')
-                    time.sleep(10.0)
+                    #time.sleep(10.0)
                     Region_File_LS= os.popen("ls").read()
-                    print "Region_File_LS : ", Region_File_LS 
+                    print "Region_File_LS : ", Region_File_LS
                     Region_File_LS_L=Region_File_LS.split("\n")
                     print "Region_File_LS_L : ",Region_File_LS_L
                     for Region_Filename_Test in Region_File_LS_L:
@@ -168,10 +168,14 @@ def Pipeline_B(Gname_L):
                     Simple_Region_Generator_9.Simple_Region_Generator(Region_Filename,Cur_Evt2_Filepath)
                     #print "Cur_Evt2_Filepath: ", Cur_Evt2_Filepath
                     #Area_Calc_Frac_B_2_Alt_2("NGC 253","/Network/Servers/vimes.astro.wesleyan.edu/Volumes/vvodata/home/asantini/Desktop/CCD_Incompleteness_Correction/Area_Calc/acisf13830_repro_evt2.fits","acisf13830_repro_CCD_Regions_simple_region_modifed_Code.txt")
-                    time.sleep(60.0)
+                    print "The Filepath Before LS Delay"
+                    system('pwd')
+                    #time.sleep(10.0)
                     Simple_Region_File_LS= os.popen("ls").read()
                     print "Simple_Region_File_LS : ", Simple_Region_File_LS
-                    Simple_Region_File_LS_L=Region_File_LS.split("\n")
+                    print "The Filepath Before LS Delay"
+                    system('pwd')
+                    Simple_Region_File_LS_L=Simple_Region_File_LS.split("\n")
                     print "Simple_Region_File_LS_L : ",Simple_Region_File_LS_L
                     for Simple_Region_Filename_Test in Simple_Region_File_LS_L:
                         Simple_Region_Filename_Test_L=Simple_Region_Filename_Test.split("_")
@@ -197,6 +201,7 @@ def Pipeline_B(Gname_L):
                     #print "Cur_Evt2_Filepath_L : ",Cur_Evt2_Filepath_L
                     #Cur_Evt2_Filename=Cur_Evt2_Filepath_L[len(Cur_Evt2_Filepath_L)-1]
                     #print "Cur_Evt2_Filename : ",Cur_Evt2_Filename
+                    """
                     Area_Calc_File=open(Area_List_Filename,"w")
                     for Cur_Area in Cur_Area_L:
                         if (Cur_Area==False):
@@ -207,6 +212,7 @@ def Pipeline_B(Gname_L):
                         Cur_Area_Str=str(Cur_Area)
                         Area_Calc_File.write(Cur_Area_Str +"\n")
                     #This_is_Ment_To_Break_The_Code
+                    """
                     print "PWD before Path_5 : "
                     system('pwd')
         path_5=os.path.realpath('../../../../')
