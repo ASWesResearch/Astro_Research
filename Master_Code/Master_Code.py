@@ -5,6 +5,7 @@ import os
 from os import system
 import sys
 import gzip
+import time
 def Pipeline_A(Gname_L):
     #Imports alaxy_Histogram_Code_2
     #os.system('python Hello_World.py')
@@ -45,14 +46,18 @@ def Pipeline_B(Gname_L):
     #from CCD_Region_Testing import Simple_Region_Generator_8
     from Simple_Region_Generator import Simple_Region_Generator_9
     from Area_Calc import Area_Calc_Frac_B_2_Alt_8
+    from Galaxy_Name_Reducer import Galaxy_Name_Reducer
     for Gname in Gname_L:
         #Pipeline_B Code
+        """
         Gname_List=Gname.split(" ")
         print "Gname_List: ", Gname_List
         if(len(Gname_List)>1):
             Gname_Modifed=Gname_List[0]+"_"+Gname_List[1] #Adds underscore to remove space from "NGC #" to change to "NGC_#" if there is a space in the name
         else:
             Gname_Modifed=Gname # Does nothing if the galaxy name has no space, ie. NGC#, For example NGC253 instead of NGC 253 or NGC_253
+        """
+        Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
         print "Gname_Modifed ", Gname_Modifed
         path_2=os.path.realpath('../Master_Code/Master_Output/')
         path_3=path_2+'/'+Gname_Modifed+'/'
@@ -146,26 +151,34 @@ def Pipeline_B(Gname_L):
                     XPA_DS9_Region_Generator_3.XPA_DS9_Region_Generator(Cur_Evt2_Filepath,Cur_Fov_Filepath)
                     print "The Filepath Before End is : "
                     system('pwd')
+                    time.sleep(10.0)
                     Region_File_LS= os.popen("ls").read()
+                    print "Region_File_LS : ", Region_File_LS 
                     Region_File_LS_L=Region_File_LS.split("\n")
                     print "Region_File_LS_L : ",Region_File_LS_L
                     for Region_Filename_Test in Region_File_LS_L:
                         Region_Filename_Test_L=Region_Filename_Test.split("_")
                         print "Region_Filename_Test_L : ",Region_Filename_Test_L
-                        if(len(Region_Filename_Test_L)==4):
+                        #if(len(Region_Filename_Test_L)==4):
+                            #Region_Filename=Region_Filename_Test
+                        if(("modifed" not in Region_Filename_Test) and ("CCD" in Region_Filename_Test)):
                             Region_Filename=Region_Filename_Test
                     print "Region_Filename : ",Region_Filename
                     #This_is_Ment_To_Break_The_Code
                     Simple_Region_Generator_9.Simple_Region_Generator(Region_Filename,Cur_Evt2_Filepath)
                     #print "Cur_Evt2_Filepath: ", Cur_Evt2_Filepath
                     #Area_Calc_Frac_B_2_Alt_2("NGC 253","/Network/Servers/vimes.astro.wesleyan.edu/Volumes/vvodata/home/asantini/Desktop/CCD_Incompleteness_Correction/Area_Calc/acisf13830_repro_evt2.fits","acisf13830_repro_CCD_Regions_simple_region_modifed_Code.txt")
+                    time.sleep(60.0)
                     Simple_Region_File_LS= os.popen("ls").read()
+                    print "Simple_Region_File_LS : ", Simple_Region_File_LS
                     Simple_Region_File_LS_L=Region_File_LS.split("\n")
                     print "Simple_Region_File_LS_L : ",Simple_Region_File_LS_L
                     for Simple_Region_Filename_Test in Simple_Region_File_LS_L:
                         Simple_Region_Filename_Test_L=Simple_Region_Filename_Test.split("_")
                         print "Simple_Region_Filename_Test_L : ",Simple_Region_Filename_Test_L
-                        if(len(Simple_Region_Filename_Test_L)==8):
+                        #if(len(Simple_Region_Filename_Test_L)==8):
+                            #Simple_Region_Filename=Simple_Region_Filename_Test
+                        if(("modifed" in Simple_Region_Filename_Test_L) and ("no" not in Simple_Region_Filename_Test_L)):
                             Simple_Region_Filename=Simple_Region_Filename_Test
                     print "Simple_Region_Filename : ",Simple_Region_Filename
                     #Area_Calc_Frac_B_2_Alt_8.Area_Calc_Frac_B_2_Alt_2(Gname,Simple_Region_Filename,Cur_Evt2_Filepath)
@@ -205,8 +218,11 @@ def Pipeline_B(Gname_L):
 
 def Pipeline_C(Gname_L):
     dir = os.path.dirname(__file__)
+    #print "dir : ", dir
+    print "PWD C : "
+    system('pwd')
     path=os.path.realpath('../')
-    #print "Path=",path
+    print "Path=",path
     #system('pwd')
     #print "Before : "
     #print sys.path
@@ -218,27 +234,52 @@ def Pipeline_C(Gname_L):
     #print sys.path
     #Import Desktop Modules Here !!!
     from File_Query_Code import File_Query_Code_5
+    print "PWD C 2a : "
+    system('pwd')
     from Source_Region_Generator import Source_Region_Generator_Radius_Modifed_V3
+    print "PWD C 2b : "
+    system('pwd')
     from Background_Finder import Background_Finder_10
+    print "PWD C 2c : "
+    system('pwd')
     from Detection_Probablity_Calc import Detection_Probability_Calc_7
+    print "PWD C 2d : "
+    system('pwd')
     from Known_Flux_Finder import Known_Flux_Finder
+    print "PWD C 2e : "
+    system('pwd')
     from Counts_To_Flux_Converter import Counts_To_Flux_Converter_3
+    print "PWD C 2f : "
+    system('pwd')
+    from Galaxy_Name_Reducer import Galaxy_Name_Reducer
+    print "PWD C 2g : "
+    system('pwd')
     for Gname in Gname_L:
         #Pipeline_C Code
+        """
         Gname_List=Gname.split(" ")
         print "Gname_List: ", Gname_List
         if(len(Gname_List)>1):
             Gname_Modifed=Gname_List[0]+"_"+Gname_List[1] #Adds underscore to remove space from "NGC #" to change to "NGC_#" if there is a space in the name
         else:
             Gname_Modifed=Gname # Does nothing if the galaxy name has no space, ie. NGC#, For example NGC253 instead of NGC 253 or NGC_253
+        """
+        print "PWD C 2 : "
+        system('pwd')
+        Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
         print "Gname_Modifed ", Gname_Modifed
+        print "PWD C 3 : "
+        system('pwd')
         path_2=os.path.realpath('../Master_Code/Master_Output/')
+        print "path_2 : ", path_2
         path_3=path_2+'/'+Gname_Modifed+'/'
+        print "path_3 : ", path_3
         directory = os.path.dirname(path_3)
         if not os.path.exists(directory):
             os.makedirs(directory)
         #os.chdir(path_3) #Goes to Current Galaxies Folder
         path_Flux_90=path_3+'Flux_90_Files/'
+        print "path_Flux_90 : ", path_Flux_90
         directory_Flux_90=os.path.dirname(path_Flux_90)
         if not os.path.exists(directory_Flux_90):
             os.makedirs(directory_Flux_90)
@@ -315,8 +356,15 @@ def Pipeline_C(Gname_L):
                     #print "THE PWD AT END IS :"
                     system('pwd')
                     os.chdir(path_Obs)
-                    print "THE PWD AT END IS :"
-                    system('pwd')
+                    #print "THE PWD AT END IS :"
+                    #system('pwd')
+                    Flux_90_L=Flux_90_L_H[0]
+                    print "Flux_90_L : ", Flux_90_L
+                    #NGC_4258_ObsID_1618
+                    file=open(Gname_Modifed+"_ObsID_"+str(Cur_Evt2_ObsID)+"_Flux_90.txt","w")
+                    file.write("Background_Ratio:"+str(Background_Ratio)+"|"+"\n")
+                    for Flux_90 in Flux_90_L:
+                        file.write(str(Flux_90)+"\n")
 """
 def Pipeline_D(Gname_L):
     for Gname in Gname_L:
@@ -325,8 +373,8 @@ def Pipeline_D(Gname_L):
 
 def Master(Gname_L):
     if __name__ == '__main__':
-        #Thread(target = Pipeline_A(Gname_L)).start()
-        #Thread(target = Pipeline_B(Gname_L)).start()
+        Thread(target = Pipeline_A(Gname_L)).start()
+        Thread(target = Pipeline_B(Gname_L)).start()
         Thread(target = Pipeline_C(Gname_L)).start()
         #Thread(target = Pipeline_D(Gname_L)).start()
 
