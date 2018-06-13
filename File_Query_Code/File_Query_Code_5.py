@@ -152,13 +152,14 @@ def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(Unbound
     return fname_L_H
 
 
-print File_Query("NGC 891","evt2") #In in CSC
+#print File_Query("NGC 891","evt2") #In in CSC
 #print File_Query("NGC 6946","evt2") #In CSC
 #print File_Query("NGC 891","fov1") #In in CSC
-print File_Query("NGC 891","reg",".reg") #In in CSC
+#print File_Query("NGC 891","reg",".reg") #In in CSC
 #print File_Query("NGC 6946","fov1") #In CSC
 #print File_Query("NGC 4449","evt2") # Not CSC
 #print File_Query("NGC 4449","fov1") #Not CSC
 #print File_Query("NGC 4449","reg",".reg") #NOT CSC #retuns "Some Filepath" as the filepath, I don't know why this bug is happening, # A: becuase the files not in CSC don't have the reg files, Not_
 #print File_Query("M31","evt2") #This has multible ObsIDs for the 1 Galaxy M31
 #print File_Query("M31","evt2") #This has multible ObsIDs for the 1 Galaxy M31
+print File_Query("NGC 6946","sources") #In in CSC
