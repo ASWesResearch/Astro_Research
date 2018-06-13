@@ -371,18 +371,90 @@ def Pipeline_C(Gname_L):
                     file.write("Background_Ratio:"+str(Background_Ratio)+"|"+"\n")
                     for Flux_90 in Flux_90_L:
                         file.write(str(Flux_90)+"\n")
-"""
+        path_5=os.path.realpath('../../../../')
+        print "path_5 : ",path_5
+        os.chdir(path_5)
+        print "THE PWD AT VERY END IS :"
+        system('pwd')
+
 def Pipeline_D(Gname_L):
+    dir = os.path.dirname(__file__)
+    path=os.path.realpath('../')
+    #print "Path=",path
+    system('pwd')
+    sys.path.append(os.path.abspath(path))
+    #print sys.path
+    from File_Query_Code import File_Query_Code_5
+    from Coords_Calc import Coords_Calc
+    from Galaxy_Name_Reducer import Galaxy_Name_Reducer
     for Gname in Gname_L:
         #Pipeline_D Code
-"""
-
+        Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
+        print "Gname_Modifed ", Gname_Modifed
+        path_2=os.path.realpath('../Master_Code/Master_Output/')
+        path_3=path_2+'/'+Gname_Modifed+'/'
+        directory = os.path.dirname(path_3)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        #os.chdir(path_3) #Goes to Current Galaxies Folder
+        path_Coords=path_3+'Coords_Lists/'
+        directory_Coords=os.path.dirname(path_Coords)
+        if not os.path.exists(directory_Coords):
+            os.makedirs(directory_Coords)
+        print "path_Coords=",path_Coords
+        Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2")
+        Reg_File_H_L=File_Query_Code_5.File_Query(Gname,"reg",".reg")
+        print "Evt2_File_H_L ", Evt2_File_H_L
+        print "Reg_File_H_L ", Reg_File_H_L
+        for Evt2_File_L in Evt2_File_H_L:
+            Cur_Evt2_ObsID=Evt2_File_L[0]
+            Cur_Evt2_Filepath=Evt2_File_L[1]
+            for Reg_File_L in Reg_File_H_L:
+                Cur_Reg_ObsID=Reg_File_L[0]
+                Cur_Reg_Filepath=Reg_File_L[1]
+                if(Cur_Evt2_ObsID==Cur_Reg_ObsID):
+                    #print "Test"
+                    #path_Obs=path_Flux_90+'/'+str(Cur_Evt2_ObsID)+'/'
+                    print "Cur_Evt2_ObsID : ",Cur_Evt2_ObsID
+                    #print "type(Cur_Evt2_ObsID) : ",type(Cur_Evt2_ObsID)
+                    print "Cur_Evt2_Filepath : ", Cur_Evt2_Filepath
+                    print "Cur_Reg_Filepath : ", Cur_Reg_Filepath
+                    path_Obs=path_Coords+str(Cur_Evt2_ObsID)+'/'
+                    directory_Obs=os.path.dirname(path_Obs)
+                    if not os.path.exists(directory_Obs):
+                        os.makedirs(directory_Obs)
+                    os.chdir(path_Obs)
+                    #Cur_Evt2_Filepath_Full=path_Obs+Cur_Evt2_Filename
+                    print "path_Obs : ", path_Obs
+                    Source_C_L=Coords_Calc.Coords_Calc(Cur_Evt2_Filepath,Cur_Reg_Filepath)
+                    #print "PWD AT THE END : "
+                    #system('pwd')
+                    file2=open(Gname_Modifed+"_ObsID_"+str(Cur_Evt2_ObsID)+"_Coords.csv","w")
+                    #[Cur_X,Cur_Y,Cur_Chip_X,Cur_Chip_Y,Cur_Chip_ID,Cur_RA,Cur_DEC,Cur_Theta]
+                    file2.write("Phys_X,Phys_Y,Chip_X,Chip_Y,Chip_ID,RA,DEC,Offaxis_Angle"+"\n")
+                    for Source_C in Source_C_L:
+                        Phys_X=Source_C[0]
+                        Phys_Y=Source_C[1]
+                        Chip_X=Source_C[2]
+                        Chip_Y=Source_C[3]
+                        Chip_ID=Source_C[4]
+                        RA=Source_C[5]
+                        DEC=Source_C[6]
+                        Offaxis_Angle=Source_C[7]
+                        file2.write(str(Phys_X)+","+str(Phys_Y)+","+str(Chip_X)+","+str(Chip_Y)+","+str(Chip_ID)+","+str(RA)+","+str(DEC)+","+str(Offaxis_Angle)+"\n")
+        path_5=os.path.realpath('../../../../')
+        print "path_5 : ",path_5
+        os.chdir(path_5)
+        print "THE PWD AT VERY END IS :"
+        system('pwd')
 def Master(Gname_L):
     if __name__ == '__main__':
-        Thread(target = Pipeline_A(Gname_L)).start()
-        Thread(target = Pipeline_B(Gname_L)).start()
+        #Thread(target = Pipeline_A(Gname_L)).start()
+        #Thread(target = Pipeline_B(Gname_L)).start()
         Thread(target = Pipeline_C(Gname_L)).start()
         #Thread(target = Pipeline_D(Gname_L)).start()
 
 #Master(['NGC4258','M31','NGC 1365']) #This works
+#Master(['NGC4258','NGC 1332'])
+#Master(['NGC4258','NGC 1365'])
 Master(['NGC4258'])
