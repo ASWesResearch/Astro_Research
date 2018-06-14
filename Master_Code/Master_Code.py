@@ -456,5 +456,5 @@ def Master(Gname_L):
 
 #Master(['NGC4258','M31','NGC 1365']) #This works
 #Master(['NGC4258','NGC 1332'])
-#Master(['NGC4258','NGC 1365'])
-Master(['NGC4258'])
+Master(['NGC4258','NGC 1365'])
+#Master(['NGC4258'])
