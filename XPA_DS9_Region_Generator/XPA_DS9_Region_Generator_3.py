@@ -11,7 +11,7 @@ def XPA_DS9_Region_Generator(evtfilepath,fovfilepath):
     fov.fits files to indentical text files that can be used in the Simple_Region_Generator Code to create simple_region_no_header_modifed files
     that are used in the Area_Calc code
     """
-    print(pyds9.ds9_targets())
+    #print(pyds9.ds9_targets())
     d = pyds9.DS9()  # will open a new ds9 window or connect to an existing on
     #81853a27:55005 #The value for the
     #d = pyds9.DS9("81853a27:55005")
@@ -39,19 +39,19 @@ def XPA_DS9_Region_Generator(evtfilepath,fovfilepath):
     d.set("regions system physical") #This converts the region's coordinate system to physical coordinates (pixels) #This works ! ! !
     #d.set("regions save foo2") #This works ! ! !
     #CCD Regions
-    print "evtfilepath ", evtfilepath
-    print "fovfilepath ", fovfilepath
+    #print "evtfilepath ", evtfilepath
+    #print "fovfilepath ", fovfilepath
     fovfname_L=fovfilepath.split('/')
-    print "fovfname_L ", fovfname_L
+    #print "fovfname_L ", fovfname_L
     fovfname=fovfname_L[len(fovfname_L)-1]
-    print "fovfname ", fovfname
+    #print "fovfname ", fovfname
     fovfname_Split_L=fovfname.split('_') #fovfname_Split_L:-List, Feild_Of_View_Filename_Split_List, The resulting list of the split string regions of fovfname, The fovfname string was split on "_"
-    print "fovfname_Split_L ", fovfname_Split_L
+    #print "fovfname_Split_L ", fovfname_Split_L
     #print "fovfname_Split_L ", fovfname_Split_L
     fovfname_reduced=fovfname_Split_L[0]+"_"+fovfname_Split_L[1] #fovfname_reduced:-str, Feild_Of_View_Filename_Reduced, The Feild_Of_View_Filename without the "_fov1.fits" part, for example the fovfname_reduced of the fovfname "acisf03931_repro_fov1.fits" is "acisf03931_repro"
     if '.' in fovfname_Split_L[1]:
         fovfname_reduced=fovfname_Split_L[0]
-    print "fovfname_reduced ", fovfname_reduced
+    #print "fovfname_reduced ", fovfname_reduced
     #print "fovfname_reduced ", fovfname_reduced
     #print fovfname_reduced
     d.set("regions save "+str(fovfname_reduced)+"_CCD_Regions") #Saves the FOV1.fits file as a text file in physical coordinates with the filename in the form of str(fovfname_reduced)+"_CCD_Regions", for example for "acisf03931_repro_fov1.fits" the output file name is "acisf03931_repro_CCD_Regions"
