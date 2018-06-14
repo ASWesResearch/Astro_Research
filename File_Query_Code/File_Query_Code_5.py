@@ -142,7 +142,7 @@ def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(Unbound
                 "Finding compressed"
         #print "Filename_String ", Filename_String
         fname_L=[Cur_Obs_ID,File_Path_With_Filename_Str]
-        print "fname_L ", fname_L
+        #print "fname_L ", fname_L
         fname_L_H.append(fname_L)
         #print "File_Path_With_Filename_Str ", File_Path_With_Filename_Str
         #return File_Path_With_Filename_Str #Should not return first filenames but instead all the filenames as a list
@@ -162,4 +162,4 @@ def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(Unbound
 #print File_Query("NGC 4449","reg",".reg") #NOT CSC #retuns "Some Filepath" as the filepath, I don't know why this bug is happening, # A: becuase the files not in CSC don't have the reg files, Not_
 #print File_Query("M31","evt2") #This has multible ObsIDs for the 1 Galaxy M31
 #print File_Query("M31","evt2") #This has multible ObsIDs for the 1 Galaxy M31
-print File_Query("NGC 6946","sources") #In in CSC
+#print File_Query("NGC 6946","sources") #In in CSC
