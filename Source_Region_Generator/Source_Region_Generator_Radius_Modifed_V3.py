@@ -53,9 +53,9 @@ def Source_Region_Generator_Radius_Modifed_V3(Gname,Outpath,M=10):
         #print "Cur_Obs_ID ", Cur_Obs_ID
         #print "type(Cur_Obs_ID) ", type(Cur_Obs_ID)
         Outpath_L=Outpath.split("/")
-        print "Outpath_L : ", Outpath_L
+        #print "Outpath_L : ", Outpath_L
         Obs_ID=Outpath_L[len(Outpath_L)-2]
-        print Obs_ID
+        #print Obs_ID
         Cur_Obs_ID=Obs_ID
         Cur_Obs_ID_Str=str(Cur_Obs_ID) #Cur_Obs_ID_Str:-Str, Current_Observation_Idenification_String, The current Observation ID in the list of all obsevation IDs for the current Galaxy Name (Matching_Obs_ID_L) as a string
         #print "type(Cur_Obs_ID_Str) ", type(Cur_Obs_ID_Str)
@@ -71,7 +71,7 @@ def Source_Region_Generator_Radius_Modifed_V3(Gname,Outpath,M=10):
         #print "LS_Str_L ", LS_Str_L
         #print "type(LS_Str_L) ", type(LS_Str_L)
         if(Cur_Obs_ID_Str in LS_Str_L): #Checks to see if the current observation IDs files are in the directory that contains only the observations form the Chandra Source Cataloge, if not then the code skips this part and checks the directory containing only the files for the observations outside the Chandra Sorce Cataloge
-            print "Cur_Obs_ID_Str ", Cur_Obs_ID_Str
+            #print "Cur_Obs_ID_Str ", Cur_Obs_ID_Str
             File_Path_Str_Main="/Volumes/xray/spirals/trace/"+Cur_Obs_ID_Str #File_Path_Str_Main:-str, File_Path_String_Main, The directory of the Main files of the current observation, this directory contains the wavdetect region (.reg) files amoung others
             #print "File_Path_Str_Main ", File_Path_Str_Main
             os.chdir(File_Path_Str_Main) #Changes the directory to the directory where the Main files for the current observation are held (/Volumes/xray/spirals/trace/"+Cur_Obs_ID_Str)
@@ -153,9 +153,9 @@ def Source_Region_Generator_Radius_Modifed_V3(Gname,Outpath,M=10):
                 Gname_Underscore=Gname.replace(Gname[3], "_", 1)
             elif(Gname[3]!="_"):
                 Gname_Underscore_L=Gname.split(Gname[2])
-                print "Gname_Underscore_L : ",Gname_Underscore_L
+                #print "Gname_Underscore_L : ",Gname_Underscore_L
                 Gname_Underscore=Gname_Underscore_L[0]+Gname[2]+"_"+Gname_Underscore_L[1]
-            print "Gname_Underscore : ", Gname_Underscore
+            #print "Gname_Underscore : ", Gname_Underscore
             Region_fname=Gname_Underscore+"_"+"ObsID_"+Cur_Obs_ID_Str+"_Source_Regions_Radius_Modifed.txt"
             file=open(Region_fname,"w")
             #file.write("X"+","+"Y"+","+"Maj_Ax"+","+"Min_Ax"+","+"Angle")
