@@ -45,7 +45,7 @@ def Area_GC_R_N_F_2(Gname):
     #os.chdir('~/Desktop/SQL_Standard_File/')
     #system('cd ~/Desktop/Big_Object_Regions/')
     #system('cd ../SQL_Standard_File/')
-    system('pwd')
+    #system('pwd')
     #system('ls')
     #data = ascii.read("SQL_Sandard_File.csv") #data:-astropy.table.table.Table, data, The data from the SQL_Standard_File
     #data = ascii.read(filename) #data:-astropy.table.table.Table, data, The data from the SQL_Standard_File
@@ -234,7 +234,7 @@ def Area_GC_R_N(Gname):
     import math
     from astropy.io import ascii
     import matplotlib.pyplot as plt
-    system('pwd')
+    #system('pwd')
     #system('cd ~/Desktop/SQL_Standard_File/')
     #import os
     dir = os.path.dirname(__file__)
@@ -249,7 +249,7 @@ def Area_GC_R_N(Gname):
     #os.chdir('~/Desktop/SQL_Standard_File/')
     #system('cd ~/Desktop/Big_Object_Regions/')
     #system('cd ../SQL_Standard_File/')
-    system('pwd')
+    #system('pwd')
     #system('ls')
     #data = ascii.read("SQL_Sandard_File.csv") #data:-astropy.table.table.Table, data, The data from the SQL_Standard_File
     #data = ascii.read(filename) #data:-astropy.table.table.Table, data, The data from the SQL_Standard_File
