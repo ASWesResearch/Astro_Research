@@ -9,7 +9,7 @@ from astropy.io import fits
 from astroquery.ned import Ned
 import sys
 path_GR=os.path.realpath('../')
-print "path_GR=",path_GR
+#print "path_GR=",path_GR
 sys.path.append(os.path.abspath(path_GR))
 from Galaxy_Name_Reducer import Galaxy_Name_Reducer
 
@@ -169,14 +169,14 @@ def Area_GC_R_N_F_2(Gname):
     Hist_A=plt.hist(area_A)
     Bin_Hight_A=Hist_A[0]
     Bin_Hight_Max=max(Bin_Hight_A)
-    print Bin_Hight_Max
+    #print Bin_Hight_Max
     plt.vlines(1,0,Bin_Hight_Max,color='red')
     #Hist_Max=max(area_A)
     #print "Hist_Max ", Hist_Max
     plt.plot()
     #plt.savefig('Test1.png')
     path_2=os.path.realpath('../Master_Code/Master_Output/') #Goes to Master_Output folder, which will hold all the data calculated for the galaxies including the histogram pictures
-    print "Path_2=", path_2
+    #print "Path_2=", path_2
     """
     path_Hist=path_2+'/Histograms/'
     directory_Hist=os.path.dirname(path_Hist)
@@ -195,7 +195,7 @@ def Area_GC_R_N_F_2(Gname):
         Gname_Modifed=Gname # Does nothing if the galaxy name has no space, ie. NGC#, For example NGC253 instead of NGC 253 or NGC_253
     """
     Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
-    print Gname_Modifed
+    #print Gname_Modifed
     path_3=path_2+'/'+Gname_Modifed+'/'
     directory = os.path.dirname(path_3)
     if not os.path.exists(directory):
@@ -205,12 +205,12 @@ def Area_GC_R_N_F_2(Gname):
     directory_Hist=os.path.dirname(path_Hist)
     if not os.path.exists(directory_Hist):
         os.makedirs(directory_Hist)
-    print "path_Hist=",path_Hist
+    #print "path_Hist=",path_Hist
     os.chdir(path_Hist)
     plt.savefig(Gname_Modifed+'_Frac.png') #Saves angluar histogram figure
     #system('pwd')
     path_4=os.path.realpath('../../../../Histogram_Code/')
-    print "Path_4=",path_4
+    #print "Path_4=",path_4
     os.chdir(path_4) #Goes back to where this code (the histogram code) is being run, ie. Desktop/GitHub
     plt.close()
     #plt.show()
@@ -244,7 +244,7 @@ def Area_GC_R_N(Gname):
     #path= os.path.join(dir,'~','Desktop','SQL_Standard_File',)
     #path=os.path.realpath('~/Desktop/SQL_Standard_File/SQL_Sandard_File.csv')
     path=os.path.realpath('../SQL_Standard_File/SQL_Standard_File.csv')
-    print "Path=",path
+    #print "Path=",path
     #os.chdir(path)
     #os.chdir('~/Desktop/SQL_Standard_File/')
     #system('cd ~/Desktop/Big_Object_Regions/')
@@ -376,13 +376,13 @@ def Area_GC_R_N(Gname):
     Bin_Hight_Max=max(Bin_Hight_A)
     #print Bin_Hight_Max
     plt.vlines(D25_S_Maj_Deg,0,Bin_Hight_Max,color='red') #Plots red line at D25
-    print D25_S_Maj_Deg
+    #print D25_S_Maj_Deg
     #Hist_Max=max(area_A)
     #print "Hist_Max ", Hist_Max
     plt.plot()
     #plt.savefig('Test2.png')
     path_2=os.path.realpath('../Master_Code/Master_Output/') #Goes to Master_Output folder, which will hold all the data calculated for the galaxies including the histogram pictures
-    print "Path_2=", path_2
+    #print "Path_2=", path_2
     """
     path_Hist=path_2+'/Histograms/'
     directory_Hist=os.path.dirname(path_Hist)
@@ -401,7 +401,7 @@ def Area_GC_R_N(Gname):
         Gname_Modifed=Gname # Does nothing if the galaxy name has no space, ie. NGC#, For example NGC253 instead of NGC 253 or NGC_253
     """
     Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
-    print Gname_Modifed
+    #print Gname_Modifed
     path_3=path_2+'/'+Gname_Modifed+'/'
     directory = os.path.dirname(path_3)
     if not os.path.exists(directory):
@@ -411,12 +411,12 @@ def Area_GC_R_N(Gname):
     directory_Hist=os.path.dirname(path_Hist)
     if not os.path.exists(directory_Hist):
         os.makedirs(directory_Hist)
-    print "path_Hist=",path_Hist
+    #print "path_Hist=",path_Hist
     os.chdir(path_Hist)
     plt.savefig(Gname_Modifed+'_Ang.png') #Saves angluar histogram figure
     #system('pwd')
     path_4=os.path.realpath('../../../../Histogram_Code/')
-    print "Path_4=",path_4
+    #print "Path_4=",path_4
     os.chdir(path_4) #Goes back to where this code (the histogram code) is being run, ie. Desktop/GitHub
     plt.close()
     #plt.show()
