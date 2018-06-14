@@ -245,10 +245,10 @@ def Background_Finder_3(gname,evtfpath,objLfname,R): #Need to apply energy filte
                                 Cur_BG_Circle_Info=[BG_X_Pix,BG_Y_Pix,BG_R,Chip_ID_Test]
                                 BG_Circle_Info_L.append(Cur_BG_Circle_Info)
                         if(len(Background_L)==3):
-                            print "List Done ! ! ! ! ! ! ! ! !"
+                            #print "List Done ! ! ! ! ! ! ! ! !"
                             List_Done_Bool=True
-                            print "Background_L ", Background_L
-                            print "BG_Circle_Info_L Final", BG_Circle_Info_L
+                            #print "Background_L ", Background_L
+                            #print "BG_Circle_Info_L Final", BG_Circle_Info_L
                             if(List_Done_Bool==True):
                                 BG_Ratio_Avg=np.average(Background_L)
                                 return BG_Ratio_Avg
