@@ -19,7 +19,7 @@ def Pipeline_A(Gname_L):
     #path=os.path.realpath('../GitHub/Galaxy_Histogram_Code_2.py')
     path=os.path.realpath('../')
     #print "Path=",path
-    system('pwd')
+    #system('pwd')
     #os.system('python '+path) #This works when inputs are not used
     #import Galaxy_Histogram_Code_2
     #Driver_Code('NGC4258')
@@ -38,7 +38,7 @@ def Pipeline_B(Gname_L):
     dir = os.path.dirname(__file__)
     path=os.path.realpath('../')
     #print "Path=",path
-    system('pwd')
+    #system('pwd')
     sys.path.append(os.path.abspath(path))
     #print sys.path
     from File_Query_Code import File_Query_Code_5
@@ -118,7 +118,7 @@ def Pipeline_B(Gname_L):
                         os.makedirs(directory_Obs)
                     os.chdir(path_Obs)
                     #print "THE PWD AT END IS :"
-                    system('pwd')
+                    #system('pwd')
                     #print "CURRENT FOV FILEPATH IS :", Cur_Fov_Filepath
                     Cur_Fov_Filename_L=Cur_Fov_Filepath.split("/")
                     #print "Cur_FOV_Filename_L : ",Cur_Fov_Filename_L
@@ -136,7 +136,7 @@ def Pipeline_B(Gname_L):
                         Output_Fov_Filename=Cur_Fov_Filename_Ext_L[0]+"."+Cur_Fov_Filename_Ext_L[1]
                         #os.chdir(path_Obs)
                         os.chdir(Cur_Fov_Filepath_No_Fname)
-                        system('pwd')
+                        #system('pwd')
                         Output_Fov_Filepath=Cur_Fov_Filepath_No_Fname+"/"+Output_Fov_Filename
                         #print "Output_Fov_Filepath : ",Output_Fov_Filepath
                         inF = gzip.open(Cur_Fov_Filename, 'rb')
@@ -150,7 +150,7 @@ def Pipeline_B(Gname_L):
                     #print "Cur_Fov_Filepath : ", Cur_Fov_Filepath
                     XPA_DS9_Region_Generator_3.XPA_DS9_Region_Generator(Cur_Evt2_Filepath,Cur_Fov_Filepath)
                     #print "The Filepath Before End is : "
-                    system('pwd')
+                    #system('pwd')
                     #time.sleep(10.0)
                     Region_File_LS= os.popen("ls").read()
                     #print "Region_File_LS : ", Region_File_LS
@@ -169,12 +169,12 @@ def Pipeline_B(Gname_L):
                     #print "Cur_Evt2_Filepath: ", Cur_Evt2_Filepath
                     #Area_Calc_Frac_B_2_Alt_2("NGC 253","/Network/Servers/vimes.astro.wesleyan.edu/Volumes/vvodata/home/asantini/Desktop/CCD_Incompleteness_Correction/Area_Calc/acisf13830_repro_evt2.fits","acisf13830_repro_CCD_Regions_simple_region_modifed_Code.txt")
                     #print "The Filepath Before LS Delay"
-                    system('pwd')
+                    #system('pwd')
                     #time.sleep(10.0)
                     Simple_Region_File_LS= os.popen("ls").read()
                     #print "Simple_Region_File_LS : ", Simple_Region_File_LS
                     #print "The Filepath Before LS Delay"
-                    system('pwd')
+                    #system('pwd')
                     Simple_Region_File_LS_L=Simple_Region_File_LS.split("\n")
                     #print "Simple_Region_File_LS_L : ",Simple_Region_File_LS_L
                     for Simple_Region_Filename_Test in Simple_Region_File_LS_L:
@@ -188,7 +188,7 @@ def Pipeline_B(Gname_L):
                     #Area_Calc_Frac_B_2_Alt_8.Area_Calc_Frac_B_2_Alt_2(Gname,Simple_Region_Filename,Cur_Evt2_Filepath)
                     Cur_Area_L=Area_Calc_Frac_B_2_Alt_8.Area_Calc_Frac_B_2_Alt_2(Gname,Cur_Evt2_Filepath,Simple_Region_Filename)
                     #print Cur_Area_L
-                    system('pwd')
+                    #system('pwd')
                     Simple_Region_Filename_L=Simple_Region_Filename.split("CCD")
                     #print "Simple_Region_Filename_L : ",Simple_Region_Filename_L
                     Simple_Region_Filename_Reduced=Simple_Region_Filename_L[0]
@@ -214,19 +214,19 @@ def Pipeline_B(Gname_L):
                     #This_is_Ment_To_Break_The_Code
                     """
                     #print "PWD before Path_5 : "
-                    system('pwd')
+                    #system('pwd')
         path_5=os.path.realpath('../../../../')
         #print "path_5 : ",path_5
         os.chdir(path_5)
         #print "THE PWD AT VERY END IS :"
-        system('pwd')
+        #system('pwd')
         #Need to add the rest of Pipeline B after XPA_DS9_Region_Generator
 
 def Pipeline_C(Gname_L):
     dir = os.path.dirname(__file__)
     #print "dir : ", dir
     #print "PWD C : "
-    system('pwd')
+    #system('pwd')
     path=os.path.realpath('../')
     #print "Path=",path
     #system('pwd')
@@ -241,25 +241,25 @@ def Pipeline_C(Gname_L):
     #Import Desktop Modules Here !!!
     from File_Query_Code import File_Query_Code_5
     #print "PWD C 2a : "
-    system('pwd')
+    #system('pwd')
     from Source_Region_Generator import Source_Region_Generator_Radius_Modifed_V3
     #print "PWD C 2b : "
-    system('pwd')
+    #system('pwd')
     from Background_Finder import Background_Finder_10
     #print "PWD C 2c : "
-    system('pwd')
+    #system('pwd')
     from Detection_Probablity_Calc import Detection_Probability_Calc_7
     #print "PWD C 2d : "
-    system('pwd')
+    #system('pwd')
     from Known_Flux_Finder import Known_Flux_Finder
     #print "PWD C 2e : "
-    system('pwd')
+    #system('pwd')
     from Counts_To_Flux_Converter import Counts_To_Flux_Converter_3
     #print "PWD C 2f : "
-    system('pwd')
+    #system('pwd')
     from Galaxy_Name_Reducer import Galaxy_Name_Reducer
     #print "PWD C 2g : "
-    system('pwd')
+    #system('pwd')
     for Gname in Gname_L:
         #Pipeline_C Code
         """
@@ -271,11 +271,11 @@ def Pipeline_C(Gname_L):
             Gname_Modifed=Gname # Does nothing if the galaxy name has no space, ie. NGC#, For example NGC253 instead of NGC 253 or NGC_253
         """
         #print "PWD C 2 : "
-        system('pwd')
+        #system('pwd')
         Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
         #print "Gname_Modifed ", Gname_Modifed
         #print "PWD C 3 : "
-        system('pwd')
+        #system('pwd')
         path_2=os.path.realpath('../Master_Code/Master_Output/')
         #print "path_2 : ", path_2
         path_3=path_2+'/'+Gname_Modifed+'/'
@@ -360,7 +360,7 @@ def Pipeline_C(Gname_L):
                     Flux_90_L_H=Counts_To_Flux_Converter_3.Counts_To_Flux_Converter(C_90_Per_First_L_H,Known_Flux_L)
                     #print "Flux_90_L_H : ", Flux_90_L_H
                     #print "THE PWD AT END IS :"
-                    system('pwd')
+                    #system('pwd')
                     os.chdir(path_Obs)
                     #print "THE PWD AT END IS :"
                     #system('pwd')
@@ -375,13 +375,13 @@ def Pipeline_C(Gname_L):
         #print "path_5 : ",path_5
         os.chdir(path_5)
         #print "THE PWD AT VERY END IS :"
-        system('pwd')
+        #system('pwd')
 
 def Pipeline_D(Gname_L):
     dir = os.path.dirname(__file__)
     path=os.path.realpath('../')
     #print "Path=",path
-    system('pwd')
+    #system('pwd')
     sys.path.append(os.path.abspath(path))
     #print sys.path
     from File_Query_Code import File_Query_Code_5
@@ -446,7 +446,7 @@ def Pipeline_D(Gname_L):
         #print "path_5 : ",path_5
         os.chdir(path_5)
         #print "THE PWD AT VERY END IS :"
-        system('pwd')
+        #system('pwd')
 
 def Master(Gname_L):
     Thread(target = Pipeline_A(Gname_L)).start()
