@@ -16,10 +16,10 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfname,rchange=121.9512195,B=1): 
     rchange:-int(float?), Radius Change, The change in radius from one area cirlce to another area cirlce in pixels, must equal one arcminute in pixels
     B:-int, Binning, The binning on the regArea CIAO tool, It's standard value is 1 pixel
     """
-    print "PWD 1:"
+    #print "PWD 1:"
     system('pwd')
     homepath=os.path.realpath('.')
-    print "homepath :",homepath
+    #print "homepath :",homepath
     inner_r=0.0 #inner_r:-float, Inner_Radius, The radius of the inner most circle
     #outer_r_gap=25.0 #outer_r_gap:-float, Outer_Radius_Gap, The addtional distance that needs to be added to the outer radius inorder to account for dithering #The addtional distance that needs to be added to the outer radius inorder to account for dithering
     outer_r_gap=40.0 #outer_r_gap:-float, Outer_Radius_Gap, The addtional distance that needs to be added to the outer radius inorder to account for dithering #The addtional distance that needs to be added to the outer radius inorder to account for dithering
@@ -29,7 +29,7 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfname,rchange=121.9512195,B=1): 
     a_L=[] #a_L:-list, Area_List, The list of Area Ratios for each n
     evtfpath_L=evtfpath.split("/")
     evtfname=evtfpath_L[len(evtfpath_L)-1]
-    print "evtfname: ", evtfname
+    #print "evtfname: ", evtfname
     Evtfname_Reduced=evtfname.split(".")[0] #Evtfname_Reduced:-str, Event_Filename_Reduced, The filename of the event 2 file of the observation without the extention ".fits" at the end, for example "acisf02076_repro_evt2"
     Output_File=open(str(gname)+"_"+Evtfname_Reduced+"_Area_List.txt","w") #Output_File:-file, Output_File, The Area_List file, which is the file were the list of Area_Ratios one for each circle (ie. each n) are saved, in the form of one line per ratio
     polystring_L=[] #polystring_L:-list, Polygon String List, A list of all the CCD shape strings
@@ -41,7 +41,7 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfname,rchange=121.9512195,B=1): 
     #path=os.path.realpath('../Polygons/'+str(polyfname)) #For when code in run in Desktop/Area_Calc #Going to need to modify inorder to use the filepath of the simple_region_modifed file outputed in Master_Output or more a easier option is to run in code where the simple_region_modifed is and just feed it the file while the code is in the same directory
     #path=os.path.realpath('../../Polygons/'+str(polyfname)) #For when code in run in Desktop/CCD_Incompleteness_Correction/Area_Calc
     #path=os.path.realpath('../SQL_Standard_File/SQL_Sandard_File.csv')
-    print "Path=",path
+    #print "Path=",path
     #data = ascii.read(path)
     #polyfile=open("/home/asantini/Desktop/Polygons/"+str(polyfname),"r") #polyfile:-file, Polyfile, The polygon file that has the CCD shape strings in it #OLD
     polyfile=open(path,"r") #polyfile:-file, Polyfile, The polygon file that has the CCD shape strings in it
@@ -52,7 +52,7 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfname,rchange=121.9512195,B=1): 
     #print type(G_Data)
     raGC=float(G_Data['RA(deg)']) #raGC:-float, Right Ascension of Galatic Center, The right ascension of the galatic center of the current galaxy in degrees.
     decGC=float(G_Data['DEC(deg)']) #decGC:-float, Declination of Galatic Center, The declination of the galatic center of the current galaxy in degrees.
-    print "PWD 2:"
+    #print "PWD 2:"
     system('pwd')
     #os.chdir(evtfpath)
     #dmcoords(infile=str(evtfname),ra=str(raGC), dec=str(decGC), option='cel', verbose=0, celfmt='deg') # Runs the dmcoords CIAO tool, which converts coordinates like CHIP_ID to SKY, the tool is now being used to convert the RA and Dec of the GC to SKY coodinates in pixels (?)
@@ -60,13 +60,13 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfname,rchange=121.9512195,B=1): 
     X_Phys=dmcoords.x #X_Phys:-float, X_Physical, The sky plane X pixel coordinate in units of pixels of the galatic center
     Y_Phys=dmcoords.y #Y_Phys:-float, Y_Physical, The sky plane Y pixel coordinate in units of pixels of the galatic center
     Chip_ID=dmcoords.chip_id #Chip_ID:-int, Chip_ID, The Chip ID number the GC is on
-    print "PWD 2:"
+    #print "PWD 2:"
     system('pwd')
     #os.chdir(homepath)
-    print "PWD 3:"
+    #print "PWD 3:"
     system('pwd')
-    print "X_Phys ", X_Phys
-    print "Y_Phys ", Y_Phys
+    #print "X_Phys ", X_Phys
+    #print "Y_Phys ", Y_Phys
     #Max_Min_Chip_Coord_L=[0,1024]
     #Max_Min_Chip_Coord_L=[1,1025]
     #dmkeypar acisf03931_repro_evt2.fits "DETNAM"
@@ -104,18 +104,18 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfname,rchange=121.9512195,B=1): 
     Header_String_Reduced_2=Header_String_Reduced.split("String")[0]
     #print Header_String_Reduced_2
     Header_String_Reduced_3=Header_String_Reduced_2.replace(' ', '')
-    print Header_String_Reduced_3
+    #print Header_String_Reduced_3
     #dmkeypar(infile=str(evtfname), keyword="DETNAM")
     #pget(paramfile, paramname)
     #Chip_ID_String=pget(toolname="dmkeypar", parameter="value")
     #Chip_ID_String=pget("dmkeypar","value") #Chip_ID_String:-str, Chip_Idenifcation_String, Runs the pget tool to get the string containing what CCDs are used in the FOV1.fits file from the parameter file asscoiated with the dmkeypar tool and sets it equal to the Chip_ID_String (This) variable
     Chip_ID_String=Header_String_Reduced_3 #Chip_ID_String:-str, Chip_Idenifcation_String, Runs the pget tool to get the string containing what CCDs are used in the FOV1.fits file from the parameter file asscoiated with the dmkeypar tool and sets it equal to the Chip_ID_String (This) variable
     #Chip_ID_String=pget(toolname="dmkeypar", p_value="value")
-    print "Chip_ID_String ", Chip_ID_String
+    #print "Chip_ID_String ", Chip_ID_String
     Chip_ID_String_L=Chip_ID_String.split('-') #Chip_ID_String_L:-List, Chip_Idenifcation_String_List, The resulting list from spliting the Chip_ID_String on "_", This list contains 2 elements, the first element is the string "ACIS" and the second element is the string segment in the form (Example) "356789" where each number in the list is its own CCD ID
     #print "Chip_ID_String_L ", Chip_ID_String_L
     Chip_ID_String_Reduced=Chip_ID_String_L[1] #Chip_ID_String_Reduced:-str, Chip_Idenifcation_String_Reduced, the string segment in the form (Example) "356789" where each number in the list is its own CCD ID
-    print "Chip_ID_String_Reduced ", Chip_ID_String_Reduced
+    #print "Chip_ID_String_Reduced ", Chip_ID_String_Reduced
     Chip_ID_L=[] #Chip_ID_L:-List, Chip_Idenifcation_List, The list of all the int CCD IDs in FOV1.fits file
     for Cur_Chip_ID_Str in Chip_ID_String_Reduced: #Cur_Chip_ID_Str:-str, Current_Chip_Idenifcation_Str, The string vaule of the current string CCD ID in the Chip_ID_String_Reduced string, for example "3"
         Cur_Chip_ID=int(Cur_Chip_ID_Str) #Cur_Chip_ID:-int, Current_Chip_Idenifcation, The current chip ID number as an int, for example 3
@@ -130,7 +130,7 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfname,rchange=121.9512195,B=1): 
     #Max_Min_Chip_Coord_L=[0,1023] #Max_Min_Chip_Coord_L:-List, Maximum_Minimum_Chip_Coordinates_List, A list containing 2 elements the first of which is the lowest possble Chip value (X or Y) for the given Axis (in pixels) and the second is the largest possble Chip value (X or Y) for the given Axis. Since the CCDs on Chandra are square 1024 X 1024 pixel CCDs, the minimun and maximum Chip X values and Chip Y values are identical and therefore can be represented by this single list
     Dist_L=[] #Dist_L:-List, Distance_List, The list of every distance between the Galatic Center and each corner of each CCD
     for Chip_ID_Test in Chip_ID_L: #Chip_ID_Test:-int, Chip_Idenifcation_Test, The current test CCD were that four corners are being tested as the furthest point of the Galatic Center
-        print "Chip_ID_Test ", Chip_ID_Test
+        #print "Chip_ID_Test ", Chip_ID_Test
         #print type(Chip_ID_Test)
         for Cur_Chip_X in Max_Min_Chip_Coord_L: #Cur_Chip_X:-float, Current_Chip_X, The chip X value of the current corner in pixels (Can be either 0.0 or 1025.0)
             #print type(Cur_Chip_X)
@@ -148,20 +148,20 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfname,rchange=121.9512195,B=1): 
                 #print type(X_Phys_Test)
                 Y_Phys_Test=dmcoords.y #Y_Phys_Test:-float, Y_Physical_Test, The Y value current CCD corner being tested in SKY coordinates
                 #os.chdir(homepath)
-                print "Test Point CHIP ", [Cur_Chip_X,Cur_Chip_Y,Chip_ID_Test]
-                print "Test Point SKY ", [X_Phys_Test,Y_Phys_Test]
+                #print "Test Point CHIP ", [Cur_Chip_X,Cur_Chip_Y,Chip_ID_Test]
+                #print "Test Point SKY ", [X_Phys_Test,Y_Phys_Test]
                 X_Phys_Diff=X_Phys-X_Phys_Test #X_Phys_Diff:-float, X_Physical_Difference, The differnce between the Galatic Center X value and the current chip corner X value
                 Y_Phys_Diff=Y_Phys-Y_Phys_Test #Y_Phys_Diff:-float, Y_Physical_Difference, The differnce between the Galatic Center Y value and the current chip corner Y value
                 Dist=np.sqrt(((X_Phys_Diff)**2)+((Y_Phys_Diff)**2)) #Dist:-numpy.float64, Distance, The distance between the Galatic Center and the current CCD Corner
-                print "Dist ", Dist
+                #print "Dist ", Dist
                 #print type(Dist)
                 Dist_L.append(Dist) #Appends the current Distance to Distance_List
     #print "Dist_L ", Dist_L
     Dist_Max=max(Dist_L) #Dist_Max:-numpy.float64, Distance_Maximum, The distance between the Galatic Center and the furthest CCD Corner
-    print "Dist_Max ", Dist_Max
+    #print "Dist_Max ", Dist_Max
     #print type(Dist_Max)
     outer_r=Dist_Max+outer_r_gap #outer_r:-numpy.float64, Outer_Radius, The largest radius of the area circle, this radius should just barely inclose the all the active CCDs for the observation (All the CCDs used in the FOV1.fits file)
-    print "outer_r ", outer_r
+    #print "outer_r ", outer_r
     #print type(outer_r)
     polystring=polyfile.read() #polystring:-str, Polystring, The string containing the CCD shapes strings in it seperated by "\n"
     cur_polys_L=polystring.split("\n") #cur_polys_L:-List, Current_Polygons_List, The list of all the CCD Polygons (Simple Regions) strings for the observation, Since it is split on "\n" it is in the form ['Polystring_1','Polystring_2',...'Polystring_n',''], Example, ['box(4344.13761125,3924.99595875,5253.72685384,1088.14064223,-34.6522013895)', 'box(3728.26318125,2700.00581875,1086.83938437,1086.83938437,-34.6522013895)', ''], This has an extra element on the end that is a empty string needs to be removed from the list
@@ -178,9 +178,9 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfname,rchange=121.9512195,B=1): 
         polystring_L.append(cur_poly) #Appends the Current_Polygon string to polystring_L
     while((cur_r)<=outer_r): #makes sure the largest area circle used is not larger then the outer radius outer_r
         cur_r=(n*rchange) + inner_r #increases the current radius by n times the change in radius
-        print "cur_r 1 : ",cur_r
+        #print "cur_r 1 : ",cur_r
         shape1 ='circle(' + str(X_Phys) +','+ str(Y_Phys)+','+ str(cur_r)+')' #shape1:-str, shape1, The shape string of the current area circle
-        print "shape1 : ",shape1
+        #print "shape1 : ",shape1
         r1 = regParse(shape1) #r1:-Region, Region 1, the region of the current area circle
         a_tot=0.0 #a_tot:-float, Area_Total, The total intersecting area of all the CCDs currently intersecting with the area circle
         if(((X_Phys<cur_r) or (Y_Phys<cur_r)) or (((8192-X_Phys)<cur_r) or ((8192-Y_Phys)<cur_r))):
@@ -188,7 +188,7 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfname,rchange=121.9512195,B=1): 
             a_L.append(a_ratio)
             break
         a1_cur = regArea(r1,0,0,8192,8192,B) #a1_cur:-float, Area_1_Current, The area of the current area circle
-        print "a1_cur : ",a1_cur
+        #print "a1_cur : ",a1_cur
         for s in polystring_L: #s:-str, String, the current CCD string
             shape2 =s #Renames "s" to "shape2"
             r2 = regParse(shape2) #r2:-region, Region 2, The region of the current CCD
@@ -199,10 +199,10 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfname,rchange=121.9512195,B=1): 
             #print "Area Total is ", a_tot
             #print ""
         #print "a_tot ", a_tot #When the previous area total is equal to the current area total the previous radius is greater then or equal to the maximum radius, this could be used to tell the code when to stop
-        print "float(a1_cur) : ",float(a1_cur)
-        print "float(a_tot) : ",float(a_tot)
+        #print "float(a1_cur) : ",float(a1_cur)
+        #print "float(a_tot) : ",float(a_tot)
         a_ratio=float(a_tot)/float(a1_cur) # a_ratio:-float, Area_Ratio, The ratio of the total intersecting area on the total area of the current area circle
-        print "Area Ratio is ", a_ratio
+        #print "Area Ratio is ", a_ratio
         a_L.append(a_ratio) #a_L:-list, Area_List, The list of Area Ratios for each n
         n=n+1 # Itterates n
         cur_r=(n*rchange) + inner_r #Increases the current radius by n times the change in radius
