@@ -16,7 +16,7 @@ def fname_to_counts(fname_L_H):
         C_L_L.append(C_L) # Appends the current Count List to the Count List List
     return C_L_L # Returns the Count List List
 Counts= fname_to_counts([['Graph 1 3.0 counts.csv','Graph 1 8.4 counts.csv','Graph 1 22 counts.csv'],['Graph 2 2.8 counts.csv','Graph 2 8.3 counts.csv','Graph 2 22 counts.csv'],['Graph 3 2.4 counts.csv','Graph 3 7.0 counts.csv','Graph 3 18 counts.csv','Graph 3 23 counts.csv','Graph 3 91 counts.csv'],['Graph 4 3.7 counts.csv','Graph 4 11 counts.csv','Graph 4 29 counts.csv','Graph 4 36 counts.csv','Graph 4 110 counts.csv']])
-print Counts
+#print Counts
 Counts_L_H=[[10,20,70,70],[20,20,70,100],[20,20,70,100],[20,20,70,70]]
 Fluxes_10_Cnts_L=[4.49E-15,1.13E-15,2.81E-15,2.44E-15]
 
