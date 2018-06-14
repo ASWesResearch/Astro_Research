@@ -128,7 +128,7 @@ def D_P_C_Big_Input(Backgrounds,counts,Off_Angs):
     """
     for Background in Backgrounds: # Background:-float, Background, The current background (of one of multiple observations?)
         Prob_L=[] # Prob_L:-list, Probablity List, A list of the probablity of detecting an object given the background, counts and offaxis angle
-        print '\n'+str(Background)+'\n' # Prints the current background
+        #print '\n'+str(Background)+'\n' # Prints the current background
         for count in counts: #count:-float, Count, The current count value, Selects the current count value from the count list
             Prob_L=[] # Prob_L:-list, Probablity List, A list of the probablity of detecting an object given the background, counts and offaxis angle
             #print "count", count #Debug
@@ -140,8 +140,8 @@ def D_P_C_Big_Input(Backgrounds,counts,Off_Angs):
                 Prob_L.append(Cur_P_N)
                 #if(len(Cur_P_Str)==3): # For debugging, when not debugging Prob_L.append(Cur_P_N) allways
                     #Prob_L.append(Cur_P_N) # Appends the current probablity to the probablity list
-            print count # prints the current counts value
-            print Prob_L # Prints the current probablity list
+            #print count # prints the current counts value
+            #print Prob_L # Prints the current probablity list
 
 #D_P_C_Big_Input([0.0411256372949457,0.135727335468768,0.13725522292245054,0.153680013049534],[10,20],[0,2,5,10])
 
@@ -167,7 +167,7 @@ def D_P_C_Big_Input_90_Per_Check(Backgrounds,Off_Angs=[0,1,2,3,4,5,6,7,8,9,10],C
     for Background in Backgrounds: # Background:-float, Background, The current background (of one of multiple observations?)
         Prob_L=[] # Prob_L:-list, Probablity List, A list of the probablity of detecting an object given the background, counts and offaxis angle
         Count_90_Per_L=[] # Count_90_Per_L:-list, Count 90 Percent List, A list of all count vaules that give a detection probablity greater than 90% given the background and offaxis
-        print '\n'+str(Background)+'\n' # Prints the current background
+        #print '\n'+str(Background)+'\n' # Prints the current background
         Count_90_Per_First_L=[] #Count_90_Per_First_L:-list, Counts 90 Percent First List, The list of the minimum amount of counts need to obtain a 90% probablity of detection for a given offaxis angle for each interpolated offaxis angle in the order of the offaxis angles in the Off_Angs input list
         for Off_Ang in Off_Angs: # Off_Ang:-int, Offaxis Angle, The current offaxis angle
             Prob_L=[] # Prob_L:-list, Probablity List, A list of the probablity of detecting an object given the background, counts and offaxis angle
