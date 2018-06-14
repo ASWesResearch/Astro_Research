@@ -72,11 +72,11 @@ def Background_Finder_3(gname,evtfpath,objLfname,R): #Need to apply energy filte
     """
     G_Data= Ned.query_object(gname)
     Dia_Table = Ned.get_table(gname, table='diameters')
-    #print G_Data
-    #print Dia_Table
-    #print Dia_Table.colnames
-    #print Dia_Table.meta
-    #print Dia_Table.columns
+    print "G_Data : ", G_Data
+    print "Dia_Table : ", Dia_Table
+    print "Dia_Table.colnames : ", Dia_Table.colnames
+    print "Dia_Table.meta : ", Dia_Table.meta
+    print "Dia_Table.columns : ", Dia_Table.columns
     Dia_Table_Feq=Dia_Table['Frequency targeted']
     #print Dia_Table['NED Frequency']
     #print Dia_Table_Feq
