@@ -3,7 +3,7 @@ import os
 from os import system
 def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(UnboundLocalError: local variable 'File_Path_With_Filename_Str' referenced before assignment), Update(I fixed this bug, but I need to bug check more)
     Code_Path=os.path.realpath('.')
-    print "Code_Path ", Code_Path
+    #print "Code_Path ", Code_Path
     File_Path_With_Filename_Str="Some Filepath"
     dir = os.path.dirname(__file__)
     path=os.path.realpath('../SQL_Standard_File/SQL_Standard_File.csv')
@@ -97,8 +97,8 @@ def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(Unbound
                         Filename_String=Fname_Str_In_CSC #Filename_String:-str, Filename_String, The filename of the matching file, ie the filename that the code is looking for
                         File_Path_With_Filename_Str=File_Path_Str_Primary_In_CSC+Filename_String #File_Path_With_Filename_Str:-str, File_Path_With_Filename_String, The filepath to the matching file, for example: "/Volumes/xray/simon/chandra_from_csc/794/primary/acisf00794N003_evt2.fits"
                         Found_File_Bool=True #Sets Found_File_Bool=True to indcate that the file has been found
-                        print "Filename_String ",Filename_String
-                        print "File_Path_With_Filename_Str ", File_Path_With_Filename_Str
+                        #print "Filename_String ",Filename_String
+                        #print "File_Path_With_Filename_Str ", File_Path_With_Filename_Str
                         #print "Found the File (IN) ! ! !"
             os.chdir("/Volumes/xray/simon/chandra_not_csc_GOOD/") #Tells the code to consider the files in the directory that has the obsevation files that are NOT contained in the Chandra Source Cataloge (CSC), This is as if the code changed its directory but the current directory of the code has not changed(?)
             retval = os.getcwd() #retval:-str, retval, The current working directory as a string
