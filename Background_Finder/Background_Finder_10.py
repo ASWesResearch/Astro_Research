@@ -21,7 +21,7 @@ def Background_Finder_3(gname,evtfpath,objLfname,R): #Need to apply energy filte
     #BG_Circle_Overlap_Bool=False
     BG_R=R # Note: Physical Radius might not be equal to the Pixel Radius
     Num_BG_Pix=math.pi*((BG_R)**2) #Num_BG_Pix:-float or int, the number of pixels in the background test region
-    print Num_BG_Pix
+    #print Num_BG_Pix
     CCD_L=[] # Note: I don't even know if I need this, It's only defined here and never used again I think
     Obj_Shape="" # Note: I don't even know if I need this, It's only defined here and never used again I think
     #system('pwd')
@@ -72,11 +72,11 @@ def Background_Finder_3(gname,evtfpath,objLfname,R): #Need to apply energy filte
     """
     G_Data= Ned.query_object(gname)
     Dia_Table = Ned.get_table(gname, table='diameters')
-    print "G_Data : ", G_Data
-    print "Dia_Table : ", Dia_Table
-    print "Dia_Table.colnames : ", Dia_Table.colnames
-    print "Dia_Table.meta : ", Dia_Table.meta
-    print "Dia_Table.columns : ", Dia_Table.columns
+    #print "G_Data : ", G_Data
+    #print "Dia_Table : ", Dia_Table
+    #print "Dia_Table.colnames : ", Dia_Table.colnames
+    #print "Dia_Table.meta : ", Dia_Table.meta
+    #print "Dia_Table.columns : ", Dia_Table.columns
     Dia_Table_Feq=Dia_Table['Frequency targeted']
     #print Dia_Table['NED Frequency']
     #print Dia_Table_Feq
@@ -123,14 +123,14 @@ def Background_Finder_3(gname,evtfpath,objLfname,R): #Need to apply energy filte
     X_Phys=dmcoords.x #X_Phys:-float, X_Physical, The sky plane X pixel coordinate in units of pixels of the galatic center
     Y_Phys=dmcoords.y #Y_Phys:-float, Y_Physical, The sky plane Y pixel coordinate in units of pixels of the galatic center
     Chip_ID=dmcoords.chip_id #Chip_ID:-int, Chip_ID, The Chip ID number the GC is on
-    print Chip_ID
-    print "GC X is ", X_Phys
-    print "GC Y is ", Y_Phys
+    #print Chip_ID
+    #print "GC X is ", X_Phys
+    #print "GC Y is ", Y_Phys
     #R_Phys=S_Maj*2.03252032520325 #R_Phys:-numpy.float64, Radius_Physical, The radius of the galaxy in pixels, the converstion factor is 2.03252032520325pix/arcsec
     R_Phys=D25_S_Maj*2.03252032520325 #R_Phys:-numpy.float64, Radius_Physical, The radius of the galaxy in pixels, the converstion factor is 2.03252032520325pix/arcsec
     #D25_S_Maj
     #print type(R_Phys)
-    print "Radius of Galaxy is ", R_Phys
+    #print "Radius of Galaxy is ", R_Phys
     Gal_V_Shape='circle(' + str(X_Phys) +','+ str(Y_Phys)+','+ str(R_Phys)+')' # This might not be used at all in this code
     Objstring_L=Objstring.split("\n")
     del Objstring_L[len(Objstring_L)-1]
@@ -151,23 +151,23 @@ def Background_Finder_3(gname,evtfpath,objLfname,R): #Need to apply energy filte
     Header_String_Reduced_2=Header_String_Reduced.split("String")[0]
     #print Header_String_Reduced_2
     Header_String_Reduced_3=Header_String_Reduced_2.replace(' ', '')
-    print Header_String_Reduced_3
+    #print Header_String_Reduced_3
     #dmkeypar(infile=str(evtfpath), keyword="DETNAM")
     #pget(paramfile, paramname)
     #Chip_ID_String=pget(toolname="dmkeypar", parameter="value")
     #Chip_ID_String=pget("dmkeypar","value") #Chip_ID_String:-str, Chip_Idenifcation_String, Runs the pget tool to get the string containing what CCDs are used in the FOV1.fits file from the parameter file asscoiated with the dmkeypar tool and sets it equal to the Chip_ID_String (This) variable
     Chip_ID_String=Header_String_Reduced_3 #Chip_ID_String:-str, Chip_Idenifcation_String, Runs the pget tool to get the string containing what CCDs are used in the FOV1.fits file from the parameter file asscoiated with the dmkeypar tool and sets it equal to the Chip_ID_String (This) variable
     #Chip_ID_String=pget(toolname="dmkeypar", p_value="value")
-    print "Chip_ID_String ", Chip_ID_String
+    #print "Chip_ID_String ", Chip_ID_String
     Chip_ID_String_L=Chip_ID_String.split('-') #Chip_ID_String_L:-List, Chip_Idenifcation_String_List, The resulting list from spliting the Chip_ID_String on "_", This list contains 2 elements, the first element is the string "ACIS" and the second element is the string segment in the form (Example) "356789" where each number in the list is its own CCD ID
     #print "Chip_ID_String_L ", Chip_ID_String_L
     Chip_ID_String_Reduced=Chip_ID_String_L[1] #Chip_ID_String_Reduced:-str, Chip_Idenifcation_String_Reduced, the string segment in the form (Example) "356789" where each number in the list is its own CCD ID
-    print "Chip_ID_String_Reduced ", Chip_ID_String_Reduced
+    #print "Chip_ID_String_Reduced ", Chip_ID_String_Reduced
     Chip_ID_L=[] #Chip_ID_L:-List, Chip_Idenifcation_List, The list of all the int CCD IDs in FOV1.fits file
     for Cur_Chip_ID_Str in Chip_ID_String_Reduced: #Cur_Chip_ID_Str:-str, Current_Chip_Idenifcation_Str, The string vaule of the current string CCD ID in the Chip_ID_String_Reduced string, for example "3"
         Cur_Chip_ID=int(Cur_Chip_ID_Str) #Cur_Chip_ID:-int, Current_Chip_Idenifcation, The current chip ID number as an int, for example 3
         Chip_ID_L.append(Cur_Chip_ID) #Appends The current chip ID number as an int to Chip_Idenifcation_List
-    print "Chip_ID_L ", Chip_ID_L
+    #print "Chip_ID_L ", Chip_ID_L
     #Step_L=[500,250,100,50,25,10,5,1]
     Step_L=[500,250,100]
     Background_L=[]
