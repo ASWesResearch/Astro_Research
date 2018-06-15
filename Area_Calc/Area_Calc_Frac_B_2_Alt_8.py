@@ -53,7 +53,7 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfname,rchange=121.9512195,B=1): 
     raGC=float(G_Data['RA(deg)']) #raGC:-float, Right Ascension of Galatic Center, The right ascension of the galatic center of the current galaxy in degrees.
     decGC=float(G_Data['DEC(deg)']) #decGC:-float, Declination of Galatic Center, The declination of the galatic center of the current galaxy in degrees.
     #print "PWD 2:"
-    system('pwd')
+    #system('pwd')
     #os.chdir(evtfpath)
     #dmcoords(infile=str(evtfname),ra=str(raGC), dec=str(decGC), option='cel', verbose=0, celfmt='deg') # Runs the dmcoords CIAO tool, which converts coordinates like CHIP_ID to SKY, the tool is now being used to convert the RA and Dec of the GC to SKY coodinates in pixels (?)
     dmcoords(infile=str(evtfpath),ra=str(raGC), dec=str(decGC), option='cel', verbose=0, celfmt='deg') # Runs the dmcoords CIAO tool, which converts coordinates like CHIP_ID to SKY, the tool is now being used to convert the RA and Dec of the GC to SKY coodinates in pixels (?)
@@ -61,10 +61,10 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfname,rchange=121.9512195,B=1): 
     Y_Phys=dmcoords.y #Y_Phys:-float, Y_Physical, The sky plane Y pixel coordinate in units of pixels of the galatic center
     Chip_ID=dmcoords.chip_id #Chip_ID:-int, Chip_ID, The Chip ID number the GC is on
     #print "PWD 2:"
-    system('pwd')
+    #system('pwd')
     #os.chdir(homepath)
     #print "PWD 3:"
-    system('pwd')
+    #system('pwd')
     #print "X_Phys ", X_Phys
     #print "Y_Phys ", Y_Phys
     #Max_Min_Chip_Coord_L=[0,1024]
