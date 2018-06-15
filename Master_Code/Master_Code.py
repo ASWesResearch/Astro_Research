@@ -449,11 +449,11 @@ def Pipeline_D(Gname_L):
         #system('pwd')
 
 def Master(Gname_L):
-    Thread(target = Pipeline_A(Gname_L)).start()
+    #Thread(target = Pipeline_A(Gname_L)).start()
     Thread(target = Pipeline_B(Gname_L)).start()
-    Thread(target = Pipeline_C(Gname_L)).start()
-    Thread(target = Pipeline_D(Gname_L)).start()
-    #print "Number of Threads : ", str(threading.activeCount())
+    #Thread(target = Pipeline_C(Gname_L)).start()
+    #Thread(target = Pipeline_D(Gname_L)).start()
+    print "Number of Threads : ", str(threading.activeCount())
     print "Master Complete"
 
 """
