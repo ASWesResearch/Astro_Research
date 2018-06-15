@@ -200,18 +200,18 @@ def Area_GC_R_N_F_2(Gname):
     directory = os.path.dirname(path_3)
     if not os.path.exists(directory):
         os.makedirs(directory)
-    os.chdir(path_3) #Goes to Current Galaxies Folder
-    path_Hist=path_3+'/Histograms/'
+    #os.chdir(path_3) #Goes to Current Galaxies Folder
+    path_Hist=path_3+'Histograms/'
     directory_Hist=os.path.dirname(path_Hist)
     if not os.path.exists(directory_Hist):
         os.makedirs(directory_Hist)
     #print "path_Hist=",path_Hist
-    os.chdir(path_Hist)
-    plt.savefig(Gname_Modifed+'_Frac.png') #Saves angluar histogram figure
+    #os.chdir(path_Hist)
+    plt.savefig(path_Hist+Gname_Modifed+'_Frac.png') #Saves angluar histogram figure
     #system('pwd')
-    path_4=os.path.realpath('../../../../Histogram_Code/')
+    #path_4=os.path.realpath('../../../../Histogram_Code/')
     #print "Path_4=",path_4
-    os.chdir(path_4) #Goes back to where this code (the histogram code) is being run, ie. Desktop/GitHub
+    #os.chdir(path_4) #Goes back to where this code (the histogram code) is being run, ie. Desktop/GitHub
     plt.close()
     #plt.show()
 
@@ -406,18 +406,18 @@ def Area_GC_R_N(Gname):
     directory = os.path.dirname(path_3)
     if not os.path.exists(directory):
         os.makedirs(directory)
-    os.chdir(path_3) #Goes to Current Galaxies Folder
-    path_Hist=path_3+'/Histograms/'
+    #os.chdir(path_3) #Goes to Current Galaxies Folder
+    path_Hist=path_3+'Histograms/'
     directory_Hist=os.path.dirname(path_Hist)
     if not os.path.exists(directory_Hist):
         os.makedirs(directory_Hist)
     #print "path_Hist=",path_Hist
-    os.chdir(path_Hist)
-    plt.savefig(Gname_Modifed+'_Ang.png') #Saves angluar histogram figure
+    #os.chdir(path_Hist)
+    plt.savefig(path_Hist + Gname_Modifed+'_Ang.png') #Saves angluar histogram figure
     #system('pwd')
-    path_4=os.path.realpath('../../../../Histogram_Code/')
+    #path_4=os.path.realpath('../../../../Histogram_Code/')
     #print "Path_4=",path_4
-    os.chdir(path_4) #Goes back to where this code (the histogram code) is being run, ie. Desktop/GitHub
+    #os.chdir(path_4) #Goes back to where this code (the histogram code) is being run, ie. Desktop/GitHub
     plt.close()
     #plt.show()
 
