@@ -2,7 +2,7 @@ from astropy.io import ascii
 import os
 from os import system
 def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(UnboundLocalError: local variable 'File_Path_With_Filename_Str' referenced before assignment), Update(I fixed this bug, but I need to bug check more)
-    Code_Path=os.path.realpath('.')
+    #Code_Path=os.path.realpath('.')
     #print "Code_Path ", Code_Path
     File_Path_With_Filename_Str="Some Filepath"
     dir = os.path.dirname(__file__)
@@ -51,12 +51,12 @@ def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(Unbound
         #print "type(Cur_Obs_ID) ", type(Cur_Obs_ID)
         Cur_Obs_ID_Str=str(Cur_Obs_ID) #Cur_Obs_ID_Str:-Str, Current_Observation_Idenification_String, The current Observation ID in the list of all obsevation IDs for the current Galaxy Name (Matching_Obs_ID_L) as a string
         #print "type(Cur_Obs_ID_Str) ", type(Cur_Obs_ID_Str)
-        os.chdir("/Volumes/xray/simon/chandra_from_csc/") #Tells the code to consider the files in the directory that has the obsevation files that are contained in the Chandra Source Cataloge (CSC), This is as if the code changed its directory but the current directory of the code has not changed(?)
+        #os.chdir("/Volumes/xray/simon/chandra_from_csc/") #Tells the code to consider the files in the directory that has the obsevation files that are contained in the Chandra Source Cataloge (CSC), This is as if the code changed its directory but the current directory of the code has not changed(?)
         retval = os.getcwd() #retval:-str, retval, The current working directory as a string
         #print retval
         #print "type(retval) ", type(retval)
         #print "Directory changed successfully %s" % retval  #Checks the this line and the line above it combined check what the current working directory is
-        LS_Str_In_CSC= os.popen("ls").read() #LS_Str_In_CSC:-str, LS_String_In_Chandra_Source_Cataloge, The string output of "Ls"ing the filenames in the current directory (/Volumes/xray/simon/chandra_from_csc/), As if "ls" was typed in the terminal window, the filenames are all just the observations IDs here, so the filename for the observation ID 794 is just "794"
+        LS_Str_In_CSC= os.popen("ls /Volumes/xray/simon/chandra_from_csc/").read() #LS_Str_In_CSC:-str, LS_String_In_Chandra_Source_Cataloge, The string output of "Ls"ing the filenames in the current directory (/Volumes/xray/simon/chandra_from_csc/), As if "ls" was typed in the terminal window, the filenames are all just the observations IDs here, so the filename for the observation ID 794 is just "794"
         #print "LS_Str_In_CSC ", LS_Str_In_CSC
         #print "type(LS_Str_In_CSC) ", type(LS_Str_In_CSC)
         LS_Str_In_CSC_L=LS_Str_In_CSC.split("\n") #LS_Str_In_CSC_L:-List, LS_String_In_Chandra_Source_Cataloge_List, The list of the all filenames in the current directory (/Volumes/xray/simon/chandra_from_csc/)
@@ -70,12 +70,12 @@ def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(Unbound
             if(Cur_Obs_ID_Str in LS_Str_In_CSC_L): #Checks to see if the current observation IDs files are in the directory that contains only the observations form the Chandra Source Cataloge, if not then the code skips this part and checks the directory containing only the files for the observations outside the Chandra Sorce Cataloge
                 File_Path_Str_Primary_In_CSC="/Volumes/xray/simon/chandra_from_csc/"+Cur_Obs_ID_Str+"/primary/" #File_Path_Str_Primary_In_CSC:-str, File_Path_String_Primary_In_Chandra_Source_Cataloge, The directory of the primary files of the current observation, this directory contains the evt2.fits files and the fov1.fits files amoung others, this code will only be able to get .fits and .fits.gz files
                 #print "File_Path_Str_Primary_In_CSC ", File_Path_Str_Primary_In_CSC
-                os.chdir(File_Path_Str_Primary_In_CSC) #Changes the directory to the directory where the primary files for the current observation are held (/Volumes/xray/simon/chandra_from_csc/"+Cur_Obs_ID_Str+"/primary/)
-                retval_In_CSC = os.getcwd() #retval_In_CSC:-str, Retval_In_Chandra_Source_Catologe, The filepath of the primary directory as a string, should be identical to File_Path_Str_Primary_In_CSC except that there is not "/" at the end of the filepath
+                #os.chdir(File_Path_Str_Primary_In_CSC) #Changes the directory to the directory where the primary files for the current observation are held (/Volumes/xray/simon/chandra_from_csc/"+Cur_Obs_ID_Str+"/primary/)
+                #retval_In_CSC = os.getcwd() #retval_In_CSC:-str, Retval_In_Chandra_Source_Catologe, The filepath of the primary directory as a string, should be identical to File_Path_Str_Primary_In_CSC except that there is not "/" at the end of the filepath
                 #print "retval_In_CSC ", retval_In_CSC
                 #print "type(retval) ", type(retval)
                 #print "Directory changed successfully %s" % retval_In_CSC  #Checks the this line and the line above it combined check what the current working directory is
-                LS_Str_In_CSC_Primary=os.popen("ls").read() #LS_Str_In_CSC_Primary:-str, LS_String_In_Chandra_Source_Cataloge_Primary, The string containing all the filenames of the files in the primary directory, As if the "ls" command was used in the terminal to list out all the files name in the primary directory
+                LS_Str_In_CSC_Primary=os.popen("ls " +File_Path_Str_Primary_In_CSC).read() #LS_Str_In_CSC_Primary:-str, LS_String_In_Chandra_Source_Cataloge_Primary, The string containing all the filenames of the files in the primary directory, As if the "ls" command was used in the terminal to list out all the files name in the primary directory
                 #print "LS_Str_In_CSC_Primary ", LS_Str_In_CSC_Primary
                 #print type(LS_Str_In_CSC_Primary)
                 LS_Str_In_CSC_Primary_L=LS_Str_In_CSC_Primary.split("\n") #LS_Str_In_CSC_Primary_L:-List, LS_String_In_Chandra_Source_Cataloge_Primary_List, The list of all filenames in the primary file of the current observation
@@ -100,11 +100,11 @@ def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(Unbound
                         #print "Filename_String ",Filename_String
                         #print "File_Path_With_Filename_Str ", File_Path_With_Filename_Str
                         #print "Found the File (IN) ! ! !"
-            os.chdir("/Volumes/xray/simon/chandra_not_csc_GOOD/") #Tells the code to consider the files in the directory that has the obsevation files that are NOT contained in the Chandra Source Cataloge (CSC), This is as if the code changed its directory but the current directory of the code has not changed(?)
-            retval = os.getcwd() #retval:-str, retval, The current working directory as a string
+            #os.chdir("/Volumes/xray/simon/chandra_not_csc_GOOD/") #Tells the code to consider the files in the directory that has the obsevation files that are NOT contained in the Chandra Source Cataloge (CSC), This is as if the code changed its directory but the current directory of the code has not changed(?)
+            #retval = os.getcwd() #retval:-str, retval, The current working directory as a string
             #print "type(retval) ", type(retval)
             #print "Directory changed successfully %s" % retval  #Checks the this line and the line above it combined check what the current working directory is
-            LS_Str_Not_CSC= os.popen("ls").read() #LS_Str_NOT_CSC:-str, LS_String_NOT_in_Chandra_Source_Cataloge, The string output of "Ls"ing the filenames in the current directory (/Volumes/xray/simon/chandra_not_csc/), As if "ls" was typed in the terminal window, the filenames are all just the observations IDs here, so the filename for the observation ID 10125 is just "10125"
+            LS_Str_Not_CSC= os.popen("ls /Volumes/xray/simon/chandra_not_csc_GOOD/").read() #LS_Str_NOT_CSC:-str, LS_String_NOT_in_Chandra_Source_Cataloge, The string output of "Ls"ing the filenames in the current directory (/Volumes/xray/simon/chandra_not_csc/), As if "ls" was typed in the terminal window, the filenames are all just the observations IDs here, so the filename for the observation ID 10125 is just "10125"
             #print "LS_Str_Not_CSC ", LS_Str_Not_CSC
             #print "type(LS_Str_Not_CSC) ", type(LS_Str_Not_CSC)
             LS_Str_Not_CSC_L=LS_Str_Not_CSC.split("\n") #LS_Str_Not_CSC_L:-List, LS_String_Not_in_Chandra_Source_Cataloge_List, The list of the all filenames in the current directory (/Volumes/xray/simon/chandra_not_csc/)
@@ -112,11 +112,11 @@ def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(Unbound
             if(Cur_Obs_ID_Str in LS_Str_Not_CSC_L): #Checks to see if the current observation IDs files are in the directory that contains only the observations Not in the Chandra Source Cataloge, if not then the code skips this part
                 #print "Not in CSC"
                 File_Path_Str_Primary_Not_CSC="/Volumes/xray/simon/chandra_not_csc_GOOD/"+Cur_Obs_ID_Str+"/primary/"
-                os.chdir(File_Path_Str_Primary_Not_CSC) #Changes the directory to the directory where the primary files for the current observation are held (/Volumes/xray/simon/chandra_not_csc/"+Cur_Obs_ID_Str+"/primary/)
-                retval_Not_CSC = os.getcwd() #retval_Not_CSC:-str, Retval_Not_Chandra_Source_Catologe, The filepath of the primary directory as a string, should be identical to File_Path_Str_Primary_Not_CSC except that there is not "/" at the end of the filepath
+                #os.chdir(File_Path_Str_Primary_Not_CSC) #Changes the directory to the directory where the primary files for the current observation are held (/Volumes/xray/simon/chandra_not_csc/"+Cur_Obs_ID_Str+"/primary/)
+                #retval_Not_CSC = os.getcwd() #retval_Not_CSC:-str, Retval_Not_Chandra_Source_Catologe, The filepath of the primary directory as a string, should be identical to File_Path_Str_Primary_Not_CSC except that there is not "/" at the end of the filepath
                 #print "type(retval) ", type(retval)
                 #print "Directory changed successfully %s" % retval_Not_CSC  #Checks the this line and the line above it combined check what the current working directory is
-                LS_Str_Not_CSC_Primary=os.popen("ls").read() #LS_Str_Not_CSC_Primary:-str, LS_String_Not_in_Chandra_Source_Cataloge_Primary, The string containing all the filenames of the files in the primary directory, As if the "ls" command was used in the terminal to list out all the files name in the primary directory
+                LS_Str_Not_CSC_Primary=os.popen("ls "+File_Path_Str_Primary_Not_CSC).read() #LS_Str_Not_CSC_Primary:-str, LS_String_Not_in_Chandra_Source_Cataloge_Primary, The string containing all the filenames of the files in the primary directory, As if the "ls" command was used in the terminal to list out all the files name in the primary directory
                 #print "LS_Str_Not_CSC_Primary ", LS_Str_Not_CSC_Primary
                 LS_Str_Not_CSC_Primary_L=LS_Str_Not_CSC_Primary.split("\n") #LS_Str_Not_in_CSC_Primary_L:-List, LS_String_Not_in_Chandra_Source_Cataloge_Primary_List, The list of all filenames in the primary file of the current observation
                 #print "LS_Str_Not_CSC_Primary_L ", LS_Str_Not_CSC_Primary_L
@@ -148,11 +148,11 @@ def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(Unbound
         #return File_Path_With_Filename_Str #Should not return first filenames but instead all the filenames as a list
     #print fname_L_H
     #os.chdir("/Network/Servers/vimes.astro.wesleyan.edu/Volumes/vvodata/home/asantini/Desktop/File_Query_Code") #Changes directory back to the codes pwd, so when the code is run twice in a row it still works
-    os.chdir(Code_Path) #Changes directory back to the codes pwd, so when the code is run twice in a row it still works
+    #os.chdir(Code_Path) #Changes directory back to the codes pwd, so when the code is run twice in a row it still works
     return fname_L_H
 
 
-#print File_Query("NGC 891","evt2") #In in CSC
+print File_Query("NGC 891","evt2") #In in CSC
 #print File_Query("NGC 6946","evt2") #In CSC
 #print File_Query("NGC 891","fov1") #In in CSC
 #print File_Query("NGC 891","reg",".reg") #In in CSC
