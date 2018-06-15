@@ -59,12 +59,12 @@ def Source_Region_Generator_Radius_Modifed_V3(Gname,Outpath,M=10):
         Cur_Obs_ID=Obs_ID
         Cur_Obs_ID_Str=str(Cur_Obs_ID) #Cur_Obs_ID_Str:-Str, Current_Observation_Idenification_String, The current Observation ID in the list of all obsevation IDs for the current Galaxy Name (Matching_Obs_ID_L) as a string
         #print "type(Cur_Obs_ID_Str) ", type(Cur_Obs_ID_Str)
-        os.chdir("/Volumes/xray/spirals/trace/") #Tells the code to consider the files in the directory that has the obsevation files that are contained in the Chandra Source Cataloge (CSC), This is as if the code changed its directory but the current directory of the code has not changed(?)
-        retval = os.getcwd() #retval:-str, retval, The current working directory as a string
+        #os.chdir("/Volumes/xray/spirals/trace/") #Tells the code to consider the files in the directory that has the obsevation files that are contained in the Chandra Source Cataloge (CSC), This is as if the code changed its directory but the current directory of the code has not changed(?)
+        #retval = os.getcwd() #retval:-str, retval, The current working directory as a string
         #print retval
         #print "type(retval) ", type(retval)
         #print "Directory changed successfully %s" % retval  #Checks the this line and the line above it combined check what the current working directory is
-        LS_Str= os.popen("ls").read() #LS_Str:-str, LS_String, The string output of "Ls"ing the filenames in the current directory (/Volumes/xray/spirals/trace/), As if "ls" was typed in the terminal window, the filenames are all just the observations IDs here, so the filename for the observation ID 794 is just "794"
+        LS_Str= os.popen("ls /Volumes/xray/spirals/trace/").read() #LS_Str:-str, LS_String, The string output of "Ls"ing the filenames in the current directory (/Volumes/xray/spirals/trace/), As if "ls" was typed in the terminal window, the filenames are all just the observations IDs here, so the filename for the observation ID 794 is just "794"
         #print "LS_Str ", LS_Str
         #print "type(LS_Str) ", type(LS_Str)
         LS_Str_L=LS_Str.split("\n") #LS_Str_L:-List, LS_String_List, The list of the all filenames in the current directory (/Volumes/xray/spirals/trace/)
@@ -74,12 +74,12 @@ def Source_Region_Generator_Radius_Modifed_V3(Gname,Outpath,M=10):
             #print "Cur_Obs_ID_Str ", Cur_Obs_ID_Str
             File_Path_Str_Main="/Volumes/xray/spirals/trace/"+Cur_Obs_ID_Str #File_Path_Str_Main:-str, File_Path_String_Main, The directory of the Main files of the current observation, this directory contains the wavdetect region (.reg) files amoung others
             #print "File_Path_Str_Main ", File_Path_Str_Main
-            os.chdir(File_Path_Str_Main) #Changes the directory to the directory where the Main files for the current observation are held (/Volumes/xray/spirals/trace/"+Cur_Obs_ID_Str)
-            retval_2 = os.getcwd() #retval_2:-str, Retval_In_Chandra_Source_Catologe, The filepath of the Main directory as a string, should be identical to File_Path_Str_Main except that there is not "/" at the end of the filepath
+            #os.chdir(File_Path_Str_Main) #Changes the directory to the directory where the Main files for the current observation are held (/Volumes/xray/spirals/trace/"+Cur_Obs_ID_Str)
+            #retval_2 = os.getcwd() #retval_2:-str, Retval_In_Chandra_Source_Catologe, The filepath of the Main directory as a string, should be identical to File_Path_Str_Main except that there is not "/" at the end of the filepath
             #print "retval_In_CSC ", retval_In_CSC
             #print "type(retval) ", type(retval)
             #print "Directory changed successfully %s" % retval_In_CSC  #Checks the this line and the line above it combined check what the current working directory is
-            LS_Str_Main=os.popen("ls").read() #LS_Str_Main:-str, LS_String_In_Chandra_Source_Cataloge_Main, The string containing all the filenames of the files in the Main directory, As if the "ls" command was used in the terminal to list out all the files name in the Main directory
+            LS_Str_Main=os.popen("ls "+File_Path_Str_Main).read() #LS_Str_Main:-str, LS_String_In_Chandra_Source_Cataloge_Main, The string containing all the filenames of the files in the Main directory, As if the "ls" command was used in the terminal to list out all the files name in the Main directory
             #print "LS_Str_Main ", LS_Str_Main
             #print type(LS_Str_Main)
             LS_Str_Main_L=LS_Str_Main.split("\n") #LS_Str_Main_L:-List, LS_String_In_Chandra_Source_Cataloge_Main_List, The list of all filenames in the Main file of the current observation
@@ -120,7 +120,8 @@ def Source_Region_Generator_Radius_Modifed_V3(Gname,Outpath,M=10):
             """
             Shape_String_List=[]
             for Reg_Fname in Filtered_Fname_L_Ordered:
-                Cur_Reg_Data_L=pyregion.open(Reg_Fname)
+                Reg_Filepath=File_Path_Str_Main+"/"+Reg_Fname
+                Cur_Reg_Data_L=pyregion.open(Reg_Filepath)
                 #print "Cur_Reg_Data_L ", Cur_Reg_Data_L
                 Cur_Reg_Data=Cur_Reg_Data_L[0]
                 #print "Cur_Reg_Data ", Cur_Reg_Data
@@ -147,7 +148,7 @@ def Source_Region_Generator_Radius_Modifed_V3(Gname,Outpath,M=10):
             #/Network/Servers/vimes.astro.wesleyan.edu/
             #Source_Region_Tables_Filepath="/Network/Servers/vimes.astro.wesleyan.edu/Volumes/vvodata/home/asantini/Desktop/Source_Region_Tables" #Needs to be modifed to be the Master_Output directory
             Source_Region_Tables_Filepath=Outpath
-            os.chdir(Source_Region_Tables_Filepath)
+            #os.chdir(Source_Region_Tables_Filepath)
             Gname_Underscore=Gname
             if(Gname[3]==" "):
                 Gname_Underscore=Gname.replace(Gname[3], "_", 1)
@@ -157,7 +158,9 @@ def Source_Region_Generator_Radius_Modifed_V3(Gname,Outpath,M=10):
                 Gname_Underscore=Gname_Underscore_L[0]+Gname[2]+"_"+Gname_Underscore_L[1]
             #print "Gname_Underscore : ", Gname_Underscore
             Region_fname=Gname_Underscore+"_"+"ObsID_"+Cur_Obs_ID_Str+"_Source_Regions_Radius_Modifed.txt"
-            file=open(Region_fname,"w")
+            Region_fpath=Source_Region_Tables_Filepath+Region_fname
+            print "Region_fpath : ", Region_fpath
+            file=open(Region_fpath,"w")
             #file.write("X"+","+"Y"+","+"Maj_Ax"+","+"Min_Ax"+","+"Angle")
             #file.write("X"+","+"Y"+","+"Maj_Ax")
             for Shape_String in Shape_String_List:
