@@ -1,5 +1,5 @@
 import pyds9 #For some reason this gives the error "ImportError: No module named pyds9", This code worked before, maybe the module is uninstalled
-def XPA_DS9_Region_Generator(evtfilepath,fovfilepath):
+def XPA_DS9_Region_Generator(evtfilepath,fovfilepath,outpath):
     #THIS CODE IS UNTESTED, XPA_DS9_Region_Generator.py is the current working version of this code, Therefore it is not yet pushed to GitHub
     """
     evtfilepath:-str, Event_Filename, The filepath of the Event 2 File
@@ -54,7 +54,11 @@ def XPA_DS9_Region_Generator(evtfilepath,fovfilepath):
     #print "fovfname_reduced ", fovfname_reduced
     #print "fovfname_reduced ", fovfname_reduced
     #print fovfname_reduced
-    d.set("regions save "+str(fovfname_reduced)+"_CCD_Regions") #Saves the FOV1.fits file as a text file in physical coordinates with the filename in the form of str(fovfname_reduced)+"_CCD_Regions", for example for "acisf03931_repro_fov1.fits" the output file name is "acisf03931_repro_CCD_Regions"
+    #d.set("regions save "+str(fovfname_reduced)+"_CCD_Regions") #Saves the FOV1.fits file as a text file in physical coordinates with the filename in the form of str(fovfname_reduced)+"_CCD_Regions", for example for "acisf03931_repro_fov1.fits" the output file name is "acisf03931_repro_CCD_Regions"
+    #outpath
+    outpath_with_fname=str(outpath)+str(fovfname_reduced)
+    #print "outpath_with_fname : ", outpath_with_fname
+    d.set("regions save "+str(outpath_with_fname)+"_CCD_Regions") #Saves the FOV1.fits file as a text file in physical coordinates with the filename in the form of str(fovfname_reduced)+"_CCD_Regions", for example for "acisf03931_repro_fov1.fits" the output file name is "acisf03931_repro_CCD_Regions"
     d.set("exit") #Exits DS9 #This Works ! ! !
     #d.set('quit') #I think this does the exact same thing as d.set("exit"), I don't know if this is necessary, but I CAN'T be used when d.set("exit") is on the line above it #This Works ! ! !
 #XPA_DS9_Region_Generator("acisf03931_repro_evt2.fits","acisf03931_repro_fov1.fits")
