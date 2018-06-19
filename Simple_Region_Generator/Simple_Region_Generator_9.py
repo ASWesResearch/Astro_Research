@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import pyregion
 import decimal
 import numpy as np
-def Simple_Region_Generator (fname,evtfpath):
+def Simple_Region_Generator (fname,evtfpath,outpath):
     """
     fname:-str, Filename, The string filename of the CCD Region File from the XPA-DS9 Region Generator (Does Not Exist Yet) that take the FOV1.fits files from an observation as an input
     evtfpath:-str, Event 2 Filepath, The string filepath of the Event 2 file of the obseravation that the current FOV1.fits file and therefore the CCD Region File are from
@@ -15,16 +15,18 @@ def Simple_Region_Generator (fname,evtfpath):
     and some loss of area my occur as gaps between regions once connnected are 3 pixels wide. This code works are all possible combinations of CCDs on the Chandra Space Telescope
     for other telescopes and Chandra observations with subarrays ALL BETS ARE OFF ! ! !
     """
-    Reg_Data=pyregion.open(fname) #Reg_Data:-pyregion.ShapeList, Region_Data, The Region Data that is obtainted when the pyregion module converts the CCD Region File for it's use
+    fpath=outpath+fname
+    #print "fpath : ", fpath
+    Reg_Data=pyregion.open(fpath) #Reg_Data:-pyregion.ShapeList, Region_Data, The Region Data that is obtainted when the pyregion module converts the CCD Region File for it's use
     #print type(Reg_Data)
     fname_Reduced_L=fname.split('.') #fname_Reduced_L:-List, Filename_Reduced_List, The list of strings of the split fname string that was split on ".". fname_Reduced_L[0] is the filename without the extention and fname_Reduced_L[1] is the extenstion
     #print fname_Reduced_L
     fname_Reduced=fname_Reduced_L[0] #fname_Reduced:-str, Filename_Reduced, The filename string without the extention at the end. ie NO .reg or .txt at the end
     #print fname_Reduced
-    file=open(fname_Reduced + "_simple_region_no_header_modifed.txt",'w') # file:-file, File, The file that will become the simple_region_no_header_modifed file
+    #file=open(fname_Reduced + "_simple_region_no_header_modifed.txt",'w') # file:-file, File, The file that will become the simple_region_no_header_modifed file
     #print type(file)
-    file.write('\n') # This imediately moves to the next line (ie. hits the enter key) in the simple_region_no_header_modifed file. This is necessary for the Area Calc code to run correctly and is why the simple_region_no_header_modifed file has the "no_header" part in it's name. I will probbaly unify with file type with simple_region_modifed files and have those work with Area Calc instead.
-    file_2=open(fname_Reduced + "_simple_region_modifed_Code.txt",'w') #file_2:-file, File_2, the file that will become the simple_region_modifed file that can be open in DS9 and viewed, This does not work consistanly with the simple_region_no_header_modifed files
+    #file.write('\n') # This imediately moves to the next line (ie. hits the enter key) in the simple_region_no_header_modifed file. This is necessary for the Area Calc code to run correctly and is why the simple_region_no_header_modifed file has the "no_header" part in it's name. I will probbaly unify with file type with simple_region_modifed files and have those work with Area Calc instead.
+    file_2=open(outpath+fname_Reduced + "_simple_region_modifed_Code.txt",'w') #file_2:-file, File_2, the file that will become the simple_region_modifed file that can be open in DS9 and viewed, This does not work consistanly with the simple_region_no_header_modifed files
     Shape_List=[] #Shape_List:-List, Shape_List, The list of all Cur_Shape strings for an observation
     Shape_Data_L=[] #Shape_Data_L:-List, Shape_Data_List, The list of all data needed to create a simple CCD region for every CCD polygon, represented as a high list where each high element is a list containing the data for a perticular CCD polygon, ie. This list is in the form [[[Midpoint_X_1,Midpoint_Y_1],D_1,Angle_1],[[Midpoint_X_2,Midpoint_Y_2],D_2,Angle_2],...[[Midpoint_X_n,Midpoint_Y_n],D_1,Angle_n]], where 1,2..n are differnt CCD polygons
     for Cur_Reg_Data in Reg_Data: # Selects the current CCD shape polygon
@@ -1112,7 +1114,7 @@ def Simple_Region_Generator (fname,evtfpath):
             #print "Uncon_Big_Shape_Str ", Uncon_Big_Shape_Str
     #print "Big_Shape_Str_L ", Big_Shape_Str_L
     for Big_Shape_String in Big_Shape_Str_L:
-        file.write(Big_Shape_String)
+        #file.write(Big_Shape_String)
         file_2.write(Big_Shape_String)
 
 
