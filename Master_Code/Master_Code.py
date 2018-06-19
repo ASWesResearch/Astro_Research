@@ -6,7 +6,28 @@ from os import system
 import sys
 import gzip
 #import time
+dir = os.path.dirname(__file__)
+path=os.path.realpath('../')
+#print "Path=",path
+#system('pwd')
+sys.path.append(os.path.abspath(path))
+from Histogram_Code import Galaxy_Histogram_Code_3
+from File_Query_Code import File_Query_Code_5
+from XPA_DS9_Region_Generator import XPA_DS9_Region_Generator_3
+#from CCD_Region_Testing import Simple_Region_Generator_8
+from Simple_Region_Generator import Simple_Region_Generator_9
+from Area_Calc import Area_Calc_Frac_B_2_Alt_8
+from Galaxy_Name_Reducer import Galaxy_Name_Reducer
+#from File_Query_Code import File_Query_Code_5
+from Source_Region_Generator import Source_Region_Generator_Radius_Modifed_V3
+from Background_Finder import Background_Finder_10
+from Detection_Probablity_Calc import Detection_Probability_Calc_7
+from Known_Flux_Finder import Known_Flux_Finder
+from Counts_To_Flux_Converter import Counts_To_Flux_Converter_3
+#from Galaxy_Name_Reducer import Galaxy_Name_Reducer
+from Coords_Calc import Coords_Calc
 def Pipeline_A(Gname_L):
+    """
     #Imports alaxy_Histogram_Code_2
     #os.system('python Hello_World.py')
     #dir = os.path.dirname(__file__)
@@ -28,13 +49,16 @@ def Pipeline_A(Gname_L):
     #from Galaxy_Histogram_Code_2 import *
     #import Galaxy_Histogram_Code_2
     from Histogram_Code import Galaxy_Histogram_Code_3
+    """
     for Gname in Gname_L:
         #Pipeline_A Code
+        print "Gname A: ", Gname
         Galaxy_Histogram_Code_3.Driver_Code(Gname) #This runs the histrogram code and creates the histrograms and the directories with the histrograms in them
 
 # Pipelines are quoted until they are finished
 
 def Pipeline_B(Gname_L):
+    """
     dir = os.path.dirname(__file__)
     path=os.path.realpath('../')
     #print "Path=",path
@@ -47,8 +71,10 @@ def Pipeline_B(Gname_L):
     from Simple_Region_Generator import Simple_Region_Generator_9
     from Area_Calc import Area_Calc_Frac_B_2_Alt_8
     from Galaxy_Name_Reducer import Galaxy_Name_Reducer
+    """
     for Gname in Gname_L:
         #Pipeline_B Code
+        print "Gname B: ", Gname
         """
         Gname_List=Gname.split(" ")
         print "Gname_List: ", Gname_List
@@ -231,6 +257,7 @@ def Pipeline_B(Gname_L):
         #Need to add the rest of Pipeline B after XPA_DS9_Region_Generator
 
 def Pipeline_C(Gname_L):
+    """
     dir = os.path.dirname(__file__)
     #print "dir : ", dir
     #print "PWD C : "
@@ -254,8 +281,10 @@ def Pipeline_C(Gname_L):
     from Known_Flux_Finder import Known_Flux_Finder
     from Counts_To_Flux_Converter import Counts_To_Flux_Converter_3
     from Galaxy_Name_Reducer import Galaxy_Name_Reducer
+    """
     for Gname in Gname_L:
         #Pipeline_C Code
+        print "Gname C: ", Gname
         """
         Gname_List=Gname.split(" ")
         print "Gname_List: ", Gname_List
@@ -376,6 +405,7 @@ def Pipeline_C(Gname_L):
         #system('pwd')
 
 def Pipeline_D(Gname_L):
+    """
     dir = os.path.dirname(__file__)
     path=os.path.realpath('../')
     #print "Path=",path
@@ -385,8 +415,10 @@ def Pipeline_D(Gname_L):
     from File_Query_Code import File_Query_Code_5
     from Coords_Calc import Coords_Calc
     from Galaxy_Name_Reducer import Galaxy_Name_Reducer
+    """
     for Gname in Gname_L:
         #Pipeline_D Code
+        print "Gname D: ", Gname
         Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
         #print "Gname_Modifed ", Gname_Modifed
         path_2=os.path.realpath('../Master_Code/Master_Output/')
@@ -446,7 +478,7 @@ def Pipeline_D(Gname_L):
         #os.chdir(path_5)
         #print "THE PWD AT VERY END IS :"
         #system('pwd')
-"""
+
 def Master(Gname_L):
     Thread(target = Pipeline_A(Gname_L)).start()
     Thread(target = Pipeline_B(Gname_L)).start()
@@ -454,8 +486,8 @@ def Master(Gname_L):
     Thread(target = Pipeline_D(Gname_L)).start()
     print "Number of Threads : ", str(threading.activeCount())
     print "Master Complete"
-"""
 
+"""
 def Master(Gname_L):
     A=Thread(target = Pipeline_A, args=(Gname_L,))
     B=Thread(target = Pipeline_B, args=(Gname_L,))
@@ -467,9 +499,10 @@ def Master(Gname_L):
     D.start()
     print "Number of Threads : ", str(threading.activeCount())
     print "Master Complete"
-
+"""
 if __name__ == '__main__':
     #Master(['NGC4258','M31','NGC 1365']) #This works
     #Master(['NGC4258','NGC 1332'])
-    Master(['NGC4258','NGC 1365'])
+    #Master(['NGC4258','NGC 1365'])
     #Master(['NGC4258'])
+    Master(['NGC 4449', 'NGC 6946', 'Willman 1', 'NGC 602', 'SN 2004am', 'SN 1996aq', 'NGC 4278', 'DDO 68', 'NGC7507', 'PGC135659', 'NGC 5054', 'NGC1300', 'NGC4742', 'NGC5576', 'NGC3384', 'NGC4486A', 'NGC4459', '3C 299', 'NGC3115', 'NGC 247', 'PTF11eon', 'SN2011dh', 'NGC 4472', 'NGC5813', 'NGC 1042', '2XMM J120405.8+201345', 'M83', 'NGC 5139', 'SN2011ja', 'NGC 253', 'N119', 'SN 2011ja', 'ngc2997', 'ngc6744', 'NGC3923', 'M31', 'NGC 4490', 'NGC4594', 'NGC3379', 'NGC1097', 'NGC4258', 'NGC4388', 'M51', 'M33', 'NGC 346', 'SNR 1987A', 'SN 1998S', 'NGC2403', 'NGC4365', 'NGC 2865', 'NGC 1316', 'NGC 604', 'RXJ1416.4+2315', 'NGC 3556', 'NGC 4559', 'NGC 4214', 'NGC 5253', 'NGC 3628', 'NGC 278', 'NGC 628', 'NGC 1291', 'NGC 2681', 'NGC 4314', 'NGC 5236', 'IC 5332', 'NGC 4621', 'NGC 1700', 'NGC 5018', 'NGC 3608', 'NGC 4494', 'LBQS 1231+1320', '3C31', 'NGC 4303', 'IC 1459', 'NGC 5055', 'NGC 7331', 'NGC 741 GROUP', 'QSO 1508+5714', 'NGC 55', 'CIRCINUS GALAXY', 'NGC4486', 'NGC5471B', 'NGC 1332', 'NGC 4501', 'M82', 'NGC 1313', 'NGC 4725', 'NGC4698', 'NGC 4039', 'NGC 4038', 'NGC 3507', 'NGC4457', 'NGC 3557', 'DEM L50', 'NGC 4258', 'M87', 'NGC 1365', 'NGC 1850', 'NGC 3031', 'DEM L238', 'NGC 5204 X-1', 'NGC 1818', 'IC5267', 'NGC 4565', 'NGC 3631', 'NGC 7793', 'NGC4527', 'FORNAX CLUSTER', 'SN 2002HH', 'SN 1986J', 'SN 2004dj', 'SN 2004et', 'NGC 4473', 'NGC 2787', 'M101', 'NGC4278', 'NGC1427', 'NGC4214', 'NGC 1313 X-1', 'NGC 1313 X-2', 'VIRGO CLUSTER', 'IC 1613', 'M84', 'NGC 3351', 'ngc 1672', 'M81', 'NGC 2841', 'IRAS08572+3915', 'NGC 7090', 'SN 1993J', 'SNR 0509-67.5', 'SN1999em', 'SN1998S', 'NGC 7552', 'NGC 4649', 'NGC 4308', 'NGC 5846', 'NGC 891', 'NGC 4631', 'NGC 4374', 'NGC 4570', 'NGC 4478', 'I ZW 18', 'NGC 4550', 'NGC 4476', 'UGC 7658', '2MASX J12293498+0803286', 'LHA 120-N 11', 'SNR 0104-72.3', 'SN1978K', 'SN 1979C', 'NGC3585', 'M86', 'NGC4477', 'NGC1399', 'Sombrero', 'M81 DwA', 'Holmberg IX', 'NGC 5474', 'NGC 3627', 'NGC 855', 'NGC 3198', 'NGC 3521', 'NGC 4736'])
