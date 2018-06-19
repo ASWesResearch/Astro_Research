@@ -5,7 +5,7 @@ import numpy as np
 import math
 import os
 from os import system
-def Background_Finder_3(gname,evtfpath,objLfname,R): #Need to apply energy filter (0.3kev to 10kev) to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
+def Background_Finder_3(gname,evtfpath,objLfpath,R): #Need to apply energy filter (0.3kev to 10kev) to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
     """
     gname:-str, Galaxy Name, The name of the galaxy in the form NGC #, For Example 'NGC 3077'
     evtfpath:-str, Event Filepath, The filepath of the event file of the observation, For Example '/Volumes/xray/simon/chandra_not_csc_GOOD/1618/primary/acisf01618N003_evt2.fits.gz'
@@ -42,7 +42,7 @@ def Background_Finder_3(gname,evtfpath,objLfname,R): #Need to apply energy filte
     #os.chdir("~")
     #os.system("cd ~")
     #Objfile=open("Desktop/Big_Object_Regions/"+str(objLfname),"r") #Objfile:-file, Objectfile, a file containing the regions of the X-ray objects in the observation as strings regions
-    Objfile=open(str(objLfname),"r")
+    Objfile=open(str(objLfpath),"r")
     #print type(Objfile)
     #path2=os.path.realpath('../Background_Finder/') #Changes PWD back to this code's PWD in Desktop/Background_Finder, this may be Changed later to go to the location of the Evt2 file that will be used in the DMCOORDS, the location will be given by File_Query_Code
     #os.chdir(path2)
