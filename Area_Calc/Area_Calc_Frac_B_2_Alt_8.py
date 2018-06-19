@@ -7,7 +7,7 @@ import os
 from os import system
 #import subprocess
 #subprocess.call("pset dmkeypar mode='hl'")
-def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfname,rchange=121.9512195,B=1): #NEED to finish this code, Check to see if the radius is increaing correctly and write outputs to a file, Also the evt 2 filename should be a event 2 filepath
+def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfpath,rchange=121.9512195,B=1): #NEED to finish this code, Check to see if the radius is increaing correctly and write outputs to a file, Also the evt 2 filename should be a event 2 filepath
     #This is the latest version, 4/20/18
     """
     gname:-str, Galaxy Name, The name of the galaxy in the form NGC #, For Example 'NGC 3077'
@@ -17,8 +17,8 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfname,rchange=121.9512195,B=1): 
     B:-int, Binning, The binning on the regArea CIAO tool, It's standard value is 1 pixel
     """
     #print "PWD 1:"
-    system('pwd')
-    homepath=os.path.realpath('.')
+    #system('pwd')
+    #homepath=os.path.realpath('.')
     #print "homepath :",homepath
     inner_r=0.0 #inner_r:-float, Inner_Radius, The radius of the inner most circle
     #outer_r_gap=25.0 #outer_r_gap:-float, Outer_Radius_Gap, The addtional distance that needs to be added to the outer radius inorder to account for dithering #The addtional distance that needs to be added to the outer radius inorder to account for dithering
@@ -30,14 +30,18 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfname,rchange=121.9512195,B=1): 
     evtfpath_L=evtfpath.split("/")
     evtfname=evtfpath_L[len(evtfpath_L)-1]
     #print "evtfname: ", evtfname
+    polyfpath_L=polyfpath.rsplit("/",1)
+    print "polyfpath_L : ", polyfpath_L
+    polyfpath_no_fname=polyfpath_L[0]
+    print "polyfpath_no_fname : ", polyfpath_no_fname
     Evtfname_Reduced=evtfname.split(".")[0] #Evtfname_Reduced:-str, Event_Filename_Reduced, The filename of the event 2 file of the observation without the extention ".fits" at the end, for example "acisf02076_repro_evt2"
-    Output_File=open(str(gname)+"_"+Evtfname_Reduced+"_Area_List.txt","w") #Output_File:-file, Output_File, The Area_List file, which is the file were the list of Area_Ratios one for each circle (ie. each n) are saved, in the form of one line per ratio
+    Output_File=open(polyfpath_no_fname+"/"+str(gname)+"_"+Evtfname_Reduced+"_Area_List.txt","w") #Output_File:-file, Output_File, The Area_List file, which is the file were the list of Area_Ratios one for each circle (ie. each n) are saved, in the form of one line per ratio
     polystring_L=[] #polystring_L:-list, Polygon String List, A list of all the CCD shape strings
     dir = os.path.dirname(__file__)
     #system('pwd')
     #system('cd ../..')
     #system('pwd')
-    path=polyfname # For when the code runs in Master Code, is Really just a filename, but techincally the very last part of a filepath, ie /fname is the same as fname
+    path=polyfpath
     #path=os.path.realpath('../Polygons/'+str(polyfname)) #For when code in run in Desktop/Area_Calc #Going to need to modify inorder to use the filepath of the simple_region_modifed file outputed in Master_Output or more a easier option is to run in code where the simple_region_modifed is and just feed it the file while the code is in the same directory
     #path=os.path.realpath('../../Polygons/'+str(polyfname)) #For when code in run in Desktop/CCD_Incompleteness_Correction/Area_Calc
     #path=os.path.realpath('../SQL_Standard_File/SQL_Sandard_File.csv')
@@ -216,7 +220,7 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfname,rchange=121.9512195,B=1): 
 #print Area_Calc_Frac_B_2_Alt_2("NGC 253","acisf03931_repro_evt2.fits","acisf03931_repro_CCD_Regions_simple_region_no_header_modifed.txt",0,120,3000,2,1)
 #print Area_Calc_Frac_B_2_Alt_2("NGC 253","acisf03931_repro_evt2.fits","acisf03931_repro_CCD_Regions_simple_region_modifed_Code.txt",0,120,3000)
 #print Area_Calc_Frac_B_2_Alt_2("NGC 253","acisf03931_repro_evt2.fits","acisf03931_repro_CCD_Regions_simple_region_modifed_Code.txt")
-#print Area_Calc_Frac_B_2_Alt_2("NGC 253","acisf13830_repro_evt2.fits","acisf13830_Unconnnected_simple_region_modifed_Code.txt") #This does not work, The polyfname needs to be a real observation
+#print Area_Calc_Frac_B_2_Alt_2("NGC 253","acisf13830_repro_evt2.fits","acisf13830_Unconnnected_simple_region_modifed_Code.txt") #This does not work, The polyfpath needs to be a real observation
 #print Area_Calc_Frac_B_2_Alt_2("NGC 253","acisf13830_repro_evt2.fits","acisf13830_repro_CCD_Regions_simple_region_modifed_Code.txt")
 #print Area_Calc_Frac_B_2_Alt_2("NGC 253","/Network/Servers/vimes.astro.wesleyan.edu/Volumes/vvodata/home/asantini/Desktop/CCD_Incompleteness_Correction/Area Calc/acisf13830_repro_evt2.fits","acisf13830_repro_CCD_Regions_simple_region_modifed_Code.txt")
 #print Area_Calc_Frac_B_2_Alt_2("NGC 253","/home/asantini/Desktop/CCD_Incompleteness_Correction/Area Calc/acisf13830_repro_evt2.fits","acisf13830_repro_CCD_Regions_simple_region_modifed_Code.txt")
