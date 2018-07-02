@@ -25,13 +25,4 @@ Galaxy_Test/9518/secondary/axaff09518N002_VV001_vvref2.pdf.gz
 /Galaxy_Test
 /Terminal_Ouput_Log
 /Master_Code/Master_Output/*
-SQL_Standard_File/._BrowseTargets
-SQL_Standard_File/._BrowseTargets.20103.1529600836
-SQL_Standard_File/._BrowseTargets.21356.1529600692
-SQL_Standard_File/BrowseTargets
-SQL_Standard_File/BrowseTargets.20103.1529600836
-SQL_Standard_File/BrowseTargets.21356.1529600692
-SQL_Standard_File/._RC3_Query_Modifed.csv
-SQL_Standard_File/._RC3_Query_Raw.csv
-SQL_Standard_File/RC3_Query_Modifed.csv
-SQL_Standard_File/RC3_Query_Raw.csv
+SQL_Standard_File/*
