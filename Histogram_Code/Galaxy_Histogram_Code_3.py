@@ -12,6 +12,7 @@ path_GR=os.path.realpath('../')
 #print "path_GR=",path_GR
 sys.path.append(os.path.abspath(path_GR))
 from Galaxy_Name_Reducer import Galaxy_Name_Reducer
+from D25_Finder import D25_Finder
 
 def Area_GC_R_N_F_2(Gname):
     """
@@ -103,6 +104,7 @@ def Area_GC_R_N_F_2(Gname):
     #area_T=((S_Maj)**2)*math.pi
     G_Data= Ned.query_object(Gname) #G_Data:-astropy.table.table.Table, Galaxy_Data, The Galaxy Data Table queried from NED
     #print type(G_Data)
+    """
     Dia_Table = Ned.get_table(Gname, table='diameters') #Dia_Table:-astropy.table.table.Table, Diameter_Table, The Data table queried from NED that contains the infomation about the Major Axis of the input Galaxy Name
     #print type(Dia_Table)
     #print G_Data
@@ -154,6 +156,8 @@ def Area_GC_R_N_F_2(Gname):
     #print "Maj, ! ! !", Maj
     D25_S_Maj=D25_Maj/2.0
     D25_S_Maj_Deg=D25_S_Maj/3600.0
+    """
+    D25_S_Maj_Deg=D25_Finder.D25_Finder(Gname)
     area_T=((D25_S_Maj_Deg)**2)*math.pi
     raGC=float(G_Data['RA(deg)'])
     decGC=float(G_Data['DEC(deg)'])
@@ -307,6 +311,7 @@ def Area_GC_R_N(Gname):
     #area_T=((S_Maj)**2)*math.pi
     G_Data= Ned.query_object(Gname) #G_Data:-astropy.table.table.Table, Galaxy_Data, The Galaxy Data Table queried from NED
     #print type(G_Data)
+    """
     Dia_Table = Ned.get_table(Gname, table='diameters') #Dia_Table:-astropy.table.table.Table, Diameter_Table, The Data table queried from NED that contains the infomation about the Major Axis of the input Galaxy Name
     #print type(Dia_Table)
     #print G_Data
@@ -358,6 +363,8 @@ def Area_GC_R_N(Gname):
     #print "Maj, ! ! !", Maj
     D25_S_Maj=D25_Maj/2.0
     D25_S_Maj_Deg=D25_S_Maj/3600.0
+    """
+    D25_S_Maj_Deg=D25_Finder.D25_Finder(Gname)
     area_T=((D25_S_Maj_Deg)**2)*math.pi
     raGC=float(G_Data['RA(deg)'])
     decGC=float(G_Data['DEC(deg)'])
