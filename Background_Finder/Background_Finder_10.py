@@ -5,6 +5,12 @@ import numpy as np
 import math
 import os
 from os import system
+from astropy.io import ascii
+import sys
+path=os.path.realpath('../')
+#print "Path=",path
+sys.path.append(os.path.abspath(path))
+from D25_Finder import D25_Finder
 def Background_Finder_3(gname,evtfpath,objLfpath,R): #Need to apply energy filter (0.3kev to 10kev) to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
     """
     gname:-str, Galaxy Name, The name of the galaxy in the form NGC #, For Example 'NGC 3077'
@@ -70,8 +76,13 @@ def Background_Finder_3(gname,evtfpath,objLfpath,R): #Need to apply energy filte
     #print Min
     S_Maj=Maj/2 #S_Maj:-numpy.float64, Semi_Major axis, The semi major axis of the galaxy in acrseconds
     """
+
     G_Data= Ned.query_object(gname)
+    """
     Dia_Table = Ned.get_table(gname, table='diameters')
+    #path_Dia_T=os.path.realpath('../SQL_Standard_File/RC3_Query_Modifed.csv')
+    #print "path_Dia_T : ", path_Dia_T
+    #Dia_Table=ascii.read(path_Dia_T,format='csv',)
     #print "G_Data : ", G_Data
     #print "Dia_Table : ", Dia_Table
     #print "Dia_Table.colnames : ", Dia_Table.colnames
@@ -117,8 +128,12 @@ def Background_Finder_3(gname,evtfpath,objLfpath,R): #Need to apply energy filte
     #print Dia_Table_2
     #Maj=Dia_Table_2[18]
     #print "Maj, ! ! !", Maj
-    D25_S_Maj=D25_Maj/2.0
+    #D25_S_Maj=D25_Maj/2.0
+    #print "D25_S_Maj : ", D25_S_Maj
     #D25_S_Maj_Deg=D25_S_Maj/3600.0
+    """
+    D25_S_Maj_Deg=D25_Finder.D25_Finder(gname)
+    D25_S_Maj=D25_S_Maj_Deg*3600.0 #D25_S_Maj:-float, D25_Semi_Major_Axis, The D25 Semi Major Axis of the current galaxy in arcseconds
     dmcoords(infile=str(evtfpath),ra=str(raGC), dec=str(decGC), option='cel', verbose=0, celfmt='deg') # Runs the dmcoords CIAO tool, which converts coordinates like CHIP_ID to SKY, the tool is now being used to convert the RA and Dec of the GC to SKY coodinates in pixels (?)
     X_Phys=dmcoords.x #X_Phys:-float, X_Physical, The sky plane X pixel coordinate in units of pixels of the galatic center
     Y_Phys=dmcoords.y #Y_Phys:-float, Y_Physical, The sky plane Y pixel coordinate in units of pixels of the galatic center
