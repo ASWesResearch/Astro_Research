@@ -47,19 +47,20 @@ def D25_Finder(Gname):
         else:
             #print "Not in RC3 ! ! !"
             #result_table = Ned.query_region(Gname_No_W, radius=0.05 * u.deg)
-            result_table = Ned.query_region(Gname_No_W, radius=(1.0/60.0) * u.deg)
+            #result_table = Ned.query_region(Gname_No_W, radius=(1.0/60.0) * u.deg)
+            result_table = Ned.query_region(Gname_No_W, radius=(5.0/60.0) * u.deg)
             #print(result_table)
             Resolved_Name_Table=result_table['Object Name']
             #print "Resolved_Name_Table : \n", Resolved_Name_Table
             Resolved_Name_L=list(Resolved_Name_Table)
-            #print "Resolved_Name_L : ", Resolved_Name_L
+            print "Resolved_Name_L : ", Resolved_Name_L
             for Resolved_Name in Resolved_Name_L:
                 Resolved_Name_Reduced_L=Resolved_Name.split(":")
                 Resolved_Name_Reduced=Resolved_Name_Reduced_L[0]
-                #print "Resolved_Name_Reduced : ", Resolved_Name_Reduced
+                print "Resolved_Name_Reduced : ", Resolved_Name_Reduced
                 Resolved_Name_Reduced_No_Whitespace=Resolved_Name_Reduced.replace(" ","")
-                Resolved_Name_Reduced_No_Whitespace_No_0_L=Resolved_Name_Reduced_No_Whitespace.split('0')
-                #print "Resolved_Name_Reduced_No_Whitespace_No_0_L : ", Resolved_Name_Reduced_No_Whitespace_No_0_L #Removes the "0" form NGC 0###, for example "NGC0253" becomes "NGC253"
+                Resolved_Name_Reduced_No_Whitespace_No_0_L=Resolved_Name_Reduced_No_Whitespace.split('0',1)
+                print "Resolved_Name_Reduced_No_Whitespace_No_0_L : ", Resolved_Name_Reduced_No_Whitespace_No_0_L #Removes the "0" form NGC 0###, for example "NGC0253" becomes "NGC253"
                 if(Resolved_Name_Reduced_No_Whitespace_No_0_L[0]=="NGC"):
                     Resolved_Name_Reduced_No_Whitespace=Resolved_Name_Reduced_No_Whitespace_No_0_L[0]+Resolved_Name_Reduced_No_Whitespace_No_0_L[1]
                 #print "Resolved_Name_Reduced_No_Whitespace : ", Resolved_Name_Reduced_No_Whitespace
@@ -79,7 +80,7 @@ def D25_Finder(Gname):
                     #D25_S_Maj_Deg=float(D25_S_Maj_Deg) # So it will throw up an expectation, when the value is "None"
                     if D25_S_Maj_Deg is not None:
                         return D25_S_Maj_Deg
-    return "None Found"/0.0 # So it will throw up an expectation, when the value is "None"          
+    return "None Found"/0.0 # So it will throw up an expectation, when the value is "None"
                     #return D25_S_Maj_Deg
                 #break
         #return D25_S_Maj_Deg
@@ -106,6 +107,10 @@ def D25_List_Run(Gname_L):
 #NGC 1313 X-2
 #print D25_Finder("NGC 1313 X-2")
 #print D25_Finder("NGC 1313 X-1")
+#print D25_Finder("SN2011ja")
+#print D25_Finder("NGC 604")
+#3C31
+print D25_Finder("3C31")
 """
 D25_List_Run(['SN 2004am', 'SN 1996aq', 'PGC135659', 'M51', 'SN2011ja', 'N119',
 'SN 2011ja', 'NGC 346', 'SNR 1987A', 'SN 1998S', 'NGC 604', 'NGC5471B', 'NGC 5204 X-1', 'NGC 1818', 'FORNAX CLUSTER', 'SN 2002HH', 'SN 1986J', 'SN 2004dj', 'SN 2004et', 'NGC 1313 X-1', 'NGC 1313 X-2', 'VIRGO CLUSTER', 'ngc 1672', 'SN 1993J',
@@ -114,4 +119,4 @@ D25_List_Run(['SN 2004am', 'SN 1996aq', 'PGC135659', 'M51', 'SN2011ja', 'N119',
  'SN1978K'])
 """
 
-D25_List_Run(['SN 2004am','SN 1996aq','PGC135659','M51','SN2011ja','N119','SN 2011ja','NGC 346','SNR 1987A','SN 1998S','NGC 604','NGC5471B','NGC 5204 X-1','NGC 1818','FORNAX CLUSTER','SN 2002HH','SN 1986J','SN 2004dj','SN 2004et','NGC 1313 X-1','NGC 1313 X-2','VIRGO CLUSTER','ngc 1672','SN 1993J','SNR 0509-67.5','SN1999em','SN1998S','UGC 7658','SNR 0104-72.3','SN1978K','NGC7507','NGC 4472','M83','NGC 253','NGC3923','NGC 4490','NGC1097','M33','NGC 2865','NGC 1316','NGC 5253','NGC 3628','NGC 1291','NGC 5236','NGC 1700','NGC 5018','3C31','IC 1459','NGC 1332','M82','NGC 3557','NGC 4258','M87','NGC 3031','IC5267','NGC 4565','M101','NGC1427','M84','M81','NGC 7552','NGC 4649','NGC 5846','NGC 891','NGC 4631','NGC 4374','I ZW 18','NGC3585','M86','NGC1399'])
+#D25_List_Run(['SN 2004am','SN 1996aq','PGC135659','M51','SN2011ja','N119','SN 2011ja','NGC 346','SNR 1987A','SN 1998S','NGC 604','NGC5471B','NGC 5204 X-1','NGC 1818','FORNAX CLUSTER','SN 2002HH','SN 1986J','SN 2004dj','SN 2004et','NGC 1313 X-1','NGC 1313 X-2','VIRGO CLUSTER','ngc 1672','SN 1993J','SNR 0509-67.5','SN1999em','SN1998S','UGC 7658','SNR 0104-72.3','SN1978K','NGC7507','NGC 4472','M83','NGC 253','NGC3923','NGC 4490','NGC1097','M33','NGC 2865','NGC 1316','NGC 5253','NGC 3628','NGC 1291','NGC 5236','NGC 1700','NGC 5018','3C31','IC 1459','NGC 1332','M82','NGC 3557','NGC 4258','M87','NGC 3031','IC5267','NGC 4565','M101','NGC1427','M84','M81','NGC 7552','NGC 4649','NGC 5846','NGC 891','NGC 4631','NGC 4374','I ZW 18','NGC3585','M86','NGC1399'])
