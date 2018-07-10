@@ -47,9 +47,9 @@ def D25_Finder(Gname):
         else:
             #print "Not in RC3 ! ! !"
             #result_table = Ned.query_region(Gname_No_W, radius=0.05 * u.deg)
-            #result_table = Ned.query_region(Gname_No_W, radius=(1.0/60.0) * u.deg)
-            result_table = Ned.query_region(Gname_No_W, radius=(5.0/60.0) * u.deg)
-            #print(result_table)
+            result_table = Ned.query_region(Gname_No_W, radius=(1.0/60.0) * u.deg)
+            #result_table = Ned.query_region(Gname_No_W, radius=(5.0/60.0) * u.deg)
+            print(result_table)
             Resolved_Name_Table=result_table['Object Name']
             #print "Resolved_Name_Table : \n", Resolved_Name_Table
             Resolved_Name_L=list(Resolved_Name_Table)
