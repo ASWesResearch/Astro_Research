@@ -1,12 +1,16 @@
 from astropy.io import ascii
 import os
 from os import system
+path_Modules=os.path.realpath('../')
+sys.path.append(os.path.abspath(path_Modules))
+from Galaxy_Name_Reducer import Galaxy_Name_Reducer
 def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(UnboundLocalError: local variable 'File_Path_With_Filename_Str' referenced before assignment), Update(I fixed this bug, but I need to bug check more)
     #Code_Path=os.path.realpath('.')
     #print "Code_Path ", Code_Path
     File_Path_With_Filename_Str="Some Filepath"
     dir = os.path.dirname(__file__)
-    path=os.path.realpath('../SQL_Standard_File/SQL_Standard_File.csv')
+    #path=os.path.realpath('../SQL_Standard_File/SQL_Standard_File.csv')
+    path=os.path.realpath('../SQL_Standard_File/Source_Flux_Table.csv')
     #print "Path=",path
     data = ascii.read(path)
     #data = ascii.read("/home/asantini/Desktop/SQL_Standard_File/SQL_Sandard_File.csv") #data:-astropy.table.table.Table, data, The data from the SQL_Standard_File
@@ -14,7 +18,9 @@ def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(Unbound
     #print type(data)
     #Standard_File=open("/home/asantini/Desktop/SQL_Standard_File/SQL_Sandard_File.csv","r")
     #print Standard_File
-    Obs_ID_A=data["obsid"] #Obs_ID_A:-astropy.table.column.Column, Observation_Idenification_Array, The array containing all Observation IDs in the SQL_Standard_File (not indexable)
+    #Obs_ID_A=data["obsid"] #Obs_ID_A:-astropy.table.column.Column, Observation_Idenification_Array, The array containing all Observation IDs in the SQL_Standard_File (not indexable)
+    #OBSID
+    Obs_ID_A=data["OBSID"] #Obs_ID_A:-astropy.table.column.Column, Observation_Idenification_Array, The array containing all Observation IDs in the SQL_Standard_File (not indexable)
     #print type(Obs_ID_A)
     Obs_ID_L=list(Obs_ID_A) #Obs_ID_L:-List, Observation_Idenification_List, The list containing all Observation IDs in the SQL_Standard_File (So it is indexable)
     #print "Obs_ID_L ", Obs_ID_L
@@ -23,7 +29,8 @@ def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(Unbound
     #FGname_A=data["foundName"]
     #FGname_L=list(FGname_A)
     #print FGname_A
-    QGname_A=data["queriedName"] #QGname_A:-Obs_ID_A:-astropy.table.column.Column, Query_Galaxy_Name_Array, The array containing all Query Galaxy Names in the SQL_Standard_File (not indexable)
+    #QGname_A=data["queriedName"] #QGname_A:-Obs_ID_A:-astropy.table.column.Column, Query_Galaxy_Name_Array, The array containing all Query Galaxy Names in the SQL_Standard_File (not indexable)
+    QGname_A=data["resolvedObject"] #QGname_A:-Obs_ID_A:-astropy.table.column.Column, Query_Galaxy_Name_Array, The array containing all Query Galaxy Names in the SQL_Standard_File (not indexable)
     QGname_L=list(QGname_A) #QGname_L:-List, Query_Galaxy_Name_Array, The list containing all Query Galaxy Names in the SQL_Standard_File (So it is indexable)
     #print type(QGname_A)
     #print QGname_A
