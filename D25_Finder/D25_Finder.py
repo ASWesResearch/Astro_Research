@@ -2,7 +2,14 @@ import os
 import pandas as pd
 from astroquery.ned import Ned
 import astropy.units as u
+import sys
+from astropy.io import ascii
+path=os.path.realpath('../')
+sys.path.append(os.path.abspath(path))
+from File_Query_Code import File_Query_Code_5
 def D25_Finder(Gname):
+    #print "Hello_World"
+    """
     Gname_No_W=Gname.replace(" ", "")
     print "Gname_No_W : ", Gname_No_W
     path_Dia_T=os.path.realpath('../SQL_Standard_File/RC3_Query_Modifed_No_Whitespace.csv')
@@ -84,6 +91,82 @@ def D25_Finder(Gname):
                     #return D25_S_Maj_Deg
                 #break
         #return D25_S_Maj_Deg
+        """
+    Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2")
+    #print "Evt2_File_H_L : ", Evt2_File_H_L
+    Evt2_File_L=Evt2_File_H_L[0]
+    Obs_ID=Evt2_File_L[0]
+    #print "Obs_ID : ", Obs_ID
+    path_Source_Flux_Table=os.path.realpath('../SQL_Standard_File/Source_Flux_Table.csv')
+    #print "path_Source_Flux_Table : ", path_Source_Flux_Table
+    Source_Flux_Table=ascii.read(path_Source_Flux_Table)
+    #print "Source_Flux_Table : \n", Source_Flux_Table
+    Obs_ID_A=Source_Flux_Table["OBSID"]
+    Obs_ID_L=list(Obs_ID_A)
+    #print "Obs_ID_L : ", Obs_ID_L
+    Obs_ID_Inx=Obs_ID_L.index(Obs_ID)
+    #print "Obs_ID_Inx : ", Obs_ID_Inx
+    Resolved_Name_A=Source_Flux_Table["resolvedObject"]
+    #print "Resolved_Name_A : ", Resolved_Name_A
+    Resolved_Name_L=list(Resolved_Name_A)
+    #print "Resolved_Name_L : ", Resolved_Name_L
+    Resolved_Name=Resolved_Name_L[Obs_ID_Inx]
+    print "Resolved_Name : ", Resolved_Name
+    """
+    Dia_Table = Ned.get_table(Gname, table='diameters') #Dia_Table:-astropy.table.table.Table, Diameter_Table, The Data table queried from NED that contains the infomation about the Major Axis of the input Galaxy Name
+    #print type(Dia_Table)
+    #print G_Data
+    #print Dia_Table
+    #print Dia_Table.colnames
+    #print Dia_Table.meta
+    #print Dia_Table.columns
+    Dia_Table_Feq=Dia_Table['Frequency targeted'] #Dia_Table_Feq:-astropy.table.column.MaskedColumn, Diameter_Table_Fequency, The Array containing all named frequencies of light that are being used for the Major Axis Measurement
+    #print Dia_Table['NED Frequency']
+    #print Dia_Table_Feq
+    #print type(Dia_Table_Feq)
+    Dia_Table_Feq_L=list(Dia_Table_Feq) #Dia_Table_Feq_L:-List, Diameter_Table_Fequency_List, The list containing all named frequencies of light that are being used for the Major Axis Measurement
+    #print Dia_Table_Feq_L
+    Dia_Table_Num=Dia_Table['No.'] #Dia_Table_Num:-astropy.table.column.MaskedColumn, Diameter_Table_Number, The number Ned assigns to
+    #print Dia_Table_Num
+    #print type(Dia_Table_Num)
+    Dia_Table_Num_L=list(Dia_Table_Num)
+    #print Dia_Table_Num_L
+    for i in range(0,len(Dia_Table_Feq_L)-1): #There is a bug here with index matching, The matched index isn't that same index for the major axis
+        Cur_Feq=Dia_Table_Feq_L[i]
+        #print Cur_Feq
+        if(Cur_Feq=="RC3 D_25, R_25 (blue)"):
+            Match_inx=i
+            Match_Feq=Dia_Table_Feq_L[Match_inx]
+            Match_Num=Dia_Table_Num_L[Match_inx]
+            #Match_Num
+            #print "Match_Feq ", Match_Feq
+            #print "Match_inx ", Match_inx
+            #print "Match_Num ", Match_Num
+    #Dia_Table_Maj=Dia_Table['Major Axis']
+    Dia_Table_Maj=Dia_Table['NED Major Axis']
+    #print Dia_Table_Maj
+    Dia_Table_Maj_L=list(Dia_Table_Maj)
+    #print Dia_Table_Maj_L
+    Dia_Table_Maj_Units=Dia_Table['Major Axis Unit']
+    #print Dia_Table_Maj_Units
+    Dia_Table_Maj_Units_L=list(Dia_Table_Maj_Units)
+    #print Dia_Table_Maj_Units_L
+    #print "i ", i
+    D25_Maj=Dia_Table_Maj_L[Match_inx]
+    #print "D25_Maj ", D25_Maj
+    D25_Units=Dia_Table_Maj_Units[Match_inx]
+    #print "D25_Units ", D25_Units
+    #print type(Dia_Table)
+    #print Dia_Table.info()
+    #Dia_Table_2=Dia_Table[6]
+    #print Dia_Table_2
+    #Maj=Dia_Table_2[18]
+    #print "Maj, ! ! !", Maj
+    D25_S_Maj=D25_Maj/2.0
+    D25_S_Maj_Deg=D25_S_Maj/3600.0
+    """
+
+
 
 def D25_List_Run(Gname_L):
     Fail_L=[]
