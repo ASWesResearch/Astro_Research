@@ -1,10 +1,14 @@
 from astropy.io import ascii
 import os
 from os import system
+import sys
+import numpy
 path_Modules=os.path.realpath('../')
 sys.path.append(os.path.abspath(path_Modules))
 from Galaxy_Name_Reducer import Galaxy_Name_Reducer
 def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(UnboundLocalError: local variable 'File_Path_With_Filename_Str' referenced before assignment), Update(I fixed this bug, but I need to bug check more)
+    Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
+    #print "Gname_Modifed : ", Gname_Modifed
     #Code_Path=os.path.realpath('.')
     #print "Code_Path ", Code_Path
     File_Path_With_Filename_Str="Some Filepath"
@@ -39,9 +43,18 @@ def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(Unbound
         #print "i ", i
         QGname=QGname_L[i] #QGname:-string, Query_Galaxy_Name, The current test Galaxy Name, if this Galaxy name equals the input Galaxy Name (Gname) then this Matching_Index, i (ref. QGname_L) will be appended to the Matching_Index_List
         #QGname_Reduced=QGname.replace(" ", "")
-        #print "QGname ", QGname
+        print "QGname : ", QGname
+        print "type(QGname) : ", type(QGname)
+        #print "type(type(QGname)) : ", type(type(QGname))
+        #if(type(QGname)=='numpy.ma.core.MaskedConstant'):
+        if isinstance(QGname, numpy.ma.core.MaskedConstant):
+            print "Empty QGname Found"
+            continue
         #print "QGname_Reduced ", QGname_Reduced
-        if(Gname==QGname): #Checks to see if the current test Galaxy Name is the same as the input Galaxy Name, if so it appends the current index (ref. QGname_L) to the Matching_Index_List
+        QGname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(QGname)
+        #print "Gname_Modifed : ", Gname_Modifed
+        #print "QGname_Modifed : ", QGname_Modifed
+        if(Gname_Modifed==QGname_Modifed): #Checks to see if the current test Galaxy Name is the same as the input Galaxy Name, if so it appends the current index (ref. QGname_L) to the Matching_Index_List
             #print "i ", i
             Matching_Index_List.append(i) #Appends the current index (ref. QGname_L) to the Matching_Index_List
     Matching_Obs_ID_L=[] #Matching_Obs_ID_L:-List, Matching_Observation_Idenification_List, The list of all Observation IDs for the current input Galaxy Name
