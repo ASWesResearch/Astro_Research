@@ -40,7 +40,8 @@ def Area_GC_R_N_F_2(Gname):
     #print "Filepath =",filepath
     #path= os.path.join(dir,'~','Desktop','SQL_Standard_File',)
     #path=os.path.realpath('~/Desktop/SQL_Standard_File/SQL_Sandard_File.csv')
-    path=os.path.realpath('../SQL_Standard_File/SQL_Standard_File.csv')
+    #path=os.path.realpath('../SQL_Standard_File/SQL_Standard_File.csv')
+    path=os.path.realpath('../SQL_Standard_File/Source_Flux_Table.csv')
     #print "Path=",path
     #os.chdir(path)
     #os.chdir('~/Desktop/SQL_Standard_File/')
@@ -71,7 +72,8 @@ def Area_GC_R_N_F_2(Gname):
     #FGname_A=data["foundName"]
     #FGname_L=list(FGname_A)
     #print FGname_A
-    QGname_A=data["queriedName"] #QGname_A:-Obs_ID_A:-astropy.table.column.Column, Query_Galaxy_Name_Array, The array containing all Query Galaxy Names in the SQL_Standard_File (not indexable)
+    #QGname_A=data["queriedName"] #QGname_A:-Obs_ID_A:-astropy.table.column.Column, Query_Galaxy_Name_Array, The array containing all Query Galaxy Names in the SQL_Standard_File (not indexable)
+    QGname_A=data["resolvedObject"] #QGname_A:-Obs_ID_A:-astropy.table.column.Column, Query_Galaxy_Name_Array, The array containing all Query Galaxy Names in the SQL_Standard_File (not indexable)
     QGname_L=list(QGname_A) #QGname_L:-List, Query_Galaxy_Name_Array, The list containing all Query Galaxy Names in the SQL_Standard_File (So it is indexable)
     #print type(QGname_A)
     #print QGname_A
@@ -209,7 +211,7 @@ def Area_GC_R_N_F_2(Gname):
     directory_Hist=os.path.dirname(path_Hist)
     if not os.path.exists(directory_Hist):
         os.makedirs(directory_Hist)
-    #print "path_Hist=",path_Hist
+    print "path_Hist=",path_Hist
     #os.chdir(path_Hist)
     plt.savefig(path_Hist+Gname_Modifed+'_Frac.png') #Saves angluar histogram figure
     #system('pwd')
@@ -247,7 +249,7 @@ def Area_GC_R_N(Gname):
     #print "Filepath =",filepath
     #path= os.path.join(dir,'~','Desktop','SQL_Standard_File',)
     #path=os.path.realpath('~/Desktop/SQL_Standard_File/SQL_Sandard_File.csv')
-    path=os.path.realpath('../SQL_Standard_File/SQL_Standard_File.csv')
+    path=os.path.realpath('../SQL_Standard_File/Source_Flux_Table.csv')
     #print "Path=",path
     #os.chdir(path)
     #os.chdir('~/Desktop/SQL_Standard_File/')
@@ -278,7 +280,8 @@ def Area_GC_R_N(Gname):
     #FGname_A=data["foundName"]
     #FGname_L=list(FGname_A)
     #print FGname_A
-    QGname_A=data["queriedName"] #QGname_A:-Obs_ID_A:-astropy.table.column.Column, Query_Galaxy_Name_Array, The array containing all Query Galaxy Names in the SQL_Standard_File (not indexable)
+    #QGname_A=data["queriedName"] #QGname_A:-Obs_ID_A:-astropy.table.column.Column, Query_Galaxy_Name_Array, The array containing all Query Galaxy Names in the SQL_Standard_File (not indexable)
+    QGname_A=data["resolvedObject"] #QGname_A:-Obs_ID_A:-astropy.table.column.Column, Query_Galaxy_Name_Array, The array containing all Query Galaxy Names in the SQL_Standard_File (not indexable)
     QGname_L=list(QGname_A) #QGname_L:-List, Query_Galaxy_Name_Array, The list containing all Query Galaxy Names in the SQL_Standard_File (So it is indexable)
     #print type(QGname_A)
     #print QGname_A
@@ -436,3 +439,5 @@ def Driver_Code(Gname):
 
 #Driver_Code('NGC4258')
 #Driver_Code('NGC 4649')
+#"NGC 891"
+Driver_Code('NGC 891')
