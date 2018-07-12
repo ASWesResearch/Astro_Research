@@ -93,7 +93,7 @@ def D25_Finder(Gname):
         #return D25_S_Maj_Deg
         """
     Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2")
-    #print "Evt2_File_H_L : ", Evt2_File_H_L
+    print "Evt2_File_H_L : ", Evt2_File_H_L
     Evt2_File_L=Evt2_File_H_L[0]
     Obs_ID=Evt2_File_L[0]
     #print "Obs_ID : ", Obs_ID
@@ -111,9 +111,9 @@ def D25_Finder(Gname):
     Resolved_Name_L=list(Resolved_Name_A)
     #print "Resolved_Name_L : ", Resolved_Name_L
     Resolved_Name=Resolved_Name_L[Obs_ID_Inx]
-    print "Resolved_Name : ", Resolved_Name
-    """
-    Dia_Table = Ned.get_table(Gname, table='diameters') #Dia_Table:-astropy.table.table.Table, Diameter_Table, The Data table queried from NED that contains the infomation about the Major Axis of the input Galaxy Name
+    #print "Resolved_Name : ", Resolved_Name
+    #Dia_Table = Ned.get_table(Gname, table='diameters') #Dia_Table:-astropy.table.table.Table, Diameter_Table, The Data table queried from NED that contains the infomation about the Major Axis of the input Galaxy Name
+    Dia_Table = Ned.get_table(Resolved_Name, table='diameters') #Dia_Table:-astropy.table.table.Table, Diameter_Table, The Data table queried from NED that contains the infomation about the Major Axis of the input Galaxy Name
     #print type(Dia_Table)
     #print G_Data
     #print Dia_Table
@@ -164,7 +164,7 @@ def D25_Finder(Gname):
     #print "Maj, ! ! !", Maj
     D25_S_Maj=D25_Maj/2.0
     D25_S_Maj_Deg=D25_S_Maj/3600.0
-    """
+    return D25_S_Maj_Deg
 
 
 
@@ -193,7 +193,9 @@ def D25_List_Run(Gname_L):
 #print D25_Finder("SN2011ja")
 #print D25_Finder("NGC 604")
 #3C31
-print D25_Finder("3C31")
+#print D25_Finder("3C31")
+#NGC 891
+#print D25_Finder("NGC 891")
 """
 D25_List_Run(['SN 2004am', 'SN 1996aq', 'PGC135659', 'M51', 'SN2011ja', 'N119',
 'SN 2011ja', 'NGC 346', 'SNR 1987A', 'SN 1998S', 'NGC 604', 'NGC5471B', 'NGC 5204 X-1', 'NGC 1818', 'FORNAX CLUSTER', 'SN 2002HH', 'SN 1986J', 'SN 2004dj', 'SN 2004et', 'NGC 1313 X-1', 'NGC 1313 X-2', 'VIRGO CLUSTER', 'ngc 1672', 'SN 1993J',
