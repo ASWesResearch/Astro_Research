@@ -84,4 +84,4 @@ def Galaxy_Name_Reducer(Gname):
 #print Galaxy_Name_Reducer("NGC0346")
 #print Galaxy_Name_Reducer("NGC_0346")
 #NGC 891
-print Galaxy_Name_Reducer("NGC 891")
+#print Galaxy_Name_Reducer("NGC 891")
