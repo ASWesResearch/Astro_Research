@@ -43,12 +43,12 @@ def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(Unbound
         #print "i ", i
         QGname=QGname_L[i] #QGname:-string, Query_Galaxy_Name, The current test Galaxy Name, if this Galaxy name equals the input Galaxy Name (Gname) then this Matching_Index, i (ref. QGname_L) will be appended to the Matching_Index_List
         #QGname_Reduced=QGname.replace(" ", "")
-        print "QGname : ", QGname
-        print "type(QGname) : ", type(QGname)
+        #print "QGname : ", QGname
+        #print "type(QGname) : ", type(QGname)
         #print "type(type(QGname)) : ", type(type(QGname))
         #if(type(QGname)=='numpy.ma.core.MaskedConstant'):
         if isinstance(QGname, numpy.ma.core.MaskedConstant):
-            print "Empty QGname Found"
+            #print "Empty QGname Found"
             continue
         #print "QGname_Reduced ", QGname_Reduced
         QGname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(QGname)
@@ -172,7 +172,7 @@ def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(Unbound
     return fname_L_H
 
 
-print File_Query("NGC 891","evt2") #In in CSC
+#print File_Query("NGC 891","evt2") #In in CSC
 #print File_Query("NGC 6946","evt2") #In CSC
 #print File_Query("NGC 891","fov1") #In in CSC
 #print File_Query("NGC 891","reg",".reg") #In in CSC
