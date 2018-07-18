@@ -15,6 +15,7 @@ def Known_Flux_Finder(gname,evtfilepath,PIMMSfname='PIMMS_Data.csv'):
     X_Phys=dmcoords.x #X_Phys:-float, X_Physical, The sky plane X pixel coordinate in units of pixels of the galatic center
     Y_Phys=dmcoords.y #Y_Phys:-float, Y_Physical, The sky plane Y pixel coordinate in units of pixels of the galatic center
     Chip_ID=dmcoords.chip_id #Chip_ID:-int, Chip_ID, The Chip ID number the GC is on
+    #print "evtfilepath : ",  evtfilepath
     hdulist = fits.open(evtfilepath)
     Obs_Date_Str=hdulist[1].header['DATE-OBS']
     #print Obs_Date_Str
