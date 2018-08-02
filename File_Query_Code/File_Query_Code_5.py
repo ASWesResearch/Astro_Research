@@ -3,10 +3,12 @@ import os
 from os import system
 import sys
 import numpy
+#from ciao_contrib.runtool import *
+from astropy.io import fits
 path_Modules=os.path.realpath('../')
 sys.path.append(os.path.abspath(path_Modules))
 from Galaxy_Name_Reducer import Galaxy_Name_Reducer
-def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(UnboundLocalError: local variable 'File_Path_With_Filename_Str' referenced before assignment), Update(I fixed this bug, but I need to bug check more)
+def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True): #Still bugs, Bug:(UnboundLocalError: local variable 'File_Path_With_Filename_Str' referenced before assignment), Update(I fixed this bug, but I need to bug check more)
     Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
     #print "Gname_Modifed : ", Gname_Modifed
     #Code_Path=os.path.realpath('.')
@@ -169,8 +171,39 @@ def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(Unbound
     #print fname_L_H
     #os.chdir("/Network/Servers/vimes.astro.wesleyan.edu/Volumes/vvodata/home/asantini/Desktop/File_Query_Code") #Changes directory back to the codes pwd, so when the code is run twice in a row it still works
     #os.chdir(Code_Path) #Changes directory back to the codes pwd, so when the code is run twice in a row it still works
-    return fname_L_H
-
+    #if((Obs_Check_B==False) or (File_Type_Str!="evt2")):
+    if(Obs_Check_B==False):
+        return fname_L_H #Returns all filepaths for a galaxy regardless if it is a valid observation or not and makes sure that only evt2 files are removed (not FOV1 files or .reg files)
+    #Need to check whether each observation is a vaild observation for the sample here and removed the observations that have either to short of an exposure or are a subarray
+    #if((Obs_Check_B) and (File_Type_Str=="evt2")): #Removes all invaild observation evt2 files
+    if((Obs_Check_B)): #Removes all invaild observation files
+        for Filename_L in fname_L_H:
+            Filepath=Filename_L[1]
+            #print "Filepath : ", Filepath
+            hdul = fits.open(Filepath)
+            Num_Rows_in_Array=hdul[1].header['NROWS'] #Num_Rows_in_Array:-int, Number of Row in the Array, The number of rows in a (sub)array, if less then 1024 then the observation is a subarray and will be removed from the sample
+            #print "Num_Rows_in_Array : ", Num_Rows_in_Array
+            #print "type(Num_Rows_in_Array) : ", type(Num_Rows_in_Array)
+            Exposure_Time=hdul[1].header['EXPOSURE'] #Exposure_Time:-float, Exposure Time, The Exposure Time of the observation (I think the longest time of all the chips) in seconds (not kiloseconds), If this is less the 5000s then the observation is invaild and will be removed from the sample
+            #print "Exposure_Time : ", Exposure_Time
+            #print "type(Exposure_Time) : ", type(Exposure_Time)
+            if((Num_Rows_in_Array!=1024) or (Exposure_Time<5000)): #Checks to see if the current observation is invaild (invalid if: it is a subarray or has an exposure time less then 5000s)
+                fname_L_H.remove(Filename_L)
+            """
+            evtfpath=Filepath
+            Header_String=dmlist(infile=str(evtfpath),opt="header")
+            Header_String_Reduced=Header_String.split("NROWS")[1]
+            Header_String_Reduced_2=Header_String_Reduced.split("Int4")[0]
+            Header_String_Reduced_3=Header_String_Reduced_2.replace(' ', '')
+            Num_Rows_in_Array=int(Header_String_Reduced_3)
+            print "Num_Rows_in_Array : ", Num_Rows_in_Array
+            """
+            Number_of_ObsIDs=len(fname_L_H)
+        #print "Number_of_ObsIDs : ", Number_of_ObsIDs
+        if(Number_of_ObsIDs==0):
+            print "There are no vaild observations for this galaxy"
+            return False
+        return fname_L_H
 
 #print File_Query("NGC 891","evt2") #In in CSC
 #print File_Query("NGC 6946","evt2") #In CSC
@@ -183,3 +216,5 @@ def File_Query(Gname,File_Type_Str,Extension=".fits"): #Still bugs, Bug:(Unbound
 #print File_Query("M31","evt2") #This has multible ObsIDs for the 1 Galaxy M31
 #print File_Query("M31","evt2") #This has multible ObsIDs for the 1 Galaxy M31
 #print File_Query("NGC 6946","sources") #In in CSC
+#print File_Query("NGC 253","evt2",Obs_Check_B=False) #In in CSC
+#print File_Query("NGC 253","evt2") #In in CSC
