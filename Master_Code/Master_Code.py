@@ -55,6 +55,11 @@ def Pipeline_A(Gname_L):
     for Gname in Gname_L:
         #Pipeline_A Code
         print "Gname A: ", Gname
+        Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2")
+        if(Evt2_File_H_L==False):
+            print "Invalid Galaxy"
+            Galaxy_No_Obs_B_L.append(Gname)
+            continue
         try:
             Galaxy_Histogram_Code_3.Driver_Code(Gname) #This runs the histrogram code and creates the histrograms and the directories with the histrograms in them
         except:
