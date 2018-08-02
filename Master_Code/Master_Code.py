@@ -78,6 +78,7 @@ def Pipeline_B(Gname_L):
     from Galaxy_Name_Reducer import Galaxy_Name_Reducer
     """
     Galaxy_Fail_B_L=[]
+    Galaxy_No_Obs_B_L=[]
     for Gname in Gname_L:
         #Pipeline_B Code
         try:
@@ -92,6 +93,7 @@ def Pipeline_B(Gname_L):
             """
             Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2")
             if(Evt2_File_H_L==False):
+                Galaxy_No_Obs_B_L.append(Gname)
                 continue
             Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
             #print "Gname_Modifed ", Gname_Modifed
@@ -269,6 +271,7 @@ def Pipeline_B(Gname_L):
             Galaxy_Fail_B_L.append(Gname)
 
     print "Galaxy_Fail_B_L : ", Galaxy_Fail_B_L
+    print "Galaxy_No_Obs_B_L : ", Galaxy_No_Obs_B_L
 
 def Pipeline_C(Gname_L):
     """
@@ -298,6 +301,7 @@ def Pipeline_C(Gname_L):
     """
     Galaxy_Fail_C_L=[]
     ObsID_Fail_C_L=[]
+    Galaxy_No_Obs_C_L=[]
     for Gname in Gname_L:
         #Pipeline_C Code
         try:
@@ -314,6 +318,7 @@ def Pipeline_C(Gname_L):
             #system('pwd')
             Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2")
             if(Evt2_File_H_L==False):
+                Galaxy_No_Obs_C_L.append(Gname)
                 continue
             Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
             #print "Gname_Modifed ", Gname_Modifed
@@ -432,6 +437,7 @@ def Pipeline_C(Gname_L):
             Galaxy_Fail_C_L.append(Gname)
 
     print "Galaxy_Fail_C_L : ", Galaxy_Fail_C_L
+    print "Galaxy_No_Obs_C_L : ", Galaxy_No_Obs_B_L
     print "ObsID_Fail_C_L : ", ObsID_Fail_C_L
 
 def Pipeline_D(Gname_L):
@@ -447,12 +453,14 @@ def Pipeline_D(Gname_L):
     from Galaxy_Name_Reducer import Galaxy_Name_Reducer
     """
     Galaxy_Fail_D_L=[]
+    Galaxy_No_Obs_D_L=[]
     for Gname in Gname_L:
         try:
             #Pipeline_D Code
             print "Gname D: ", Gname
             Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2")
             if(Evt2_File_H_L==False):
+                Galaxy_No_Obs_D_L.append(Gname)
                 continue
             Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
             #print "Gname_Modifed ", Gname_Modifed
@@ -516,6 +524,8 @@ def Pipeline_D(Gname_L):
         except:
             Galaxy_Fail_D_L.append(Gname)
     print "Galaxy_Fail_D_L : ", Galaxy_Fail_D_L
+    print "Galaxy_No_Obs_B_L : ", Galaxy_No_Obs_B_L
+    
 def Master(Gname_L):
     webbrowser.open_new("https://www.youtube.com/watch?v=xnKhsTXoKCI") # OBEY YOUR MASTER ! ! !      Not nesseary for the fuctionality of the code, Can be removed without any problem whatsoever
     #Thread(target = Pipeline_A(Gname_L)).start()
@@ -553,5 +563,7 @@ if __name__ == '__main__':
     #Master(['MESSIER 033', 'MESSIER 031']) #Galaxy_Fail_C_Without_A_L After modification to the PIMMS file to allow for dates earlier then 2001 now removing galaxy names as the problem is understood
     #Master(['MESSIER 031']) #Galaxy_Fail_C_Without_A_L After modification to the PIMMS file to allow for dates earlier then 2001 now removing galaxy names as the problem is understood
     #Master(['NGC 4278', 'NGC 5204', 'NGC 2841', 'NGC 5194', 'MESSIER 104', 'MESSIER 105', 'NGC 5054', 'NGC 5813', 'MESSIER 108', 'MESSIER 066', 'MESSIER 061', 'MESSIER 063', 'MESSIER 086', 'NGC 0278', 'MESSIER 088', 'NGC 1042', 'NGC 6744', 'IC 5332', 'NGC 3585', 'NGC 4478', 'NGC 7507', 'NGC 4473', 'NGC 1365', 'MESSIER 074', 'NGC 4476', 'NGC 4570', 'NGC 5576', 'NGC 4321', 'NGC 5474', 'NGC 7090', 'MESSIER 094', 'MESSIER 095', 'NGC 4494', 'NGC 0247', 'IC 1613', 'NGC 4477', 'NGC 4365', 'NGC 2787', 'NGC 3557', 'IC 5267', 'NGC 4388', 'NGC 3923', 'NGC 4945', 'NGC 1300', 'UGC 05340', 'NGC 3631', 'NGC 4314', 'NGC 4550', 'Holmberg IX                   ', 'NGC 4559', 'IC 1459', 'NGC 1399', 'NGC 4039', 'NGC 4038', 'NGC 1316', 'NGC 1097', 'NGC 2681', 'NGC 5018', 'NGC 5253', 'NGC 4308', 'NGC 4742', 'NGC 1672', 'NGC 4725', 'NGC 2403', 'NGC 3507', 'NGC 4698', 'NGC 3384', 'NGC 6946', 'NGC 3115', 'NGC 1332', 'NGC 5584', 'NGC 4527', 'NGC 7552', 'NGC 2997', 'NGC 4449', 'NGC 3198', 'NGC 0855', 'NGC 7793', 'NGC 0119', 'NGC 2865', 'Circinus Galaxy               ', 'MESSIER 059', 'NGC 7331', 'NGC 1427', 'NGC 3608', 'NGC 0055', 'NGC 4457', 'NGC 4214', 'NGC 4459', 'NGC 3521']) #This an old galaxy name list (This needs to be fixed need to add Messier Objects back in) Note_2: It is fixed in the new Master Code Input Galaxy Name List
-    #Master(['NGC 4278', 'NGC 5204', 'NGC 2841', 'NGC 3877', 'MESSIER 106', 'NGC 5194', 'MESSIER 104', 'MESSIER 105', 'MESSIER 101', 'NGC 5054', 'NGC 5813', 'MESSIER 108', 'MESSIER 066', 'MESSIER 061', 'MESSIER 063', 'MESSIER 086', 'MESSIER 084', 'MESSIER 083', 'MESSIER 082', 'MESSIER 081', 'NGC 0278', 'MESSIER 088', 'NGC 1042', 'NGC 6744', 'IC 5332', 'NGC 3585', 'NGC 4478', 'NGC 7507', 'NGC 1637', 'NGC 4473', 'NGC 1365', 'MESSIER 074', 'NGC 4476', 'NGC 4570', 'NGC 5576', 'NGC 4321', 'NGC 5474', 'NGC 7090', 'MESSIER 094', 'MESSIER 095', 'NGC 4494', 'NGC 0247', 'NGC 4490', 'IC 1613', 'NGC 4477', 'NGC 4365', 'NGC 2787', 'NGC 3557', 'IC 5267', 'NGC 4388', 'NGC 3923', 'NGC 4945', 'NGC 891', 'NGC 1300', 'UGC 05340', 'NGC 3631', 'UGCA 166', 'NGC 4314', 'NGC 4550', 'Holmberg IX                   ', 'NGC 4559', 'IC 1459', 'NGC 1399', 'NGC 4039', 'NGC 4038', 'NGC 1316', 'NGC 1097', 'NGC 0383', 'NGC 2681', 'NGC 5018', 'NGC 5253', 'NGC 4631', 'NGC 4308', 'MESSIER 060', 'NGC 4742', 'NGC 1672', 'NGC 5846', 'NGC 4725', 'NGC 2403', 'NGC 3507', 'MESSIER 087', 'NGC 0891', 'NGC 4698', 'NGC 3384', 'NGC 6946', 'NGC 1291:[LFF2012] 084', 'NGC 3115', 'NGC 1332', 'NGC 1700', 'NGC 5584', 'NGC 4527', 'NGC 7552', 'NGC 2997', 'NGC 4449', 'MESSIER 049', 'NGC 3198', 'NGC 0855', 'NGC 7793', 'NGC 0119', 'NGC 2865', 'Circinus Galaxy               ', 'MESSIER 059', 'NGC 7331', 'NGC 1427', 'NGC 3628', 'NGC 3608', 'NGC 0055', 'NGC 4457', 'NGC 4214', 'NGC 4459', 'NGC 3521']) #This is the current correct Master Code Input Galaxy Name List
-    Master(['NGC 4565', 'NGC 0253', 'NGC 1313']) #List of galaxy names that work in Pipeline A but not in Pipeline C, Probably because there is too short of an exposure time for one of the ObsIDs for each galaxy without duplicates and Messier Objects
+    #Master(['NGC 4278', 'NGC 5204', 'NGC 2841', 'NGC 3877', 'MESSIER 106', 'NGC 5194', 'MESSIER 104', 'MESSIER 105', 'MESSIER 101', 'NGC 5054', 'NGC 5813', 'MESSIER 108', 'MESSIER 066', 'MESSIER 061', 'MESSIER 063', 'MESSIER 086', 'MESSIER 084', 'MESSIER 083', 'MESSIER 082', 'MESSIER 081', 'NGC 0278', 'MESSIER 088', 'NGC 1042', 'NGC 6744', 'IC 5332', 'NGC 3585', 'NGC 4478', 'NGC 7507', 'NGC 1637', 'NGC 4473', 'NGC 1365', 'MESSIER 074', 'NGC 4476', 'NGC 4570', 'NGC 5576', 'NGC 4321', 'NGC 5474', 'NGC 7090', 'MESSIER 094', 'MESSIER 095', 'NGC 4494', 'NGC 0247', 'NGC 4490', 'IC 1613', 'NGC 4477', 'NGC 4365', 'NGC 2787', 'NGC 3557', 'IC 5267', 'NGC 4388', 'NGC 3923', 'NGC 4945', 'NGC 891', 'NGC 1300', 'UGC 05340', 'NGC 3631', 'UGCA 166', 'NGC 4314', 'NGC 4550', 'Holmberg IX                   ', 'NGC 4559', 'IC 1459', 'NGC 1399', 'NGC 4039', 'NGC 4038', 'NGC 1316', 'NGC 1097', 'NGC 0383', 'NGC 2681', 'NGC 5018', 'NGC 5253', 'NGC 4631', 'NGC 4308', 'MESSIER 060', 'NGC 4742', 'NGC 1672', 'NGC 5846', 'NGC 4725', 'NGC 2403', 'NGC 3507', 'MESSIER 087', 'NGC 0891', 'NGC 4698', 'NGC 3384', 'NGC 6946', 'NGC 1291:[LFF2012] 084', 'NGC 3115', 'NGC 1332', 'NGC 1700', 'NGC 5584', 'NGC 4527', 'NGC 7552', 'NGC 2997', 'NGC 4449', 'MESSIER 049', 'NGC 3198', 'NGC 0855', 'NGC 7793', 'NGC 0119', 'NGC 2865', 'Circinus Galaxy               ', 'MESSIER 059', 'NGC 7331', 'NGC 1427', 'NGC 3628', 'NGC 3608', 'NGC 0055', 'NGC 4457', 'NGC 4214', 'NGC 4459', 'NGC 3521']) #This was the correct Master Code Input Galaxy Name List without 3 galaxies that had bad observations in them, these 3 galaxies will now be included in the new current correct Master Code Input Galaxy Name List
+    #Master(['NGC 4565', 'NGC 0253', 'NGC 1313']) #List of galaxy names that work in Pipeline A but not in Pipeline C, Probably because there is too short of an exposure time for one of the ObsIDs for each galaxy without duplicates and Messier Objects
+    #Master(['NGC 4278', 'NGC 5204', 'NGC 2841', 'NGC 5194', 'MESSIER 104', 'MESSIER 105', 'NGC 5054', 'NGC 5813', 'MESSIER 108', 'MESSIER 066', 'MESSIER 061', 'MESSIER 063', 'MESSIER 086', 'NGC 0278', 'MESSIER 088', 'NGC 1042', 'NGC 6744', 'IC 5332', 'NGC 3585', 'NGC 4478', 'NGC 7507', 'NGC 4473', 'NGC 1365', 'MESSIER 074', 'NGC 4476', 'NGC 4570', 'NGC 5576', 'NGC 4321', 'NGC 5474', 'NGC 7090', 'MESSIER 094', 'MESSIER 095', 'NGC 4494', 'NGC 0247', 'IC 1613', 'NGC 4477', 'NGC 4365', 'NGC 2787', 'NGC 3557', 'IC 5267', 'NGC 4388', 'NGC 3923', 'NGC 4945', 'NGC 1300', 'UGC 05340', 'NGC 3631', 'NGC 4314', 'NGC 4550', 'Holmberg IX                   ', 'NGC 4559', 'IC 1459', 'NGC 1399', 'NGC 4039', 'NGC 4038', 'NGC 1316', 'NGC 1097', 'NGC 2681', 'NGC 5018', 'NGC 5253', 'NGC 4308', 'NGC 4742', 'NGC 1672', 'NGC 4725', 'NGC 2403', 'NGC 3507', 'NGC 4698', 'NGC 3384', 'NGC 6946', 'NGC 3115', 'NGC 1332', 'NGC 5584', 'NGC 4527', 'NGC 7552', 'NGC 2997', 'NGC 4449', 'NGC 3198', 'NGC 0855', 'NGC 7793', 'NGC 0119', 'NGC 2865', 'Circinus Galaxy               ', 'MESSIER 059', 'NGC 7331', 'NGC 1427', 'NGC 3608', 'NGC 0055', 'NGC 4457', 'NGC 4214', 'NGC 4459', 'NGC 3521']) #This an old galaxy name list (This needs to be fixed need to add Messier Objects back in) Note_2: It is fixed in the new Master Code Input Galaxy Name List
+    Master(['NGC 4278', 'NGC 5204', 'NGC 2841', 'NGC 3877', 'MESSIER 106', 'NGC 5194', 'MESSIER 104', 'MESSIER 105', 'MESSIER 101', 'NGC 5054', 'NGC 5813', 'MESSIER 108', 'MESSIER 066', 'MESSIER 061', 'MESSIER 063', 'MESSIER 086', 'MESSIER 084', 'MESSIER 083', 'MESSIER 082', 'MESSIER 081', 'NGC 0278', 'MESSIER 088', 'NGC 1042', 'NGC 6744', 'IC 5332', 'NGC 3585', 'NGC 4478', 'NGC 7507', 'NGC 1637', 'NGC 4473', 'NGC 1365', 'MESSIER 074', 'NGC 4476', 'NGC 4570', 'NGC 5576', 'NGC 4321', 'NGC 5474', 'NGC 7090', 'MESSIER 094', 'MESSIER 095', 'NGC 4494', 'NGC 0247', 'NGC 4490', 'IC 1613', 'NGC 4477', 'NGC 4365', 'NGC 2787', 'NGC 3557', 'IC 5267', 'NGC 4388', 'NGC 3923', 'NGC 4945', 'NGC 891', 'NGC 1300', 'UGC 05340', 'NGC 3631', 'UGCA 166', 'NGC 4314', 'NGC 4550', 'Holmberg IX                   ', 'NGC 4559', 'IC 1459', 'NGC 1399', 'NGC 4039', 'NGC 4038', 'NGC 1316', 'NGC 1097', 'NGC 0383', 'NGC 2681', 'NGC 5018', 'NGC 5253', 'NGC 4631', 'NGC 4308', 'MESSIER 060', 'NGC 4742', 'NGC 1672', 'NGC 5846', 'NGC 4725', 'NGC 2403', 'NGC 3507', 'MESSIER 087', 'NGC 0891', 'NGC 4698', 'NGC 3384', 'NGC 6946', 'NGC 1291:[LFF2012] 084', 'NGC 3115', 'NGC 1332', 'NGC 1700', 'NGC 5584', 'NGC 4527', 'NGC 7552', 'NGC 2997', 'NGC 4449', 'MESSIER 049', 'NGC 3198', 'NGC 0855', 'NGC 7793', 'NGC 0119', 'NGC 2865', 'Circinus Galaxy               ', 'MESSIER 059', 'NGC 7331', 'NGC 1427', 'NGC 3628', 'NGC 3608', 'NGC 0055', 'NGC 4457', 'NGC 4214', 'NGC 4459', 'NGC 3521','NGC 4565', 'NGC 1313', 'NGC 0253']) #This is the current correct Master Code Input Galaxy Name List
