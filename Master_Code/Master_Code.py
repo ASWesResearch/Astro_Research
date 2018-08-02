@@ -491,6 +491,7 @@ def Pipeline_D(Gname_L):
                     Cur_Reg_ObsID=Reg_File_L[0]
                     Cur_Reg_Filepath=Reg_File_L[1]
                     if(Cur_Evt2_ObsID==Cur_Reg_ObsID):
+                        print "Cur_Evt2_ObsID : ", Cur_Evt2_ObsID
                         #print "Test"
                         #path_Obs=path_Flux_90+'/'+str(Cur_Evt2_ObsID)+'/'
                         #print "Cur_Evt2_ObsID : ",Cur_Evt2_ObsID
