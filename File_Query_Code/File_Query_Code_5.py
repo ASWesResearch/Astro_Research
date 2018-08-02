@@ -172,11 +172,11 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True): #Still b
     #os.chdir("/Network/Servers/vimes.astro.wesleyan.edu/Volumes/vvodata/home/asantini/Desktop/File_Query_Code") #Changes directory back to the codes pwd, so when the code is run twice in a row it still works
     #os.chdir(Code_Path) #Changes directory back to the codes pwd, so when the code is run twice in a row it still works
     #if((Obs_Check_B==False) or (File_Type_Str!="evt2")):
-    if(Obs_Check_B==False):
+    if((Obs_Check_B==False) or (File_Type_Str!="evt2")):
         return fname_L_H #Returns all filepaths for a galaxy regardless if it is a valid observation or not and makes sure that only evt2 files are removed (not FOV1 files or .reg files)
     #Need to check whether each observation is a vaild observation for the sample here and removed the observations that have either to short of an exposure or are a subarray
     #if((Obs_Check_B) and (File_Type_Str=="evt2")): #Removes all invaild observation evt2 files
-    if((Obs_Check_B)): #Removes all invaild observation files
+    if((Obs_Check_B) and (File_Type_Str=="evt2")): #Removes all invaild observation files
         for Filename_L in fname_L_H:
             Filepath=Filename_L[1]
             #print "Filepath : ", Filepath
@@ -218,3 +218,5 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True): #Still b
 #print File_Query("NGC 6946","sources") #In in CSC
 #print File_Query("NGC 253","evt2",Obs_Check_B=False) #In in CSC
 #print File_Query("NGC 253","evt2") #In in CSC
+#print File_Query("NGC 5204","evt2")
+#print File_Query("NGC 5204","evt2",Obs_Check_B=False)
