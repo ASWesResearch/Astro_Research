@@ -17,7 +17,11 @@ def Observation_Tester(Gname_L,Simple_Reg_B=False):
     Reject_L=[]
     Question_L=[]
     Warning_L=[]
+    Galaxy_Counter=0
+    Obs_ID_Counter=0
+    Num_Galaxies=len(Gname_L)
     for Gname in Gname_L:
+        Galaxy_Counter=Galaxy_Counter+1
         Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
         G_Data = Ned.query_object(Gname) #G_Data:-astropy.table.table.Table, Galaxy_Data, The queryed data of the galaxy from NED in the form of a astropy table
         #print G_Data
@@ -41,6 +45,7 @@ def Observation_Tester(Gname_L,Simple_Reg_B=False):
                         Cur_Reg_ObsID=Reg_File_L[0]
                         Cur_Reg_Filepath=Reg_File_L[1]
                         if(Cur_Evt2_ObsID==Cur_Reg_ObsID):
+                            Obs_ID_Counter=Obs_ID_Counter+1
                             Obs_Info_L=[Gname,Cur_Evt2_ObsID]
                             print "Obs_Info_L : ", Obs_Info_L
                             dmcoords(infile=str(Cur_Evt2_Filepath),ra=str(raGC), dec=str(decGC), option='cel', verbose=0, celfmt='deg') # Runs the dmcoords CIAO tool, which converts coordinates like CHIP_ID to SKY, the tool is now being used to convert the RA and Dec of the GC to SKY coodinates in pixels (?)
@@ -103,6 +108,14 @@ def Observation_Tester(Gname_L,Simple_Reg_B=False):
                                 if(Rejection_Reason_Input!=""):
                                     Obs_Info_L.append(Rejection_Reason_Input)
                                 Question_L.append(Obs_Info_L)
+                            Print_Input=raw_input("p to print update: ")
+                            if((Print_Input=="p") or (Print_Input=="P")):
+                                print "Accept_L : \n", Accept_L
+                                print "Reject_L : \n", Reject_L
+                                print "Question_L : \n", Question_L
+                                print "Warning_L : \n", Warning_L
+                                Update_String=str(Galaxy_Counter)+" Out of "+str(Num_Galaxies)+" Galaxies Checked : "+str(Obs_ID_Counter)+" Observations Checked"
+                                print Update_String
     print "Accept_L : \n", Accept_L
     print "Reject_L : \n", Reject_L
     print "Question_L : \n", Question_L
