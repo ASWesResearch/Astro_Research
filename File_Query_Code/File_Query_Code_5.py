@@ -187,7 +187,10 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True): #Still b
             Exposure_Time=hdul[1].header['EXPOSURE'] #Exposure_Time:-float, Exposure Time, The Exposure Time of the observation (I think the longest time of all the chips) in seconds (not kiloseconds), If this is less the 5000s then the observation is invaild and will be removed from the sample
             #print "Exposure_Time : ", Exposure_Time
             #print "type(Exposure_Time) : ", type(Exposure_Time)
-            if((Num_Rows_in_Array!=1024) or (Exposure_Time<5000)): #Checks to see if the current observation is invaild (invalid if: it is a subarray or has an exposure time less then 5000s)
+            Grating_Flag=hdul[1].header['GRATING']
+            #print "Grating_Flag : ", Grating_Flag
+            #print Grating_Flag
+            if((Num_Rows_in_Array!=1024) or (Exposure_Time<5000) or (Grating_Flag!="NONE")): #Checks to see if the current observation is invaild (invalid if: it is a subarray or has an exposure time less then 5000s)
                 fname_L_H.remove(Filename_L)
             """
             evtfpath=Filepath
