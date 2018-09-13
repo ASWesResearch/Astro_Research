@@ -52,6 +52,7 @@ def Pipeline_A(Gname_L):
     from Histogram_Code import Galaxy_Histogram_Code_3
     """
     Galaxy_Fail_A_L=[]
+    Galaxy_No_Obs_B_L=[]
     for Gname in Gname_L:
         #Pipeline_A Code
         print "Gname A: ", Gname
