@@ -305,8 +305,12 @@ def Area_GC_R_N(Gname):
     #print type(RA_A)
     RA_L=list(RA_A) #RA_L:-list, Right_Ascension_List, The list containing all Right Ascensions in the SQL Standard File
     #print RA_L
+    RA_A_Arcmin=RA_A*60.0
+    RA_L_Arcmin=list(RA_A_Arcmin)
     Dec_A=data['sourceDec'] #Dec_A:-astropy.table.column.Column, Declination_Array, The array containing all Declinations in the SQL Standard File
     Dec_L=list(Dec_A) #Dec_L:-List, Declination_List, The list containing all Declinations in the SQL Standard File
+    Dec_A_Arcmin=Dec_A*60.0
+    Dec_L_Arcmin=list(Dec_A_Arcmin)
     #print Dec_L
     #Obs_ID_A=data["obsid"] #Obs_ID_A:-astropy.table.column.Column, Observation_Idenification_Array, The array containing all Observation IDs in the SQL_Standard_File (not indexable)
     #print type(Obs_ID_A)
@@ -351,9 +355,14 @@ def Area_GC_R_N(Gname):
         RA_Match_L=[] #RA_Match_L:-List, Right_Ascension_Match_List, The list of all source RA's for the input Galaxy Name in decimal degrees
         Dec_Match_L=[] #Dec_Match_L:-List, Declination_Match_List, The list of all source Dec's for the input Galaxy Name in decimal degrees
         for Cur_Matching_Index in Matching_Index_List: #Cur_Matching_Index:-int, Current_Matching_Index, The current index (ref. QGname_L) in the list of matching indexes for the current input Galaxy Name (Matching_Index_List)
+            """
             Cur_Match_RA=RA_L[Cur_Matching_Index] #Cur_Match_RA:-numpy.float64, Current_Match_Right_Ascension, The RA of the current source in decimal degrees
             #print type(Cur_Match_RA)
             Cur_Match_Dec=Dec_L[Cur_Matching_Index] #Cur_Match_Dec:-numpy.float64, Current_Match_Declination, The Dec of the current source in decimal degrees
+            """
+            Cur_Match_RA=RA_L_Arcmin[Cur_Matching_Index] #Cur_Match_RA:-numpy.float64, Current_Match_Right_Ascension, The RA of the current source in decimal degrees
+            #print type(Cur_Match_RA)
+            Cur_Match_Dec=Dec_L_Arcmin[Cur_Matching_Index] #Cur_Match_Dec:-numpy.float64, Current_Match_Declination, The Dec of the current source in decimal degrees
             RA_Match_L.append(Cur_Match_RA) #RA_Match_L:-list, Right_Ascension_Match_List, The list of all source RA's for the input Galaxy Name in decimal degrees
             Dec_Match_L.append(Cur_Match_Dec) #Dec_Match_L:-list, Declination_Match_List, The list of all source Dec's for the input Galaxy Name in decimal degrees
         #print RA_Match_L
@@ -421,13 +430,17 @@ def Area_GC_R_N(Gname):
         D25_S_Maj_Deg=D25_S_Maj/3600.0
         """
         D25_S_Maj_Deg=D25_Finder.D25_Finder(Gname)
+        D25_S_Maj_Arcmin=D25_S_Maj_Deg*60.0
         area_T=((D25_S_Maj_Deg)**2)*math.pi
         raGC=float(G_Data['RA(deg)'])
         decGC=float(G_Data['DEC(deg)'])
+        raGC_Arcmin=raGC*60.0
+        decGC_Arcmin=decGC*60.0
         #area_A=[((((((decGC-dec)**2)+((raGC-ra)**2)))*(math.pi))/area_T) for dec,ra in zip(decA,raA)]
         #area_A=[((((((decGC-dec)**2)+((raGC-ra)**2)))*(math.pi))/area_T) for dec,ra in zip(Dec_Match_L,RA_Match_L)] #REAL ONE
         #disA=[math.sqrt(((decGC-dec)**2)+((raGC-ra)**2)) for dec,ra in zip(dec_A,raA)] #REAL ONE?
-        disA=[math.sqrt(((decGC-dec)**2)+((raGC-ra)**2)) for dec,ra in zip(Dec_Match_L,RA_Match_L)] #REAL ONE
+        #disA=[math.sqrt(((decGC-dec)**2)+((raGC-ra)**2)) for dec,ra in zip(Dec_Match_L,RA_Match_L)] #REAL ONE
+        disA=[math.sqrt(((decGC_Arcmin-dec)**2)+((raGC_Arcmin-ra)**2)) for dec,ra in zip(Dec_Match_L,RA_Match_L)] #REAL ONE in units of arcmins
         #print area_A
         #area_max=max(area_A)
         #print area_max
@@ -438,7 +451,8 @@ def Area_GC_R_N(Gname):
         Bin_Hight_A=Hist_A[0]
         Bin_Hight_Max=max(Bin_Hight_A)
         #print Bin_Hight_Max
-        plt.vlines(D25_S_Maj_Deg,0,Bin_Hight_Max,color='red') #Plots red line at D25
+        #plt.vlines(D25_S_Maj_Deg,0,Bin_Hight_Max,color='red') #Plots red line at D25
+        plt.vlines(D25_S_Maj_Arcmin,0,Bin_Hight_Max,color='red') #Plots red line at D25
         #print D25_S_Maj_Deg
         #Hist_Max=max(area_A)
         #print "Hist_Max ", Hist_Max
