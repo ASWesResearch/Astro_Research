@@ -40,7 +40,7 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfpath,rchange=121.9512195,B=1): 
     polyfpath_no_fname=polyfpath_L[0]
     print "polyfpath_no_fname : ", polyfpath_no_fname
     Evtfname_Reduced=evtfname.split(".")[0] #Evtfname_Reduced:-str, Event_Filename_Reduced, The filename of the event 2 file of the observation without the extention ".fits" at the end, for example "acisf02076_repro_evt2"
-    Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
+    Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(gname)
     Output_File=open(polyfpath_no_fname+"/"+str(Gname_Modifed)+"_"+Evtfname_Reduced+"_Area_List.txt","w") #Output_File:-file, Output_File, The Area_List file, which is the file were the list of Area_Ratios one for each circle (ie. each n) are saved, in the form of one line per ratio
     polystring_L=[] #polystring_L:-list, Polygon String List, A list of all the CCD shape strings
     dir = os.path.dirname(__file__)
