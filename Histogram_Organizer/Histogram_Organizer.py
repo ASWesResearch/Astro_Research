@@ -17,7 +17,7 @@ from Galaxy_Name_Reducer import Galaxy_Name_Reducer
 from D25_Finder import D25_Finder
 from File_Query_Code import File_Query_Code_5
 def Histogram_Organizer(Gname_L,D25_Threshold=0.5):
-    f=open("D25_Source_Ratios.csv","w")
+    f=open("D25_Source_Ratios_Max.csv","w")
     Initial_CSV_Line="Gname,Obs_ID,Exposure_Time,D25_Deg,D25_Arcmin,Num_Sources,Num_Sources_in_D25,Num_Sources_Outside_D25,Ratio\n"
     f.write(Initial_CSV_Line)
     for Gname in Gname_L:
@@ -85,110 +85,129 @@ def Histogram_Organizer(Gname_L,D25_Threshold=0.5):
         #Initial_CSV_Line="Gname,Obs_ID,Exposure_Time,D25_Deg,D25_Arcmin,Num_Sources,Num_Sources_in_D25,Num_Sources_Outside_D25,Ratio\n"
         #f.write(Initial_CSV_Line)
         #for Obs_ID in Galaxy_Obs_ID_L:
+        """
         for Evt2_File_L in Evt2_File_H_L:
             Obs_ID=Evt2_File_L[0]
             print "Current Obs_ID: ", Obs_ID
             Cur_Filepath=Evt2_File_L[1]
             print "Cur_Filepath : ", Cur_Filepath
-            #print type(Obs_ID_L)
-            #print Obs_ID_A
-            #FGname_A=data["foundName"]
-            #FGname_L=list(FGname_A)
-            #print FGname_A
-            #QGname_A=data["queriedName"] #QGname_A:-Obs_ID_A:-astropy.table.column.Column, Query_Galaxy_Name_Array, The array containing all Query Galaxy Names in the SQL_Standard_File (not indexable)
-            """
-            QGname_A=data["resolvedObject"] #QGname_A:-Obs_ID_A:-astropy.table.column.Column, Query_Galaxy_Name_Array, The array containing all Query Galaxy Names in the SQL_Standard_File (not indexable)
-            QGname_L=list(QGname_A) #QGname_L:-List, Query_Galaxy_Name_Array, The list containing all Query Galaxy Names in the SQL_Standard_File (So it is indexable)
-            #print type(QGname_A)
-            #print QGname_A
-            Matching_Index_List=[] #Matching_Index_List:-List, Matching_Index_List, The list of all indexes (ref. QGname_L) that corresepond to the input Galaxy Name, All arrays are of equal lenth, and "ith" value of an array is the correseponding value for any other arrays "ith" value, so for example Obs_ID_L[228]=794 and the Galaxy in the Observation is QGname_L[228]="NGC 891", Note both lists have the same index
-            for i in range(0,len(QGname_L)): # i:-int, i, the "ith" index of QGname_L
-                #print "i ", i
-                QGname=QGname_L[i] #QGname:-string, Query_Galaxy_Name, The current test Galaxy Name, if this Galaxy name equals the input Galaxy Name (Gname) then this Matching_Index, i (ref. QGname_L) will be appended to the Matching_Index_List
-                #QGname_Reduced=QGname.replace(" ", "")
-                #print "QGname ", QGname
-                #print "QGname_Reduced ", QGname_Reduced
-                if(Gname==QGname): #Checks to see if the current test Galaxy Name is the same as the input Galaxy Name, if so it appends the current index (ref. QGname_L) to the Matching_Index_List
-                    #print "i ", i
-                    Matching_Index_List.append(i) #Appends the current index (ref. QGname_L) to the Matching_Index_List
-            """
-            Matching_Index_List=[] #Matching_Index_List:-List, Matching_Index_List, The list of all indexes (ref. QGname_L) that corresepond to the input Galaxy Name, All arrays are of equal lenth, and "ith" value of an array is the correseponding value for any other arrays "ith" value, so for example Obs_ID_L[228]=794 and the Galaxy in the Observation is QGname_L[228]="NGC 891", Note both lists have the same index
-            for i in range(0,len(Obs_ID_L)): # i:-int, i, the "ith" index of QGname_L
-                #print "i ", i
-                QObs_ID=Obs_ID_L[i] #QGname:-string, Query_Galaxy_Name, The current test Galaxy Name, if this Galaxy name equals the input Galaxy Name (Gname) then this Matching_Index, i (ref. QGname_L) will be appended to the Matching_Index_List
-                #QGname_Reduced=QGname.replace(" ", "")
-                #print "QGname ", QGname
-                #print "QGname_Reduced ", QGname_Reduced
-                if(Obs_ID==QObs_ID): #Checks to see if the current test Galaxy Name is the same as the input Galaxy Name, if so it appends the current index (ref. QGname_L) to the Matching_Index_List
-                    #print "i ", i
-                    Matching_Index_List.append(i) #Appends the current index (ref. QGname_L) to the Matching_Index_List
-            RA_Match_L=[] #RA_Match_L:-List, Right_Ascension_Match_List, The list of all source RA's for the input Galaxy Name in decimal degrees
-            Dec_Match_L=[] #Dec_Match_L:-List, Declination_Match_List, The list of all source Dec's for the input Galaxy Name in decimal degrees
-            for Cur_Matching_Index in Matching_Index_List: #Cur_Matching_Index:-int, Current_Matching_Index, The current index (ref. QGname_L) in the list of matching indexes for the current input Galaxy Name (Matching_Index_List)
-                Cur_Match_RA=RA_L[Cur_Matching_Index] #Cur_Match_RA:-numpy.float64, Current_Match_Right_Ascension, The RA of the current source in decimal degrees
-                #print type(Cur_Match_RA)
-                Cur_Match_Dec=Dec_L[Cur_Matching_Index] #Cur_Match_Dec:-numpy.float64, Current_Match_Declination, The Dec of the current source in decimal degrees
-                RA_Match_L.append(Cur_Match_RA) #RA_Match_L:-list, Right_Ascension_Match_List, The list of all source RA's for the input Galaxy Name in decimal degrees
-                Dec_Match_L.append(Cur_Match_Dec) #Dec_Match_L:-list, Declination_Match_List, The list of all source Dec's for the input Galaxy Name in decimal degrees
-            #print RA_Match_L
-            #print len(RA_Match_L)
-            #print Dec_Match_L
-            #print len(Dec_Match_L)
-            #decA=Data['dec']
-            #raA=Data['ra']
-            #Maj=Maj/3600
-            #S_Maj=Maj/2
-            #area_T=((S_Maj)**2)*math.pi
-            G_Data= Ned.query_object(Gname) #G_Data:-astropy.table.table.Table, Galaxy_Data, The Galaxy Data Table queried from NED
-            #print type(G_Data)
-            D25_S_Maj_Deg=D25_Finder.D25_Finder(Gname)
-            area_T=((D25_S_Maj_Deg)**2)*math.pi
-            raGC=float(G_Data['RA(deg)'])
-            decGC=float(G_Data['DEC(deg)'])
-            #print "GC Coords : ", [raGC,decGC]
-            #area_A=[((((((decGC-dec)**2)+((raGC-ra)**2)))*(math.pi))/area_T) for dec,ra in zip(decA,raA)]
-            #area_A=[((((((decGC-dec)**2)+((raGC-ra)**2)))*(math.pi))/area_T) for dec,ra in zip(Dec_Match_L,RA_Match_L)] #REAL ONE
-            #disA=[math.sqrt(((decGC-dec)**2)+((raGC-ra)**2)) for dec,ra in zip(dec_A,raA)] #REAL ONE?
-            disA=[math.sqrt(((decGC-dec)**2)+((raGC-ra)**2)) for dec,ra in zip(Dec_Match_L,RA_Match_L)] #REAL ONE
-            #print "disA : ", disA
-            #disA.sort()
-            print "D25_S_Maj_Deg : ", D25_S_Maj_Deg
-            D25_S_Maj_Arcmin=D25_S_Maj_Deg*60.0
-            print "D25_S_Maj_Arcmin : ", D25_S_Maj_Arcmin
-            Dist_in_D25_L=[]
-            Dist_Outside_D25_L=[]
-            for Dist in disA:
-                if(Dist<D25_S_Maj_Deg):
-                    Dist_in_D25_L.append(Dist)
-                if(Dist>D25_S_Maj_Deg):
-                    Dist_Outside_D25_L.append(Dist)
-            Num_Sources=len(disA)
-            print "Num_Sources : ", Num_Sources
-            Num_Sources_in_D25=len(Dist_in_D25_L)
-            print "Num_Sources_in_D25 : ", Num_Sources_in_D25
-            Num_Sources_Outside_D25=len(Dist_Outside_D25_L)
-            print "Num_Sources_Outside_D25 : ", Num_Sources_Outside_D25
-            R=float(Num_Sources_Outside_D25)/float(Num_Sources)
-            print "R : ", R
-            #print "Filepath : ", Filepath
-            #print "Cur_Galaxy_Obs_ID_Filepath : ", Cur_Galaxy_Obs_ID_Filepath
+        """
+        Max_Exposure_Time=0
+        Max_Exp_Fpath=""
+        for Evt2_File_L in Evt2_File_H_L:
+            Obs_ID=Evt2_File_L[0]
+            print "Current Obs_ID: ", Obs_ID
+            Cur_Filepath=Evt2_File_L[1]
+            print "Cur_Filepath : ", Cur_Filepath
             hdul = fits.open(Cur_Filepath)
             #Num_Rows_in_Array=hdul[1].header['NROWS'] #Num_Rows_in_Array:-int, Number of Row in the Array, The number of rows in a (sub)array, if less then 1024 then the observation is a subarray and will be removed from the sample
             #print "Num_Rows_in_Array : ", Num_Rows_in_Array
             #print "type(Num_Rows_in_Array) : ", type(Num_Rows_in_Array)
             Exposure_Time=hdul[1].header['EXPOSURE'] #Exposure_Time:-float, Exposure Time, The Exposure Time of the observation (I think the longest time of all the chips) in seconds (not kiloseconds), If this is less the 5000s then the observation is invaild and will be removed from the sample
-            print "Exposure_Time : ", Exposure_Time
-            #print "type(Exposure_Time) : ", type(Exposure_Time)
-            #Grating_Flag=hdul[1].header['GRATING']
-            #print "Grating_Flag : ", Grating_Flag
-            #print Grating_Flag
-            #Initial_CSV_Line="Gname,Obs_ID,D25_Deg,D25_Arcmin,Num_Sources,Num_Sources_in_D25,Num_Sources_Outside_D25,Ratio\n"
-            #Initial_CSV_Line="Gname,Obs_ID,Exposure_Time,D25_Deg,D25_Arcmin,Num_Sources,Num_Sources_in_D25,Num_Sources_Outside_D25,Ratio\n"
-            Current_CSV_Line=str(Gname_Modifed)+","+str(Obs_ID)+","+str(Exposure_Time)+","+str(D25_S_Maj_Deg)+","+str(D25_S_Maj_Arcmin)+","+str(Num_Sources)+","+str(Num_Sources_in_D25)+","+str(Num_Sources_Outside_D25)+","+str(R)+"\n"
-            f.write(Current_CSV_Line)
-            #if(R>D25_Threshold):
-                #return True
-            #return False
+            #print "Exposure_Time : ", Exposure_Time
+            if(Exposure_Time>Max_Exposure_Time):
+                Max_Exposure_Time=Exposure_Time
+                Max_Exp_Fpath=Cur_Filepath
+        Cur_Filepath=Max_Exp_Fpath
+        #print type(Obs_ID_L)
+        #print Obs_ID_A
+        #FGname_A=data["foundName"]
+        #FGname_L=list(FGname_A)
+        #print FGname_A
+        #QGname_A=data["queriedName"] #QGname_A:-Obs_ID_A:-astropy.table.column.Column, Query_Galaxy_Name_Array, The array containing all Query Galaxy Names in the SQL_Standard_File (not indexable)
+        """
+        QGname_A=data["resolvedObject"] #QGname_A:-Obs_ID_A:-astropy.table.column.Column, Query_Galaxy_Name_Array, The array containing all Query Galaxy Names in the SQL_Standard_File (not indexable)
+        QGname_L=list(QGname_A) #QGname_L:-List, Query_Galaxy_Name_Array, The list containing all Query Galaxy Names in the SQL_Standard_File (So it is indexable)
+        #print type(QGname_A)
+        #print QGname_A
+        Matching_Index_List=[] #Matching_Index_List:-List, Matching_Index_List, The list of all indexes (ref. QGname_L) that corresepond to the input Galaxy Name, All arrays are of equal lenth, and "ith" value of an array is the correseponding value for any other arrays "ith" value, so for example Obs_ID_L[228]=794 and the Galaxy in the Observation is QGname_L[228]="NGC 891", Note both lists have the same index
+        for i in range(0,len(QGname_L)): # i:-int, i, the "ith" index of QGname_L
+            #print "i ", i
+            QGname=QGname_L[i] #QGname:-string, Query_Galaxy_Name, The current test Galaxy Name, if this Galaxy name equals the input Galaxy Name (Gname) then this Matching_Index, i (ref. QGname_L) will be appended to the Matching_Index_List
+            #QGname_Reduced=QGname.replace(" ", "")
+            #print "QGname ", QGname
+            #print "QGname_Reduced ", QGname_Reduced
+            if(Gname==QGname): #Checks to see if the current test Galaxy Name is the same as the input Galaxy Name, if so it appends the current index (ref. QGname_L) to the Matching_Index_List
+                #print "i ", i
+                Matching_Index_List.append(i) #Appends the current index (ref. QGname_L) to the Matching_Index_List
+        """
+        Matching_Index_List=[] #Matching_Index_List:-List, Matching_Index_List, The list of all indexes (ref. QGname_L) that corresepond to the input Galaxy Name, All arrays are of equal lenth, and "ith" value of an array is the correseponding value for any other arrays "ith" value, so for example Obs_ID_L[228]=794 and the Galaxy in the Observation is QGname_L[228]="NGC 891", Note both lists have the same index
+        for i in range(0,len(Obs_ID_L)): # i:-int, i, the "ith" index of QGname_L
+            #print "i ", i
+            QObs_ID=Obs_ID_L[i] #QGname:-string, Query_Galaxy_Name, The current test Galaxy Name, if this Galaxy name equals the input Galaxy Name (Gname) then this Matching_Index, i (ref. QGname_L) will be appended to the Matching_Index_List
+            #QGname_Reduced=QGname.replace(" ", "")
+            #print "QGname ", QGname
+            #print "QGname_Reduced ", QGname_Reduced
+            if(Obs_ID==QObs_ID): #Checks to see if the current test Galaxy Name is the same as the input Galaxy Name, if so it appends the current index (ref. QGname_L) to the Matching_Index_List
+                #print "i ", i
+                Matching_Index_List.append(i) #Appends the current index (ref. QGname_L) to the Matching_Index_List
+        RA_Match_L=[] #RA_Match_L:-List, Right_Ascension_Match_List, The list of all source RA's for the input Galaxy Name in decimal degrees
+        Dec_Match_L=[] #Dec_Match_L:-List, Declination_Match_List, The list of all source Dec's for the input Galaxy Name in decimal degrees
+        for Cur_Matching_Index in Matching_Index_List: #Cur_Matching_Index:-int, Current_Matching_Index, The current index (ref. QGname_L) in the list of matching indexes for the current input Galaxy Name (Matching_Index_List)
+            Cur_Match_RA=RA_L[Cur_Matching_Index] #Cur_Match_RA:-numpy.float64, Current_Match_Right_Ascension, The RA of the current source in decimal degrees
+            #print type(Cur_Match_RA)
+            Cur_Match_Dec=Dec_L[Cur_Matching_Index] #Cur_Match_Dec:-numpy.float64, Current_Match_Declination, The Dec of the current source in decimal degrees
+            RA_Match_L.append(Cur_Match_RA) #RA_Match_L:-list, Right_Ascension_Match_List, The list of all source RA's for the input Galaxy Name in decimal degrees
+            Dec_Match_L.append(Cur_Match_Dec) #Dec_Match_L:-list, Declination_Match_List, The list of all source Dec's for the input Galaxy Name in decimal degrees
+        #print RA_Match_L
+        #print len(RA_Match_L)
+        #print Dec_Match_L
+        #print len(Dec_Match_L)
+        #decA=Data['dec']
+        #raA=Data['ra']
+        #Maj=Maj/3600
+        #S_Maj=Maj/2
+        #area_T=((S_Maj)**2)*math.pi
+        G_Data= Ned.query_object(Gname) #G_Data:-astropy.table.table.Table, Galaxy_Data, The Galaxy Data Table queried from NED
+        #print type(G_Data)
+        D25_S_Maj_Deg=D25_Finder.D25_Finder(Gname)
+        area_T=((D25_S_Maj_Deg)**2)*math.pi
+        raGC=float(G_Data['RA(deg)'])
+        decGC=float(G_Data['DEC(deg)'])
+        #print "GC Coords : ", [raGC,decGC]
+        #area_A=[((((((decGC-dec)**2)+((raGC-ra)**2)))*(math.pi))/area_T) for dec,ra in zip(decA,raA)]
+        #area_A=[((((((decGC-dec)**2)+((raGC-ra)**2)))*(math.pi))/area_T) for dec,ra in zip(Dec_Match_L,RA_Match_L)] #REAL ONE
+        #disA=[math.sqrt(((decGC-dec)**2)+((raGC-ra)**2)) for dec,ra in zip(dec_A,raA)] #REAL ONE?
+        disA=[math.sqrt(((decGC-dec)**2)+((raGC-ra)**2)) for dec,ra in zip(Dec_Match_L,RA_Match_L)] #REAL ONE
+        #print "disA : ", disA
+        #disA.sort()
+        print "D25_S_Maj_Deg : ", D25_S_Maj_Deg
+        D25_S_Maj_Arcmin=D25_S_Maj_Deg*60.0
+        print "D25_S_Maj_Arcmin : ", D25_S_Maj_Arcmin
+        Dist_in_D25_L=[]
+        Dist_Outside_D25_L=[]
+        for Dist in disA:
+            if(Dist<D25_S_Maj_Deg):
+                Dist_in_D25_L.append(Dist)
+            if(Dist>D25_S_Maj_Deg):
+                Dist_Outside_D25_L.append(Dist)
+        Num_Sources=len(disA)
+        print "Num_Sources : ", Num_Sources
+        Num_Sources_in_D25=len(Dist_in_D25_L)
+        print "Num_Sources_in_D25 : ", Num_Sources_in_D25
+        Num_Sources_Outside_D25=len(Dist_Outside_D25_L)
+        print "Num_Sources_Outside_D25 : ", Num_Sources_Outside_D25
+        R=float(Num_Sources_Outside_D25)/float(Num_Sources)
+        print "R : ", R
+        #print "Filepath : ", Filepath
+        #print "Cur_Galaxy_Obs_ID_Filepath : ", Cur_Galaxy_Obs_ID_Filepath
+        hdul = fits.open(Cur_Filepath)
+        #Num_Rows_in_Array=hdul[1].header['NROWS'] #Num_Rows_in_Array:-int, Number of Row in the Array, The number of rows in a (sub)array, if less then 1024 then the observation is a subarray and will be removed from the sample
+        #print "Num_Rows_in_Array : ", Num_Rows_in_Array
+        #print "type(Num_Rows_in_Array) : ", type(Num_Rows_in_Array)
+        Exposure_Time=hdul[1].header['EXPOSURE'] #Exposure_Time:-float, Exposure Time, The Exposure Time of the observation (I think the longest time of all the chips) in seconds (not kiloseconds), If this is less the 5000s then the observation is invaild and will be removed from the sample
+        print "Exposure_Time : ", Exposure_Time
+        #print "type(Exposure_Time) : ", type(Exposure_Time)
+        #Grating_Flag=hdul[1].header['GRATING']
+        #print "Grating_Flag : ", Grating_Flag
+        #print Grating_Flag
+        #Initial_CSV_Line="Gname,Obs_ID,D25_Deg,D25_Arcmin,Num_Sources,Num_Sources_in_D25,Num_Sources_Outside_D25,Ratio\n"
+        #Initial_CSV_Line="Gname,Obs_ID,Exposure_Time,D25_Deg,D25_Arcmin,Num_Sources,Num_Sources_in_D25,Num_Sources_Outside_D25,Ratio\n"
+        Current_CSV_Line=str(Gname_Modifed)+","+str(Obs_ID)+","+str(Exposure_Time)+","+str(D25_S_Maj_Deg)+","+str(D25_S_Maj_Arcmin)+","+str(Num_Sources)+","+str(Num_Sources_in_D25)+","+str(Num_Sources_Outside_D25)+","+str(R)+"\n"
+        f.write(Current_CSV_Line)
+        #if(R>D25_Threshold):
+            #return True
+        #return False
 #print Histogram_Organizer("NGC 0253")
 #print Histogram_Organizer("NGC 1300")
 #print Histogram_Organizer("NGC_253")
