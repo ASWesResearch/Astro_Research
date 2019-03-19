@@ -4,7 +4,8 @@ from astroquery.ned import Ned
 import astropy.units as u
 import sys
 from astropy.io import ascii
-path=os.path.realpath('../')
+#path=os.path.realpath('../') #Reltive Path
+path=os.path.realpath('/Volumes/xray/anthony/Research_Git/') #Absolute Path
 sys.path.append(os.path.abspath(path))
 from File_Query_Code import File_Query_Code_5
 def D25_Finder(Gname):
@@ -97,7 +98,8 @@ def D25_Finder(Gname):
     Evt2_File_L=Evt2_File_H_L[0]
     Obs_ID=Evt2_File_L[0]
     #print "Obs_ID : ", Obs_ID
-    path_Source_Flux_Table=os.path.realpath('../SQL_Standard_File/Source_Flux_Table.csv')
+    #path_Source_Flux_Table=os.path.realpath('../SQL_Standard_File/Source_Flux_Table.csv') #Reltive Path
+    path_Source_Flux_Table=os.path.realpath('/Volumes/xray/anthony/Research_Git/SQL_Standard_File/Source_Flux_Table.csv') #Absolute Path
     #print "path_Source_Flux_Table : ", path_Source_Flux_Table
     Source_Flux_Table=ascii.read(path_Source_Flux_Table)
     #print "Source_Flux_Table : \n", Source_Flux_Table
