@@ -5,7 +5,8 @@ import sys
 import numpy
 #from ciao_contrib.runtool import *
 from astropy.io import fits
-path_Modules=os.path.realpath('../')
+#path_Modules=os.path.realpath('../')
+path_Modules="/Volumes/xray/anthony/Research_Git"
 sys.path.append(os.path.abspath(path_Modules))
 from Galaxy_Name_Reducer import Galaxy_Name_Reducer
 def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True): #Still bugs, Bug:(UnboundLocalError: local variable 'File_Path_With_Filename_Str' referenced before assignment), Update(I fixed this bug, but I need to bug check more)
@@ -16,7 +17,8 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True): #Still b
     File_Path_With_Filename_Str="Some Filepath"
     dir = os.path.dirname(__file__)
     #path=os.path.realpath('../SQL_Standard_File/SQL_Standard_File.csv')
-    path=os.path.realpath('../SQL_Standard_File/Source_Flux_Table.csv')
+    #path=os.path.realpath('../SQL_Standard_File/Source_Flux_Table.csv')
+    path=os.path.realpath('/Volumes/xray/anthony/Research_Git/SQL_Standard_File/Source_Flux_Table.csv')
     #print "Path=",path
     data = ascii.read(path)
     #data = ascii.read("/home/asantini/Desktop/SQL_Standard_File/SQL_Sandard_File.csv") #data:-astropy.table.table.Table, data, The data from the SQL_Standard_File
@@ -223,3 +225,5 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True): #Still b
 #print File_Query("NGC 253","evt2") #In in CSC
 #print File_Query("NGC 5204","evt2")
 #print File_Query("NGC 5204","evt2",Obs_Check_B=False)
+#print File_Query("NGC 5813","evt2")
+#print File_Query("NGC 5813","reg",".reg")
