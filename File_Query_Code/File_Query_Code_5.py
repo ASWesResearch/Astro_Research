@@ -9,7 +9,7 @@ from astropy.io import fits
 path_Modules="/Volumes/xray/anthony/Research_Git"
 sys.path.append(os.path.abspath(path_Modules))
 from Galaxy_Name_Reducer import Galaxy_Name_Reducer
-def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True): #Still bugs, Bug:(UnboundLocalError: local variable 'File_Path_With_Filename_Str' referenced before assignment), Update(I fixed this bug, but I need to bug check more)
+def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=False): #Still bugs, Bug:(UnboundLocalError: local variable 'File_Path_With_Filename_Str' referenced before assignment), Update(I fixed this bug, but I need to bug check more)
     Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
     #print "Gname_Modifed : ", Gname_Modifed
     #Code_Path=os.path.realpath('.')
@@ -18,7 +18,7 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True): #Still b
     dir = os.path.dirname(__file__)
     #path=os.path.realpath('../SQL_Standard_File/SQL_Standard_File.csv')
     #path=os.path.realpath('../SQL_Standard_File/Source_Flux_Table.csv')
-    path=os.path.realpath('/Volumes/xray/anthony/Research_Git/SQL_Standard_File/Source_Flux_Table.csv')
+    path=os.path.realpath('/Volumes/xray/anthony/Research_Git/SQL_Standard_File/Source_Flux_Table.csv') #MAJOR BUG HERE ! ! !  THIS SQL FILE DOES NOT INCLUDE ALL OBSERVATIONS IN THE SAMPLE ! (FOR EXAMPLE: OBS_ID 790 FROM NGC 253 IS MISSING AND SHOULD BE INCLUDED)
     #print "Path=",path
     data = ascii.read(path)
     #data = ascii.read("/home/asantini/Desktop/SQL_Standard_File/SQL_Sandard_File.csv") #data:-astropy.table.table.Table, data, The data from the SQL_Standard_File
@@ -178,7 +178,10 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True): #Still b
         return fname_L_H #Returns all filepaths for a galaxy regardless if it is a valid observation or not and makes sure that only evt2 files are removed (not FOV1 files or .reg files)
     #Need to check whether each observation is a vaild observation for the sample here and removed the observations that have either to short of an exposure or are a subarray
     #if((Obs_Check_B) and (File_Type_Str=="evt2")): #Removes all invaild observation evt2 files
+    #print "fname_L_H Before: ", fname_L_H
     if((Obs_Check_B) and (File_Type_Str=="evt2")): #Removes all invaild observation files
+        Max_Exposure=0
+        #Max_Exposure_Filename_L=[]
         for Filename_L in fname_L_H:
             Filepath=Filename_L[1]
             #print "Filepath : ", Filepath
@@ -192,8 +195,42 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True): #Still b
             Grating_Flag=hdul[1].header['GRATING']
             #print "Grating_Flag : ", Grating_Flag
             #print Grating_Flag
+            #print "fname_L_H Before : ", fname_L_H
             if((Num_Rows_in_Array!=1024) or (Exposure_Time<5000) or (Grating_Flag!="NONE")): #Checks to see if the current observation is invaild (invalid if: it is a subarray or has an exposure time less then 5000s)
                 fname_L_H.remove(Filename_L)
+                #print "Void Observation"
+                continue
+        #print "fname_L_H After : ", fname_L_H
+        Number_of_ObsIDs=len(fname_L_H)
+        #print "Number_of_ObsIDs : ", Number_of_ObsIDs
+        if(Number_of_ObsIDs==0):
+            print "There are no vaild observations for this galaxy"
+            return False
+            #Need to test vailidity of galaxy here
+        if(Exp_Max_B==True): #The max exposure bug may be here!
+            for Filename_L in fname_L_H:
+                #print "Filename_L", Filename_L
+                Max_Test_Obs_ID=Filename_L[0]
+                #print "Max_Test_Obs_ID : ", Max_Test_Obs_ID
+                Max_Test_Filepath=Filename_L[1]
+                hdul = fits.open(Max_Test_Filepath)
+                Exposure_Time=hdul[1].header['EXPOSURE'] #Exposure_Time:-float, Exposure Time, The Exposure Time of the observation (I think the longest time of all the chips) in seconds (not kiloseconds), If this is less the 5000s then the observation is invaild and will be removed from the sample
+                #print "Max Exposure_Time : ",Exposure_Time
+                if(Exposure_Time>Max_Exposure):
+                    Max_Exposure=Exposure_Time
+                    Max_Exposure_Filename_L=Filename_L
+                #print "Max_Exposure : ", Max_Exposure
+                #print "Max_Exposure_Filename_L : ", Max_Exposure_Filename_L
+        #Number_of_ObsIDs=len(fname_L_H)
+        #print "Number_of_ObsIDs : ", Number_of_ObsIDs
+        """
+        if(Number_of_ObsIDs==0):
+            print "There are no vaild observations for this galaxy"
+            return False
+        """
+        if(Exp_Max_B==True):
+            fname_L_H=[]
+            fname_L_H.append(Max_Exposure_Filename_L)
             """
             evtfpath=Filepath
             Header_String=dmlist(infile=str(evtfpath),opt="header")
@@ -203,11 +240,14 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True): #Still b
             Num_Rows_in_Array=int(Header_String_Reduced_3)
             print "Num_Rows_in_Array : ", Num_Rows_in_Array
             """
-            Number_of_ObsIDs=len(fname_L_H)
+            #Number_of_ObsIDs=len(fname_L_H)
+        """
+        Number_of_ObsIDs=len(fname_L_H)
         #print "Number_of_ObsIDs : ", Number_of_ObsIDs
         if(Number_of_ObsIDs==0):
             print "There are no vaild observations for this galaxy"
             return False
+        """
         return fname_L_H
 
 #print File_Query("NGC 891","evt2") #In in CSC
@@ -227,3 +267,15 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True): #Still b
 #print File_Query("NGC 5204","evt2",Obs_Check_B=False)
 #print File_Query("NGC 5813","evt2")
 #print File_Query("NGC 5813","reg",".reg")
+#print File_Query("NGC 5813","evt2",Exp_Max_B=True)
+#print File_Query("NGC 5813","fov1",Exp_Max_B=True)
+#print File_Query("NGC 253","evt2",Exp_Max_B=True)
+#print File_Query("NGC 253","fov1",Exp_Max_B=True)
+#print File_Query("NGC 2681","evt2")
+#print File_Query("NGC 2681","evt2",Exp_Max_B=True)
+#print File_Query("NGC 3631","evt2",Exp_Max_B=True)
+#print File_Query("NGC 3631","fov1",Exp_Max_B=True)
+#print File_Query("NGC 3631","reg",".reg")
+#print File_Query("NGC 3631","reg",".reg",Exp_Max_B=True)
+#print File_Query("NGC 253","reg",".reg")
+#print File_Query("NGC 253","reg",".reg",Exp_Max_B=True)
