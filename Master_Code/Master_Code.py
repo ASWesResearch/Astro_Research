@@ -546,10 +546,10 @@ def Pipeline_D(Gname_L):
 
 def Master(Gname_L):
     webbrowser.open_new("https://www.youtube.com/watch?v=xnKhsTXoKCI") # OBEY YOUR MASTER ! ! !      Not nesseary for the fuctionality of the code, Can be removed without any problem whatsoever but this code would be much less metal if removed
-    #Thread(target = Pipeline_A(Gname_L)).start()
+    Thread(target = Pipeline_A(Gname_L)).start()
     Thread(target = Pipeline_B(Gname_L)).start()
-    #Thread(target = Pipeline_C(Gname_L)).start()
-    #Thread(target = Pipeline_D(Gname_L)).start()
+    Thread(target = Pipeline_C(Gname_L)).start()
+    Thread(target = Pipeline_D(Gname_L)).start()
     print "Number of Threads : ", str(threading.activeCount())
     print "Master Complete"
 
