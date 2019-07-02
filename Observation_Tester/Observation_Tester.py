@@ -31,19 +31,19 @@ def Observation_Tester(Gname_L,Simple_Reg_B=False,Max_Exp_B=False):
         raGC=float(G_Data['RA(deg)']) #raGC:-float, Right Ascension of Galatic Center, The right ascension of the galatic center of the current galaxy in degrees.
         decGC=float(G_Data['DEC(deg)']) #decGC:-float, Declination of Galatic Center, The declination of the galatic center of the current galaxy in degrees.
         if(Max_Exp_B):
-            print "Test: True"
+            #print "Test: True"
             Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2",Obs_Check_B=False,Exp_Max_B=True)
-            #print "Evt2_File_H_L : ", Evt2_File_H_L
+            #print "Evt2_File_H_L Exp_Max_B=True : ", Evt2_File_H_L
             Reg_File_H_L=File_Query_Code_5.File_Query(Gname,"reg",".reg",Obs_Check_B=False)
             Fov_File_H_L=File_Query_Code_5.File_Query(Gname,"fov1",Obs_Check_B=False)
         else:
-            print "TEST: False"
+            #print "TEST: False"
             Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2",Obs_Check_B=False)
             Reg_File_H_L=File_Query_Code_5.File_Query(Gname,"reg",".reg",Obs_Check_B=False)
             Fov_File_H_L=File_Query_Code_5.File_Query(Gname,"fov1",Obs_Check_B=False)
         #/Volumes/xray/anthony/Thesis/Galaxy_Optical_Image_Query/Galaxy_Optical_Images/MESSIER_066
         D25_Region_Path="/Volumes/xray/anthony/Thesis/Galaxy_Optical_Image_Query/Galaxy_Optical_Images/"+Gname_Modifed+"/"+Gname_Modifed+".reg"
-        #print "Evt2_File_H_L ", Evt2_File_H_L
+        print "Evt2_File_H_L ", Evt2_File_H_L
         #print "Fov_File_H_L ", Fov_File_H_L
         for Evt2_File_L in Evt2_File_H_L:
             Cur_Evt2_ObsID=Evt2_File_L[0]
@@ -161,3 +161,4 @@ def Observation_Tester(Gname_L,Simple_Reg_B=False,Max_Exp_B=False):
 #NGC 3608
 #Observation_Tester(["NGC 3608"])
 #Observation_Tester(["NGC 1313"])
+Observation_Tester(["NGC 253","NGC 5813"],Max_Exp_B=True)
