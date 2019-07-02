@@ -174,7 +174,7 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=
     #os.chdir("/Network/Servers/vimes.astro.wesleyan.edu/Volumes/vvodata/home/asantini/Desktop/File_Query_Code") #Changes directory back to the codes pwd, so when the code is run twice in a row it still works
     #os.chdir(Code_Path) #Changes directory back to the codes pwd, so when the code is run twice in a row it still works
     #if((Obs_Check_B==False) or (File_Type_Str!="evt2")):
-    if((Obs_Check_B==False) or (File_Type_Str!="evt2")):
+    if((Obs_Check_B==False) or (File_Type_Str!="evt2")): # I am not sure if this will return the largest exposure regardless of it being a vaild obsevation. I think it does but I can't find a good galaxy to test it on.
         if(Exp_Max_B==True): #The max exposure bug may be here!
             Max_Exposure=0
             for Filename_L in fname_L_H:
@@ -308,3 +308,6 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=
 #print File_Query("NGC 253","evt2",Exp_Max_B=True)
 #print File_Query("NGC 253","evt2",Obs_Check_B=False)
 #print File_Query("NGC 253","evt2",Obs_Check_B=False,Exp_Max_B=True)
+#print File_Query("NGC 5813","evt2")
+#print File_Query("NGC 5813","evt2",Obs_Check_B=False,Exp_Max_B=True)
+#print File_Query("NGC 5813","evt2",Exp_Max_B=True)
