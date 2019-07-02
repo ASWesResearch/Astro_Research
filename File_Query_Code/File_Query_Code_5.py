@@ -175,6 +175,31 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=
     #os.chdir(Code_Path) #Changes directory back to the codes pwd, so when the code is run twice in a row it still works
     #if((Obs_Check_B==False) or (File_Type_Str!="evt2")):
     if((Obs_Check_B==False) or (File_Type_Str!="evt2")):
+        if(Exp_Max_B==True): #The max exposure bug may be here!
+            Max_Exposure=0
+            for Filename_L in fname_L_H:
+                #print "Filename_L", Filename_L
+                Max_Test_Obs_ID=Filename_L[0]
+                #print "Max_Test_Obs_ID : ", Max_Test_Obs_ID
+                Max_Test_Filepath=Filename_L[1]
+                hdul = fits.open(Max_Test_Filepath)
+                Exposure_Time=hdul[1].header['EXPOSURE'] #Exposure_Time:-float, Exposure Time, The Exposure Time of the observation (I think the longest time of all the chips) in seconds (not kiloseconds), If this is less the 5000s then the observation is invaild and will be removed from the sample
+                #print "Max Exposure_Time : ",Exposure_Time
+                if(Exposure_Time>Max_Exposure):
+                    Max_Exposure=Exposure_Time
+                    Max_Exposure_Filename_L=Filename_L
+                #print "Max_Exposure : ", Max_Exposure
+                #print "Max_Exposure_Filename_L : ", Max_Exposure_Filename_L
+        #Number_of_ObsIDs=len(fname_L_H)
+        #print "Number_of_ObsIDs : ", Number_of_ObsIDs
+        """
+        if(Number_of_ObsIDs==0):
+            print "There are no vaild observations for this galaxy"
+            return False
+        """
+        if(Exp_Max_B==True):
+            fname_L_H=[]
+            fname_L_H.append(Max_Exposure_Filename_L)
         return fname_L_H #Returns all filepaths for a galaxy regardless if it is a valid observation or not and makes sure that only evt2 files are removed (not FOV1 files or .reg files)
     #Need to check whether each observation is a vaild observation for the sample here and removed the observations that have either to short of an exposure or are a subarray
     #if((Obs_Check_B) and (File_Type_Str=="evt2")): #Removes all invaild observation evt2 files
@@ -279,3 +304,7 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=
 #print File_Query("NGC 3631","reg",".reg",Exp_Max_B=True)
 #print File_Query("NGC 253","reg",".reg")
 #print File_Query("NGC 253","reg",".reg",Exp_Max_B=True)
+#print File_Query("NGC 253","evt2")
+#print File_Query("NGC 253","evt2",Exp_Max_B=True)
+#print File_Query("NGC 253","evt2",Obs_Check_B=False)
+#print File_Query("NGC 253","evt2",Obs_Check_B=False,Exp_Max_B=True)
