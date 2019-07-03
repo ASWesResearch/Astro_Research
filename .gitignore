@@ -31,4 +31,4 @@ SQL_Standard_File/*
 /Thesis/
 /Master_Code/Old_Outputs/
 Data_Processing/
-Histogram_Organizer/D25_Source_Ratios_Max.csv
+Histogram_Organizer/*.csv
