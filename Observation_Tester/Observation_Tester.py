@@ -161,4 +161,5 @@ def Observation_Tester(Gname_L,Simple_Reg_B=False,Max_Exp_B=False):
 #NGC 3608
 #Observation_Tester(["NGC 3608"])
 #Observation_Tester(["NGC 1313"])
-Observation_Tester(["NGC 253","NGC 5813"],Max_Exp_B=True)
+#Observation_Tester(["NGC 253","NGC 5813"],Max_Exp_B=True)
+Observation_Tester(["NGC 3631"])
