@@ -1,6 +1,7 @@
 import astropy.io.ascii as ascii
 import tarfile
 import numpy as np
+import pandas as pd
 import math
 import matplotlib.pyplot as plt
 import os
@@ -18,7 +19,7 @@ from D25_Finder import D25_Finder
 from File_Query_Code import File_Query_Code_5
 def Histogram_Organizer(Gname_L,D25_Threshold=0.5):
     f=open("D25_Source_Ratios_Max.csv","w")
-    Initial_CSV_Line="Gname,Obs_ID,Exposure_Time,D25_Deg,D25_Arcmin,Num_Sources,Num_Sources_in_D25,Num_Sources_Outside_D25,Ratio\n"
+    Initial_CSV_Line="Gname,Obs_ID,Exposure_Time,D25_Deg,D25_Arcmin,Frac_of_Reasonable_FOV,Num_Sources,Num_Sources_in_D25,Num_Sources_Outside_D25,Ratio\n"
     f.write(Initial_CSV_Line)
     for Gname in Gname_L:
         """
@@ -174,6 +175,8 @@ def Histogram_Organizer(Gname_L,D25_Threshold=0.5):
         print "D25_S_Maj_Deg : ", D25_S_Maj_Deg
         D25_S_Maj_Arcmin=D25_S_Maj_Deg*60.0
         print "D25_S_Maj_Arcmin : ", D25_S_Maj_Arcmin
+        Frac_of_Reasonable_FOV=D25_S_Maj_Arcmin/10.0
+        print "Frac_of_Reasonable_FOV : ", Frac_of_Reasonable_FOV
         Dist_in_D25_L=[]
         Dist_Outside_D25_L=[]
         for Dist in disA:
@@ -203,14 +206,18 @@ def Histogram_Organizer(Gname_L,D25_Threshold=0.5):
         #print Grating_Flag
         #Initial_CSV_Line="Gname,Obs_ID,D25_Deg,D25_Arcmin,Num_Sources,Num_Sources_in_D25,Num_Sources_Outside_D25,Ratio\n"
         #Initial_CSV_Line="Gname,Obs_ID,Exposure_Time,D25_Deg,D25_Arcmin,Num_Sources,Num_Sources_in_D25,Num_Sources_Outside_D25,Ratio\n"
-        Current_CSV_Line=str(Gname_Modifed)+","+str(Obs_ID)+","+str(Exposure_Time)+","+str(D25_S_Maj_Deg)+","+str(D25_S_Maj_Arcmin)+","+str(Num_Sources)+","+str(Num_Sources_in_D25)+","+str(Num_Sources_Outside_D25)+","+str(R)+"\n"
+        Current_CSV_Line=str(Gname_Modifed)+","+str(Obs_ID)+","+str(Exposure_Time)+","+str(D25_S_Maj_Deg)+","+str(D25_S_Maj_Arcmin)+","+str(Frac_of_Reasonable_FOV)+","+str(Num_Sources)+","+str(Num_Sources_in_D25)+","+str(Num_Sources_Outside_D25)+","+str(R)+"\n"
         f.write(Current_CSV_Line)
         #if(R>D25_Threshold):
             #return True
         #return False
+    #Output_Data=pd.read_csv(Current_CSV_Line)
+    #print Output_Data
+    #Output_D25_L=Output_Data[]
 #print Histogram_Organizer("NGC 0253")
 #print Histogram_Organizer("NGC 1300")
 #print Histogram_Organizer("NGC_253")
 #print Histogram_Organizer(["NGC_253","NGC 1300"])
 #['NGC 4278', 'NGC 2841', 'NGC 3877', 'MESSIER 106', 'NGC 5194', 'MESSIER 104', 'MESSIER 105', 'MESSIER 101', 'NGC 5054', 'NGC 5813', 'MESSIER 108', 'MESSIER 066', 'MESSIER 061', 'MESSIER 063', 'MESSIER 086', 'MESSIER 084', 'MESSIER 083', 'MESSIER 082', 'MESSIER 081', 'NGC 0278', 'MESSIER 088', 'NGC 6744', 'IC 5332', 'NGC 3585', 'NGC 7507', 'NGC 1637', 'NGC 4473', 'NGC 1365', 'MESSIER 074', 'NGC 4476', 'NGC 4570', 'NGC 5576', 'NGC 4321', 'NGC 5474', 'NGC 7090', 'MESSIER 094', 'MESSIER 095', 'NGC 4494', 'NGC 4490', 'IC 1613', 'NGC 4477', 'NGC 4365', 'NGC 2787', 'NGC 3557', 'IC 5267', 'NGC 4388', 'NGC 3923', 'NGC 4945', 'NGC 891', 'NGC 1300', 'UGC 05340', 'NGC 3631', 'UGCA 166', 'NGC 4314', 'NGC 4550', 'Holmberg IX                   ', 'NGC 4559', 'NGC 1399', 'NGC 4039', 'NGC 4038', 'NGC 1316', 'NGC 1097', 'NGC 0383', 'NGC 2681', 'NGC 5018', 'NGC 5253', 'NGC 4631', 'MESSIER 060', 'NGC 4742', 'NGC 1672', 'NGC 5846', 'NGC 4725', 'NGC 2403', 'NGC 3507', 'MESSIER 087', 'NGC 0891', 'NGC 3384', 'NGC 6946', 'NGC 1291:[LFF2012] 084', 'NGC 3115', 'NGC 1332', 'NGC 1700', 'NGC 5584', 'NGC 7552', 'NGC 2997', 'NGC 4449', 'MESSIER 049', 'NGC 3198', 'NGC 0855', 'NGC 7793', 'NGC 0119', 'NGC 2865', 'MESSIER 059', 'NGC 1427', 'NGC 3628', 'NGC 3608', 'NGC 0055', 'NGC 4457', 'NGC 4214', 'NGC 4459', 'NGC 3521', 'NGC 4565', 'NGC 1313', 'NGC 0253'] #Only Vaild Galaxys in this list
-print Histogram_Organizer(['NGC 4278', 'NGC 2841', 'NGC 3877', 'MESSIER 106', 'NGC 5194', 'MESSIER 104', 'MESSIER 105', 'MESSIER 101', 'NGC 5054', 'NGC 5813', 'MESSIER 108', 'MESSIER 066', 'MESSIER 061', 'MESSIER 063', 'MESSIER 086', 'MESSIER 084', 'MESSIER 083', 'MESSIER 082', 'MESSIER 081', 'NGC 0278', 'MESSIER 088', 'NGC 6744', 'IC 5332', 'NGC 3585', 'NGC 7507', 'NGC 1637', 'NGC 4473', 'NGC 1365', 'MESSIER 074', 'NGC 4476', 'NGC 4570', 'NGC 5576', 'NGC 4321', 'NGC 5474', 'NGC 7090', 'MESSIER 094', 'MESSIER 095', 'NGC 4494', 'NGC 4490', 'IC 1613', 'NGC 4477', 'NGC 4365', 'NGC 2787', 'NGC 3557', 'IC 5267', 'NGC 4388', 'NGC 3923', 'NGC 4945', 'NGC 891', 'NGC 1300', 'UGC 05340', 'NGC 3631', 'UGCA 166', 'NGC 4314', 'NGC 4550', 'Holmberg IX                   ', 'NGC 4559', 'NGC 1399', 'NGC 4039', 'NGC 4038', 'NGC 1316', 'NGC 1097', 'NGC 0383', 'NGC 2681', 'NGC 5018', 'NGC 5253', 'NGC 4631', 'MESSIER 060', 'NGC 4742', 'NGC 1672', 'NGC 5846', 'NGC 4725', 'NGC 2403', 'NGC 3507', 'MESSIER 087', 'NGC 0891', 'NGC 3384', 'NGC 6946', 'NGC 1291:[LFF2012] 084', 'NGC 3115', 'NGC 1332', 'NGC 1700', 'NGC 5584', 'NGC 7552', 'NGC 2997', 'NGC 4449', 'MESSIER 049', 'NGC 3198', 'NGC 0855', 'NGC 7793', 'NGC 0119', 'NGC 2865', 'MESSIER 059', 'NGC 1427', 'NGC 3628', 'NGC 3608', 'NGC 0055', 'NGC 4457', 'NGC 4214', 'NGC 4459', 'NGC 3521', 'NGC 4565', 'NGC 1313', 'NGC 0253'])
+#print Histogram_Organizer(['NGC 4278', 'NGC 2841', 'NGC 3877', 'MESSIER 106', 'NGC 5194', 'MESSIER 104', 'MESSIER 105', 'MESSIER 101', 'NGC 5054', 'NGC 5813', 'MESSIER 108', 'MESSIER 066', 'MESSIER 061', 'MESSIER 063', 'MESSIER 086', 'MESSIER 084', 'MESSIER 083', 'MESSIER 082', 'MESSIER 081', 'NGC 0278', 'MESSIER 088', 'NGC 6744', 'IC 5332', 'NGC 3585', 'NGC 7507', 'NGC 1637', 'NGC 4473', 'NGC 1365', 'MESSIER 074', 'NGC 4476', 'NGC 4570', 'NGC 5576', 'NGC 4321', 'NGC 5474', 'NGC 7090', 'MESSIER 094', 'MESSIER 095', 'NGC 4494', 'NGC 4490', 'IC 1613', 'NGC 4477', 'NGC 4365', 'NGC 2787', 'NGC 3557', 'IC 5267', 'NGC 4388', 'NGC 3923', 'NGC 4945', 'NGC 891', 'NGC 1300', 'UGC 05340', 'NGC 3631', 'UGCA 166', 'NGC 4314', 'NGC 4550', 'Holmberg IX                   ', 'NGC 4559', 'NGC 1399', 'NGC 4039', 'NGC 4038', 'NGC 1316', 'NGC 1097', 'NGC 0383', 'NGC 2681', 'NGC 5018', 'NGC 5253', 'NGC 4631', 'MESSIER 060', 'NGC 4742', 'NGC 1672', 'NGC 5846', 'NGC 4725', 'NGC 2403', 'NGC 3507', 'MESSIER 087', 'NGC 0891', 'NGC 3384', 'NGC 6946', 'NGC 1291:[LFF2012] 084', 'NGC 3115', 'NGC 1332', 'NGC 1700', 'NGC 5584', 'NGC 7552', 'NGC 2997', 'NGC 4449', 'MESSIER 049', 'NGC 3198', 'NGC 0855', 'NGC 7793', 'NGC 0119', 'NGC 2865', 'MESSIER 059', 'NGC 1427', 'NGC 3628', 'NGC 3608', 'NGC 0055', 'NGC 4457', 'NGC 4214', 'NGC 4459', 'NGC 3521', 'NGC 4565', 'NGC 1313', 'NGC 0253'])
+print Histogram_Organizer(['NGC 2841', 'NGC 3877', 'NGC 5054', 'NGC 5813', 'MESSIER 108', 'MESSIER 066', 'MESSIER 061', 'MESSIER 063', 'MESSIER 086', 'MESSIER 084', 'MESSIER 083', 'MESSIER 082', 'NGC 0278', 'MESSIER 088', 'NGC 3585', 'NGC 7507', 'NGC 1637', 'NGC 4473', 'NGC 1365', 'MESSIER 074', 'NGC 4570', 'NGC 4321', 'NGC 5474', 'NGC 7090', 'MESSIER 094', 'MESSIER 095', 'NGC 4494', 'IC 1613', 'NGC 4477', 'NGC 2787', 'IC 5267', 'NGC 3923', 'NGC 891', 'NGC 1300', 'UGC 05340', 'NGC 3631', 'NGC 4314', 'NGC 4559', 'NGC 2681', 'NGC 5018', 'NGC 5253', 'NGC 4742', 'NGC 1672', 'NGC 4725', 'NGC 0891', 'NGC 6946', 'NGC 1291:[LFF2012] 084', 'NGC 3115', 'NGC 1332', 'NGC 1700', 'NGC 5584', 'NGC 7552', 'NGC 2997', 'NGC 4449', 'MESSIER 049', 'NGC 3198', 'NGC 0855', 'NGC 7793', 'NGC 2865', 'MESSIER 059', 'NGC 1427', 'NGC 3628', 'NGC 0055', 'NGC 4457', 'NGC 4214', 'NGC 4459', 'NGC 3521']) #These are the 67 galaxies used in the final version of the Master's Thesis
