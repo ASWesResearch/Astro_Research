@@ -12,19 +12,25 @@ dir = os.path.dirname(__file__)
 path=os.path.realpath('../')
 sys.path.append(os.path.abspath(path))
 from Galaxy_Name_Reducer import Galaxy_Name_Reducer
-def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfpath,rchange=121.9512195,B=1): #NEED to finish this code, Check to see if the radius is increaing correctly and write outputs to a file, Also the evt 2 filename should be a event 2 filepath
+from D25_Finder import D25_Finder
+def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfpath,rchange=121.95121955,B=1,D25_Steps_Bool=False,Reasonable_FOV_Bool=True,Fnamekey=""): #NEED to finish this code, Check to see if the radius is increaing correctly and write outputs to a file, Also the evt 2 filename should be a event 2 filepath
     #This is the latest version, 4/20/18
     """
     gname:-str, Galaxy Name, The name of the galaxy in the form NGC #, For Example 'NGC 3077'
     evtfpath:-str, Event File Path, The path of the event file of the observation, For Example '/example_path/acisf02076_repro_evt2.fits'
     ployfname:-str, PolyFileName, The filename of the simple_region_modifed file as a string
-    rchange:-int(float?), Radius Change, The change in radius from one area cirlce to another area cirlce in pixels, must equal one arcminute in pixels
+    rchange:-int(float?), Radius Change, The change in radius from one area cirlce to another area cirlce in pixels, must equal one arcminute in pixels (1 arcmin= 121.95121955 pixels), Update(7/2/19): This will now be set to 0.1 arcmin = 12.19512195 pixels
     B:-int, Binning, The binning on the regArea CIAO tool, It's standard value is 1 pixel
     """
     #print "PWD 1:"
     #system('pwd')
     #homepath=os.path.realpath('.')
     #print "homepath :",homepath
+    D25_S_Maj_Deg=D25_Finder.D25_Finder(gname)
+    D25_S_Maj=D25_S_Maj_Deg*3600.0 #D25_S_Maj:-float, D25_Semi_Major_Axis, The D25 Semi Major Axis of the current galaxy in arcseconds
+    R_Phys=D25_S_Maj*2.03252032520325 #R_Phys:-numpy.float64, Radius_Physical, The radius of the galaxy in pixels, the converstion factor is 2.03252032520325pix/arcsec
+    if(D25_Steps_Bool):
+        rchange=R_Phys
     inner_r=0.0 #inner_r:-float, Inner_Radius, The radius of the inner most circle
     #outer_r_gap=25.0 #outer_r_gap:-float, Outer_Radius_Gap, The addtional distance that needs to be added to the outer radius inorder to account for dithering #The addtional distance that needs to be added to the outer radius inorder to account for dithering
     outer_r_gap=40.0 #outer_r_gap:-float, Outer_Radius_Gap, The addtional distance that needs to be added to the outer radius inorder to account for dithering #The addtional distance that needs to be added to the outer radius inorder to account for dithering
@@ -41,7 +47,10 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfpath,rchange=121.9512195,B=1): 
     print "polyfpath_no_fname : ", polyfpath_no_fname
     Evtfname_Reduced=evtfname.split(".")[0] #Evtfname_Reduced:-str, Event_Filename_Reduced, The filename of the event 2 file of the observation without the extention ".fits" at the end, for example "acisf02076_repro_evt2"
     Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(gname)
-    Output_File=open(polyfpath_no_fname+"/"+str(Gname_Modifed)+"_"+Evtfname_Reduced+"_Area_List.txt","w") #Output_File:-file, Output_File, The Area_List file, which is the file were the list of Area_Ratios one for each circle (ie. each n) are saved, in the form of one line per ratio
+    if(Fnamekey==""):
+        Output_File=open(polyfpath_no_fname+"/"+str(Gname_Modifed)+"_"+Evtfname_Reduced+"_Area_List.txt","w") #Output_File:-file, Output_File, The Area_List file, which is the file were the list of Area_Ratios one for each circle (ie. each n) are saved, in the form of one line per ratio
+    else:
+        Output_File=open(polyfpath_no_fname+"/"+str(Gname_Modifed)+"_"+Evtfname_Reduced+"_"+Fnamekey+"_Area_List.txt","w") #Output_File:-file, Output_File, The Area_List file, which is the file were the list of Area_Ratios one for each circle (ie. each n) are saved, in the form of one line per ratio
     polystring_L=[] #polystring_L:-list, Polygon String List, A list of all the CCD shape strings
     dir = os.path.dirname(__file__)
     #system('pwd')
@@ -171,6 +180,8 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfpath,rchange=121.9512195,B=1): 
     #print "Dist_Max ", Dist_Max
     #print type(Dist_Max)
     outer_r=Dist_Max+outer_r_gap #outer_r:-numpy.float64, Outer_Radius, The largest radius of the area circle, this radius should just barely inclose the all the active CCDs for the observation (All the CCDs used in the FOV1.fits file)
+    if(Reasonable_FOV_Bool):
+        outer_r=1219.5121955
     #print "outer_r ", outer_r
     #print type(outer_r)
     polystring=polyfile.read() #polystring:-str, Polystring, The string containing the CCD shapes strings in it seperated by "\n"
@@ -216,6 +227,8 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfpath,rchange=121.9512195,B=1): 
         a_L.append(a_ratio) #a_L:-list, Area_List, The list of Area Ratios for each n
         n=n+1 # Itterates n
         cur_r=(n*rchange) + inner_r #Increases the current radius by n times the change in radius
+    Remainder_FOV=cur_r-outer_r
+    print "Remainder_FOV : ", Remainder_FOV
     for Current_Ratio in a_L: #Current_Ratio:-float, Current_Ratio, The Current_Ratio of the total intersecting area on the total area of the current area circle in a_L
         #print type(Current_Ratio)
         Current_Ratio_Str=str(Current_Ratio) #Current_Ratio_Str:-Str, Current_Ratio_String, The Current_Ratio as a string value
@@ -230,4 +243,5 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfpath,rchange=121.9512195,B=1): 
 #print Area_Calc_Frac_B_2_Alt_2("NGC 253","acisf13830_repro_evt2.fits","acisf13830_repro_CCD_Regions_simple_region_modifed_Code.txt")
 #print Area_Calc_Frac_B_2_Alt_2("NGC 253","/Network/Servers/vimes.astro.wesleyan.edu/Volumes/vvodata/home/asantini/Desktop/CCD_Incompleteness_Correction/Area Calc/acisf13830_repro_evt2.fits","acisf13830_repro_CCD_Regions_simple_region_modifed_Code.txt")
 #print Area_Calc_Frac_B_2_Alt_2("NGC 253","/home/asantini/Desktop/CCD_Incompleteness_Correction/Area Calc/acisf13830_repro_evt2.fits","acisf13830_repro_CCD_Regions_simple_region_modifed_Code.txt")
-#print Area_Calc_Frac_B_2_Alt_2("NGC 253","/Network/Servers/vimes.astro.wesleyan.edu/Volumes/vvodata/home/asantini/Desktop/CCD_Incompleteness_Correction/Area_Calc/acisf13830_repro_evt2.fits","acisf13830_repro_CCD_Regions_simple_region_modifed_Code.txt")
+#print Area_Calc_Frac_B_2_Alt_2("NGC 253","/Network/Servers/vimes.astro.wesleyan.edu/Volumes/vvodata/home/asantini/Desktop/CCD_Incompleteness_Correction/Area_Calc/acisf13830_repro_evt2.fits","acisf13830_repro_CCD_Regions_simple_region_modifed_Code.txt",Fnamekey="Arcmin_Test")
+#print Area_Calc_Frac_B_2_Alt_2("NGC 253","/Network/Servers/vimes.astro.wesleyan.edu/Volumes/vvodata/home/asantini/Desktop/CCD_Incompleteness_Correction/Area_Calc/acisf13830_repro_evt2.fits","acisf13830_repro_CCD_Regions_simple_region_modifed_Code.txt",D25_Steps_Bool=True,Fnamekey="D25_Test")
