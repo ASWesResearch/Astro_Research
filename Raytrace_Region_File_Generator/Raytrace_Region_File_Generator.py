@@ -54,6 +54,7 @@ def Raytrace_Region_File_Generator(ObsID):
         #Cur_Shape_Str_Reduced=Cur_Shape_Str_L[1]
         #ObsID_Reg_File.write(Cur_Shape_Str_Reduced+"\n")
         ObsID_Reg_File.write(Cur_Shape_Str+"\n")
+        Cur_Reg_File.close()
     ObsID_Reg_File.close()
     #return Raytrace_Reg_Fpath
     #/Volumes/xray/simon/all_chandra_observations/10025/primary
@@ -77,6 +78,9 @@ def Raytrace_Region_File_Generator(ObsID):
     file2=open(Raytraced_Coord_Outpath,"w")
     #[Cur_X,Cur_Y,Cur_Chip_X,Cur_Chip_Y,Cur_Chip_ID,Cur_RA,Cur_DEC,Cur_Theta]
     file2.write("Phys_X,Phys_Y,Chip_X,Chip_Y,Chip_ID,RA,DEC,Det_X,Det_Y,Offaxis_Angle"+"\n")
+    Det_Coords_Reg_Outpath=path_Obs+"Raytraced_Sources_ObsID_"+str(ObsID)+"_Detector_Coords.reg"
+    Det_Coords_Reg_File=open(Det_Coords_Reg_Outpath,"w")
+    Det_Coords_Reg_File.write(Header_String)
     for Source_C in Source_C_L:
         Phys_X=Source_C[0]
         Phys_Y=Source_C[1]
@@ -89,5 +93,10 @@ def Raytrace_Region_File_Generator(ObsID):
         Det_Y=Source_C[8]
         Offaxis_Angle=Source_C[9]
         file2.write(str(Phys_X)+","+str(Phys_Y)+","+str(Chip_X)+","+str(Chip_Y)+","+str(Chip_ID)+","+str(RA)+","+str(DEC)+","+str(Det_X)+","+str(Det_Y)+","+str(Offaxis_Angle)+"\n")
+        ##Cur_Reg_Str="detector;Ellipse("4095.41,3893.44,4.12171,3.24946,2.0637) #"
+        Cur_Reg_Str="detector;Circle("+str(Det_X)+","+str(Det_Y)+","+str(10)+") #\n"
+        Det_Coords_Reg_File.write(Cur_Reg_Str)
+    file2.close()
+    Det_Coords_Reg_File.close()
 #Raytrace_Region_File_Generator(140)
 Raytrace_Region_File_Generator(10125)
