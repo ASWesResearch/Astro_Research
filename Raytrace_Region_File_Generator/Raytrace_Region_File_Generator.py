@@ -3,7 +3,7 @@ import os
 from os import system
 import sys
 import numpy
-import pyregion
+#import pyregion
 path=os.path.realpath('../')
 #print "Path=",path
 #system('pwd')
@@ -99,4 +99,40 @@ def Raytrace_Region_File_Generator(ObsID):
     file2.close()
     Det_Coords_Reg_File.close()
 #Raytrace_Region_File_Generator(140)
-Raytrace_Region_File_Generator(10125)
+#Raytrace_Region_File_Generator(10125)
+
+def Raytrace_All_Soucres_Region_File_Generator(ObsID_L,Generate_Bool=False):
+    Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
+    Raytrace_Files_Path="/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"
+    Sky_Coord_All_Soruces_File=open(Raytrace_Files_Path+"Sky_Coord_All_Soruces.reg","w")
+    Sky_Coord_All_Soruces_File.write(Header_String)
+    Detector_Coord_All_Soruces_File=open(Raytrace_Files_Path+"Detector_Coord_All_Soruces.reg","w")
+    Detector_Coord_All_Soruces_File.write(Header_String)
+    for ObsID in ObsID_L:
+        if(Generate_Bool):
+            Raytrace_Region_File_Generator(ObsID)
+        Cur_Raytrace_Sky_Path=Raytrace_Files_Path+str(ObsID)+"/ObsID_"+str(ObsID)+"_Raytraced_Source_Regions.reg"
+        Cur_Raytrace_Detector_Path=Raytrace_Files_Path+str(ObsID)+"/Raytraced_Sources_ObsID_"+str(ObsID)+"_Detector_Coords.reg"
+        Cur_Raytrace_Sky_File=open(Cur_Raytrace_Sky_Path)
+        Cur_Raytrace_Sky_Str=Cur_Raytrace_Sky_File.read()
+        #print "Cur_Raytrace_Sky_Str: ", Cur_Raytrace_Sky_Str
+        Cur_Raytrace_Sky_Str_L=Cur_Raytrace_Sky_Str.split("fixed=0\n")
+        #print "Cur_Raytrace_Sky_Str_L: ", Cur_Raytrace_Sky_Str_L
+        Cur_Raytrace_Sky_Str_Reduced=Cur_Raytrace_Sky_Str_L[1]
+        #print "Cur_Raytrace_Sky_Str_Reduced:\n", Cur_Raytrace_Sky_Str_Reduced
+        #print "Cur_Raytrace_Sky_Str_Reduced Sum:\n",Header_String+Cur_Raytrace_Sky_Str_Reduced+Cur_Raytrace_Sky_Str_Reduced
+        Sky_Coord_All_Soruces_File.write(Cur_Raytrace_Sky_Str_Reduced)
+        Cur_Raytrace_Detector_File=open(Cur_Raytrace_Detector_Path)
+        Cur_Raytrace_Detector_Str=Cur_Raytrace_Detector_File.read()
+        #print "Cur_Raytrace_Detector_Str: ", Cur_Raytrace_Detector_Str
+        Cur_Raytrace_Detector_Str_L=Cur_Raytrace_Detector_Str.split("fixed=0\n")
+        #print "Cur_Raytrace_Detector_Str_L: ", Cur_Raytrace_Detector_Str_L
+        Cur_Raytrace_Detector_Str_Reduced=Cur_Raytrace_Detector_Str_L[1]
+        #print "Cur_Raytrace_Detector_Str_Reduced:\n", Cur_Raytrace_Detector_Str_Reduced
+        #print "Cur_Raytrace_Detector_Str_Reduced Sum:\n",Header_String+Cur_Raytrace_Detector_Str_Reduced+Cur_Raytrace_Detector_Str_Reduced
+        Detector_Coord_All_Soruces_File.write(Cur_Raytrace_Detector_Str_Reduced)
+    Sky_Coord_All_Soruces_File.close()
+    Detector_Coord_All_Soruces_File.close()
+
+#Raytrace_All_Soucres_Region_File_Generator([10125])
+Raytrace_All_Soucres_Region_File_Generator([6096, 1971, 1972, 768, 952, 11674, 13255, 13253, 13246, 12952, 12953, 13247, 12951, 2025, 9548, 2149, 2197, 9510, 6131, 5908, 803, 14342, 12995, 2064, 16024, 12992, 14332, 13202, 793, 2933, 11104, 379, 2056, 2055, 2922, 9506, 11344, 766, 4688, 6869, 6872, 3554, 2057, 2058, 8041, 9121, 9546, 7252, 7060, 9553, 5930, 5931, 5929, 2079, 5905, 9527, 4689, 3947, 1563, 9507, 4613, 794, 11775, 11271, 3951, 2062, 2027, 2060, 2061, 2070, 2032, 7154, 7153, 11779, 5932, 2976, 4613, 794, 1043, 4632, 4631, 4633, 4404, 2059, 12095, 2040, 2915, 4372, 2069, 11229, 7848, 15383, 10125, 2031, 10875, 12889, 12888, 321, 322, 9551, 9550, 3954, 2020, 2068, 4742, 2039, 3150, 2030, 4743, 5197, 11784, 9552])
