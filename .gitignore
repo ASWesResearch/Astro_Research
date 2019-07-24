@@ -33,3 +33,4 @@ SQL_Standard_File/*
 Data_Processing/
 Histogram_Organizer/*.csv
 /Raytrace_Region_File_Generator/Raytrace_Region_Files/
+Raytrace_Region_File_Generator/Raytrace_Region_Files_Old/
