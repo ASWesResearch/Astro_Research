@@ -1,5 +1,5 @@
 from ciao_contrib.runtool import *
-import pyregion
+#import pyregion
 import re
 def Coords_Calc(evtfpath,regfpath,header=""):
     """
