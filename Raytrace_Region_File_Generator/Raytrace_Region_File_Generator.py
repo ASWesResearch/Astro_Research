@@ -3,6 +3,7 @@ import os
 from os import system
 import sys
 import numpy
+import re
 #import pyregion
 path=os.path.realpath('../')
 #print "Path=",path
@@ -81,7 +82,26 @@ def Raytrace_Region_File_Generator(ObsID):
     Det_Coords_Reg_Outpath=path_Obs+"Raytraced_Sources_ObsID_"+str(ObsID)+"_Detector_Coords.reg"
     Det_Coords_Reg_File=open(Det_Coords_Reg_Outpath,"w")
     Det_Coords_Reg_File.write(Header_String)
-    for Source_C in Source_C_L:
+    Raytrace_Reg_File=open(Raytrace_Reg_Fpath)
+    Raytrace_Reg_Str=Raytrace_Reg_File.read()
+    #print "Raytrace_Reg_Str:\n", Raytrace_Reg_Str
+    Raytrace_Reg_Str_L=Raytrace_Reg_Str.split(Header_String)
+    #print "Raytrace_Reg_Str_L: ", Raytrace_Reg_Str_L
+    Raytrace_Reg_Str_Reduced=Raytrace_Reg_Str_L[1]
+    #print "Raytrace_Reg_Str_Reduced:\n", Raytrace_Reg_Str_Reduced
+    Raytrace_Reg_Str_Reduced_L=Raytrace_Reg_Str_Reduced.split("\n")
+    #print "Raytrace_Reg_Str_Reduced_L: ", Raytrace_Reg_Str_Reduced_L
+    #print "len(Raytrace_Reg_Str_Reduced_L) Before Pop: ", len(Raytrace_Reg_Str_Reduced_L)
+    Raytrace_Reg_Str_Reduced_L.pop(len(Raytrace_Reg_Str_Reduced_L)-1)
+    print "Raytrace_Reg_Str_Reduced_L After Pop: ", Raytrace_Reg_Str_Reduced_L
+    #print "len(Raytrace_Reg_Str_Reduced_L) After Pop: ", len(Raytrace_Reg_Str_Reduced_L)
+    #print "len(Source_C_L): ", len(Source_C_L)
+    #for Source_C in Source_C_L:
+    for i in range(0,len(Source_C_L)):
+        Source_C=Source_C_L[i]
+        print "Source_C: ", Source_C
+        Cur_Reg=Raytrace_Reg_Str_Reduced_L[i]
+        print "Cur_Reg: ", Cur_Reg
         Phys_X=Source_C[0]
         Phys_Y=Source_C[1]
         Chip_X=Source_C[2]
@@ -93,8 +113,12 @@ def Raytrace_Region_File_Generator(ObsID):
         Det_Y=Source_C[8]
         Offaxis_Angle=Source_C[9]
         file2.write(str(Phys_X)+","+str(Phys_Y)+","+str(Chip_X)+","+str(Chip_Y)+","+str(Chip_ID)+","+str(RA)+","+str(DEC)+","+str(Det_X)+","+str(Det_Y)+","+str(Offaxis_Angle)+"\n")
-        ##Cur_Reg_Str="detector;Ellipse("4095.41,3893.44,4.12171,3.24946,2.0637) #"
-        Cur_Reg_Str="detector;Circle("+str(Det_X)+","+str(Det_Y)+","+str(10)+") #\n" #This needs to be updated to preserve the region shape
+        #Cur_Reg_Str="detector;Ellipse("4095.41,3893.44,4.12171,3.24946,2.0637) #"
+        Cur_Reg_String_L=re.split("[(),]",Cur_Reg)
+        #print "Cur_Reg_String_L: ", Cur_Reg_String_L
+        #Cur_Reg_Str="detector;Circle("+str(Det_X)+","+str(Det_Y)+","+str(10)+") #\n" #This needs to be updated to preserve the region shape
+        Cur_Reg_Str=Cur_Reg_String_L[0]+"("+str(Det_X)+","+str(Det_Y)+","+Cur_Reg_String_L[3]+","+Cur_Reg_String_L[4]+","+Cur_Reg_String_L[5]+")"+Cur_Reg_String_L[6]+"\n"
+        print "Cur_Reg_Str: ", Cur_Reg_Str
         Det_Coords_Reg_File.write(Cur_Reg_Str)
     file2.close()
     Det_Coords_Reg_File.close()
@@ -134,5 +158,6 @@ def Raytrace_All_Soucres_Region_File_Generator(ObsID_L,Generate_Bool=False):
     Sky_Coord_All_Soruces_File.close()
     Detector_Coord_All_Soruces_File.close()
 
-Raytrace_All_Soucres_Region_File_Generator([10125])
+#Raytrace_All_Soucres_Region_File_Generator([10125])
+Raytrace_All_Soucres_Region_File_Generator([10125],Generate_Bool=True)
 #Raytrace_All_Soucres_Region_File_Generator([6096, 1971, 1972, 768, 952, 11674, 13255, 13253, 13246, 12952, 12953, 13247, 12951, 2025, 9548, 2149, 2197, 9510, 6131, 5908, 803, 14342, 12995, 2064, 16024, 12992, 14332, 13202, 793, 2933, 11104, 379, 2056, 2055, 2922, 9506, 11344, 766, 4688, 6869, 6872, 3554, 2057, 2058, 8041, 9121, 9546, 7252, 7060, 9553, 5930, 5931, 5929, 2079, 5905, 9527, 4689, 3947, 1563, 9507, 4613, 794, 11775, 11271, 3951, 2062, 2027, 2060, 2061, 2070, 2032, 7154, 7153, 11779, 5932, 2976, 4613, 794, 1043, 4632, 4631, 4633, 4404, 2059, 12095, 2040, 2915, 4372, 2069, 11229, 7848, 15383, 10125, 2031, 10875, 12889, 12888, 321, 322, 9551, 9550, 3954, 2020, 2068, 4742, 2039, 3150, 2030, 4743, 5197, 11784, 9552],Generate_Bool=True)
