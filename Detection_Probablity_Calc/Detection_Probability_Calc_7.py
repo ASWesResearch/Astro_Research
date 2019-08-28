@@ -47,8 +47,9 @@ def Detection_Probability_Calc_3(fname_L_H,B,C,OFF):
             B_A=data['col1'] # B_A:-array, Background Array, The array contianing the background data from the current data file, in order of increasing background
             P_A=data['col2'] # P_A:-array, Probablity Array, The array of probabilities in the order of the increasing backgrounds they are associated with
             P_Check=False
-            #print B_A
-            #print P_A
+            #print "B: ", B
+            #print "B_A: ", B_A
+            #print "P_A: ", P_A
             #print "len(B_A) is ", len(B_A)
             #print fname
             for i in range(0,len(B_A)-1): # Choses every background vaule in the background array Note:This might be wrong, NEED to FIX !!!
@@ -57,11 +58,13 @@ def Detection_Probability_Calc_3(fname_L_H,B,C,OFF):
                 B_Lg=B_A[i+1] # B_Lg:-numpy.float64, Background Large, The Larger background used to find the probablity to background slope
                 #print "B_S is ", B_S
                 #print "B_Lg is ",B_Lg
+                #print "B: ", B
                 #print B_A
                 """
                 This apoximates a linear relationship between any 2 points in a file (the fname file) and uses it to find a probablity as a function of background value inbetween the points
                 """
                 if((B>=B_S) and (B<=B_Lg)): # Checks to see if the input background is in between the Background Small value and the Background Large value
+                    #print "Interpolation Conditions Satisfied"
                     slope=(P_A[i+1]-P_A[i])/(B_A[i+1]-B_A[i]) # slope:-numpy.float64, slope, Slope formula m=(y2-y1)/(x2-x1), given that y2=P_A[i+1]=Probablity Large, y1=P_A[i]=Probablity Small
                     P_B=(slope*(B-B_S))+P_A[i] #P_B:- Probablity as a function of Background, Solved Point Slope Formula y=m(x-x1)+y1
                     #print "P_B before is ", P_B
@@ -77,7 +80,7 @@ def Detection_Probability_Calc_3(fname_L_H,B,C,OFF):
                     #print B_S
                     #print B_Lg
                     #print "P_B is ", P_B
-                    #print B_P
+                    #print "B_P: ", B_P
                     P_L.append(P_B) #P_L:-list, Probablity List, appends the current Probablity as a function of Background onto the Probablity List
                     P_Check=True
                     #print "P_L is ", P_L
@@ -182,6 +185,7 @@ def D_P_C_Big_Input_90_Per_Check(Backgrounds,Off_Angs=[0,1,2,3,4,5,6,7,8,9,10],C
                 Count_90_Per_L=[] # Count_90_Per_L:-list, Count 90 Percent List, A list of all count vaules that give a detection probablity greater than 90% given the background and offaxis, Resets the list for every new step vaule
                 for count in range(Count_Min,Count_Max+1,step): # This finds the minimum value of counts for which
                     #print '\n'+str(count)+'\n'
+                    #print "Background: ", Background
                     Cur_P= Detection_Probability_Calc_3([['Graph 1 3.0 counts.csv','Graph 1 8.4 counts.csv','Graph 1 22 counts.csv'],['Graph 2 2.8 counts.csv','Graph 2 8.3 counts.csv','Graph 2 22 counts.csv'],['Graph 3 2.4 counts.csv','Graph 3 7.0 counts.csv','Graph 3 18 counts.csv','Graph 3 23 counts.csv','Graph 3 91 counts.csv'],['Graph 4 3.7 counts.csv','Graph 4 11 counts.csv','Graph 4 29 counts.csv','Graph 4 36 counts.csv','Graph 4 110 counts.csv']],Background,count,Off_Ang) #Calculates the probablity of a detection based on all the current values
                     Cur_P_Str=str(Cur_P) # Cur_P_Str:-str, Current Probablity String, The current probablity value as a string
                     Cur_P_N=float(Cur_P_Str) # Cur_P_N:-float, Current Probablity Number, The current probablity value as a float
