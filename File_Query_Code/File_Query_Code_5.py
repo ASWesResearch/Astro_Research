@@ -205,12 +205,27 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=
     #if((Obs_Check_B) and (File_Type_Str=="evt2")): #Removes all invaild observation evt2 files
     #print "fname_L_H Before: ", fname_L_H
     if((Obs_Check_B) and (File_Type_Str=="evt2")): #Removes all invaild observation files
+        #print "Checking Vailidity"
         Max_Exposure=0
         #Max_Exposure_Filename_L=[]
-        for Filename_L in fname_L_H:
+        #print "fname_L_H Before Loop: ", fname_L_H
+        #Count=0
+        #print "len(fname_L_H): ", len(fname_L_H)
+        #for Filename_L in fname_L_H:
+        Invalid_Index_L=[]
+        for i in range(0,len(fname_L_H)):
+            Filename_L=fname_L_H[i]
+            #Count=Count+1
+            #print Count
+            #print i
+            #print "fname_L_H Top Loop: ", fname_L_H
             Filepath=Filename_L[1]
             #print "Filepath : ", Filepath
             hdul = fits.open(Filepath)
+            #print "hdul:\n", hdul
+            #hdul_info=hdul.info()
+            hdul_header=hdul[1].header
+            #print "hdul_header: ", hdul_header
             Num_Rows_in_Array=hdul[1].header['NROWS'] #Num_Rows_in_Array:-int, Number of Row in the Array, The number of rows in a (sub)array, if less then 1024 then the observation is a subarray and will be removed from the sample
             #print "Num_Rows_in_Array : ", Num_Rows_in_Array
             #print "type(Num_Rows_in_Array) : ", type(Num_Rows_in_Array)
@@ -221,10 +236,19 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=
             #print "Grating_Flag : ", Grating_Flag
             #print Grating_Flag
             #print "fname_L_H Before : ", fname_L_H
+            #print Count
             if((Num_Rows_in_Array!=1024) or (Exposure_Time<5000) or (Grating_Flag!="NONE")): #Checks to see if the current observation is invaild (invalid if: it is a subarray or has an exposure time less then 5000s)
-                fname_L_H.remove(Filename_L)
+                print "Current Observation Invalid ! ! !"
+                #fname_L_H.remove(Filename_L) #I think I need to change this to return all indexes that corresepond to invaild observations and then remove it from the list AFTER iterating though it
+                Invalid_Index_L.append(i)
                 #print "Void Observation"
-                continue
+                #print "fname_L_H Before Continue: ", fname_L_H
+                ##continue
+                #print "fname_L_H Bottom Loop: ", fname_L_H
+        #print "Invalid_Index_L: ", Invalid_Index_L
+        Invalid_Index_L.sort(reverse=True) #This is so the index being popped remains in range.
+        for Invalid_Index in Invalid_Index_L:
+            fname_L_H.pop(Invalid_Index)
         #print "fname_L_H After : ", fname_L_H
         Number_of_ObsIDs=len(fname_L_H)
         #print "Number_of_ObsIDs : ", Number_of_ObsIDs
@@ -311,3 +335,4 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=
 #print File_Query("NGC 5813","evt2")
 #print File_Query("NGC 5813","evt2",Obs_Check_B=False,Exp_Max_B=True)
 #print File_Query("NGC 5813","evt2",Exp_Max_B=True)
+#print File_Query("NGC 4559","evt2")
