@@ -11,11 +11,14 @@ path=os.path.realpath('../')
 #system('pwd')
 sys.path.append(os.path.abspath(path))
 from File_Query_Code import File_Query_Code_5
-def File_Num(Fname): #Need to modify to make sure only the number is used. There is a bug where "10new" is used instead of "10"
-    Fname_L=Fname.split(".")
-    Fname_Number_Str=Fname_L[0]
-    Fname_Number_Int=int(Fname_Number_Str) #Some Bug pointed here ! ! ! Seems like a filename I did not consider with the string segment "10new" is casuing an error.
-    return Fname_Number_Int
+def Reg_Org(Reg_Str):
+    Reg_L=re.split("[(),]",Reg_Str)
+    #print "Cur_Raytrace_Reg_L: ", Cur_Raytrace_Reg_L
+    X_Str=Reg_L[1]
+    X=float(X_Str)
+    Y_Str=Reg_L[2]
+    Y=float(Y_Str)
+    return X
 def Distance_Calc(x1,y1,x2,y2):
     Distance=np.sqrt(((x2-x1)**2.0)+((y2-y1)**2.0))
     return Distance
@@ -78,6 +81,7 @@ def Nearest_Raytraced_Neighbor_Calc(ObsID):
         os.makedirs(directory_Obs)
     Nearest_Neighbor_Hybrid_Reg_File=open(Nearest_Neighbor_Hybrid_Reg_Fpath,"w")
     Nearest_Neighbor_Hybrid_Reg_File.write(Header_String)
+    Nearest_Neighbor_Hybrid_Reg_L=[]
     for i in range(0,len(Untraced_Reg_L)):
     #for i in range(0,1): #This is a TEST
         Cur_Min_Distance=100000 #Much larger then any distance expected to be encoutered
@@ -119,6 +123,18 @@ def Nearest_Raytraced_Neighbor_Calc(ObsID):
         #print "Cur_Hybrid_Reg: ", Cur_Hybrid_Reg
         Cur_Hybrid_Reg_Det=Nearest_Raytraced_Neighbor_Reg_Str_L[0]+"("+str(Cur_Det_X)+","+str(Cur_Det_Y)+","+Nearest_Raytraced_Neighbor_Reg_Str_L[3]+","+Nearest_Raytraced_Neighbor_Reg_Str_L[4]+","+Nearest_Raytraced_Neighbor_Reg_Str_L[5]+")"+Nearest_Raytraced_Neighbor_Reg_Str_L[6]+"\n"
         #print "Cur_Hybrid_Reg_Det: ", Cur_Hybrid_Reg_Det
+        #Nearest_Neighbor_Hybrid_Reg_File.write(Cur_Hybrid_Reg) # I don't know if I need to use the X and Y as sky coordinates or detector coordinates if detector coordinates then this must be changed to "Nearest_Neighbor_Hybrid_Reg_File.write(Cur_Hybrid_Reg_Det)", I don't think the shapes of the regions transfered are vaild in detector coodinates so I'm going with sky coordinates now. Also I'm pretty sure calcuationg flux requires sky coords not detector coords
+        Nearest_Neighbor_Hybrid_Reg_L.append(Cur_Hybrid_Reg)
+    #print "Nearest_Neighbor_Hybrid_Reg_L Before: ", Nearest_Neighbor_Hybrid_Reg_L
+    #print type(Nearest_Neighbor_Hybrid_Reg_L[0])
+    #Nearest_Neighbor_Hybrid_Reg_L.sort(key=Reg_Org(Nearest_Neighbor_Hybrid_Reg_L,Evt2_Filepath))
+    Nearest_Neighbor_Hybrid_Reg_L.sort(key=Reg_Org,reverse=True)
+    #Nearest_Neighbor_Hybrid_Reg_L=Reg_Sort(Nearest_Neighbor_Hybrid_Reg_L,Evt2_Filepath)
+    #print "Nearest_Neighbor_Hybrid_Reg_L After: ", Nearest_Neighbor_Hybrid_Reg_L
+    #Nearest_Neighbor_Hybrid_Reg_L.sort(key=Reg_Org(self,Evt2_Filepath))
+    for Cur_Hybrid_Reg in Nearest_Neighbor_Hybrid_Reg_L:
+        #print "Cur_Hybrid_Reg: ", Cur_Hybrid_Reg
+        #print "type(Cur_Hybrid_Reg): ", type(Cur_Hybrid_Reg)
         Nearest_Neighbor_Hybrid_Reg_File.write(Cur_Hybrid_Reg) # I don't know if I need to use the X and Y as sky coordinates or detector coordinates if detector coordinates then this must be changed to "Nearest_Neighbor_Hybrid_Reg_File.write(Cur_Hybrid_Reg_Det)", I don't think the shapes of the regions transfered are vaild in detector coodinates so I'm going with sky coordinates now. Also I'm pretty sure calcuationg flux requires sky coords not detector coords
     Raytrace_Reg_File.close()
     Untraced_File.close()
@@ -133,6 +149,7 @@ def Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=False):
     Nearest_Raytraced_Neighbor_FPath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"
     Nearest_Neighbor_Hybrid_All_Soruces_File=open(Nearest_Raytraced_Neighbor_FPath+"Nearest_Neighbor_Hybrid_All_Soruces.reg","w")
     Nearest_Neighbor_Hybrid_All_Soruces_File.write(Header_String)
+    Nearest_Neighbor_Hybrid_All_Soruces_L=[]
     for ObsID in ObsID_L:
         if(Generate_Bool):
             Nearest_Raytraced_Neighbor_Calc(ObsID)
@@ -144,7 +161,13 @@ def Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=False):
         #print "Nearest_Raytraced_Neighbor_Reg_Str_L: ", Nearest_Raytraced_Neighbor_Reg_Str_L
         Nearest_Raytraced_Neighbor_Reg_Str_Reduced=Nearest_Raytraced_Neighbor_Reg_Str_L[1]
         #print "Nearest_Raytraced_Neighbor_Reg_Str_Reduced:\n", Nearest_Raytraced_Neighbor_Reg_Str_Reduced
-        Nearest_Neighbor_Hybrid_All_Soruces_File.write(Nearest_Raytraced_Neighbor_Reg_Str_Reduced)
+        Nearest_Raytraced_Neighbor_Reg_Str_Reduced_L=Nearest_Raytraced_Neighbor_Reg_Str_Reduced.split("\n")
+        Nearest_Raytraced_Neighbor_Reg_Str_Reduced_L.pop(len(Nearest_Raytraced_Neighbor_Reg_Str_Reduced_L)-1)
+        for Nearest_Raytraced_Neighbor_Reg in Nearest_Raytraced_Neighbor_Reg_Str_Reduced_L:
+            Nearest_Neighbor_Hybrid_All_Soruces_L.append(Nearest_Raytraced_Neighbor_Reg+"\n")
+    Nearest_Neighbor_Hybrid_All_Soruces_L.sort(key=Reg_Org,reverse=True)
+    for Nearest_Neighbor_Hybrid_Source in Nearest_Neighbor_Hybrid_All_Soruces_L:
+        Nearest_Neighbor_Hybrid_All_Soruces_File.write(Nearest_Neighbor_Hybrid_Source)
     Nearest_Neighbor_Hybrid_All_Soruces_File.close()
 
 #Nearest_Raytraced_Neighbor_Calc_Big_Input([10125],Generate_Bool=True)
