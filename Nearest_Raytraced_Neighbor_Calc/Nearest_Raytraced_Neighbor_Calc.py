@@ -141,6 +141,53 @@ def Nearest_Raytraced_Neighbor_Calc(ObsID):
     Nearest_Neighbor_Hybrid_Reg_File.close()
 
 #Nearest_Raytraced_Neighbor_Calc(10125)
+def Background_Reg_Generator(ObsID):
+    Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
+    Nearest_Neighbor_Hybrid_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+    Nearest_Neighbor_Reg_File=open(Nearest_Neighbor_Hybrid_Reg_Fpath)
+    Nearest_Neighbor_Reg_Str=Nearest_Neighbor_Reg_File.read()
+    #print "Nearest_Neighbor_Reg_Str:\n", Nearest_Neighbor_Reg_Str
+    Nearest_Neighbor_Reg_Str_L=Nearest_Neighbor_Reg_Str.split(Header_String)
+    #print "Nearest_Neighbor_Reg_Str_L: ", Nearest_Neighbor_Reg_Str_L
+    Nearest_Neighbor_Reg_Str_Reduced=Nearest_Neighbor_Reg_Str_L[1]
+    #print "Nearest_Neighbor_Reg_Str_Reduced:\n", Nearest_Neighbor_Reg_Str_Reduced
+    Nearest_Neighbor_Reg_Str_Reduced_L=Nearest_Neighbor_Reg_Str_Reduced.split("\n")
+    #print "Nearest_Neighbor_Reg_Str_Reduced_L: ", Nearest_Neighbor_Reg_Str_Reduced_L
+    #print "len(Nearest_Neighbor_Reg_Str_Reduced_L) Before Pop: ", len(Nearest_Neighbor_Reg_Str_Reduced_L)
+    Nearest_Neighbor_Reg_Str_Reduced_L.pop(len(Nearest_Neighbor_Reg_Str_Reduced_L)-1)
+    Nearest_Neighbor_Hybrid_BG_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid_Background.reg"
+    Nearest_Neighbor_Hybrid_BG_Reg_File=open(Nearest_Neighbor_Hybrid_BG_Reg_Fpath,"w")
+    Nearest_Neighbor_Hybrid_BG_Reg_File.write(Header_String)
+    for Nearest_Neighbor_Reg_Str_Reduced in Nearest_Neighbor_Reg_Str_Reduced_L:
+        Nearest_Neighbor_Reg_Str_Reduced_Split_L=re.split("[(),]", Nearest_Neighbor_Reg_Str_Reduced)
+        #print "Nearest_Neighbor_Reg_Str_Reduced_Split_L: ", Nearest_Neighbor_Reg_Str_Reduced_Split_L
+        X_Str=Nearest_Neighbor_Reg_Str_Reduced_Split_L[1]
+        #print "X_Str: ", X_Str
+        X=float(X_Str)
+        Y_Str=Nearest_Neighbor_Reg_Str_Reduced_Split_L[2]
+        Y=float(Y_Str)
+        Maj_Ax_Str=Nearest_Neighbor_Reg_Str_Reduced_Split_L[3]
+        Maj_Ax=float(Maj_Ax_Str)
+        Min_Ax_Str=Nearest_Neighbor_Reg_Str_Reduced_Split_L[4]
+        Min_Ax=float(Min_Ax_Str)
+        Angle_Str=Nearest_Neighbor_Reg_Str_Reduced_Split_L[5]
+        Angle=float(Angle_Str)
+        Reg_Front_Str=Nearest_Neighbor_Reg_Str_Reduced_Split_L[0]
+        Reg_Front_Str_L=Reg_Front_Str.split(";")
+        Units_Str=Reg_Front_Str_L[0]
+        Shape_Str=Reg_Front_Str_L[1]
+        Reg_Back_Str=Nearest_Neighbor_Reg_Str_Reduced_Split_L[len(Nearest_Neighbor_Reg_Str_Reduced_Split_L)-1]
+        BG_Maj=2.0*Maj_Ax
+        BG_Min=2.0*Min_Ax
+        Cur_BG_Reg=Units_Str+";"+Shape_Str+"("+str(X)+","+str(Y)+","+str(BG_Maj)+","+str(BG_Min)+","+str(Angle)+")"+Reg_Back_Str+"\n"
+        Cur_Reg=Units_Str+";-"+Shape_Str+"("+str(X)+","+str(Y)+","+str(Maj_Ax)+","+str(Min_Ax)+","+str(Angle)+")"+Reg_Back_Str+"\n"
+        #print "Cur_BG_Reg: ", Cur_BG_Reg
+        #print "Cur_Reg: ", Cur_Reg
+        Nearest_Neighbor_Hybrid_BG_Reg_File.write(Cur_BG_Reg)
+        Nearest_Neighbor_Hybrid_BG_Reg_File.write(Cur_Reg)
+    Nearest_Neighbor_Hybrid_BG_Reg_File.close()
+
+#Background_Reg_Generator(10125)
 
 def Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=False):
     Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
@@ -153,6 +200,7 @@ def Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=False):
     for ObsID in ObsID_L:
         if(Generate_Bool):
             Nearest_Raytraced_Neighbor_Calc(ObsID)
+            Background_Reg_Generator(ObsID)
         #Nearest_Raytraced_Neighbor_Reg_FPath="/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
         Nearest_Raytraced_Neighbor_Reg_FPath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
         Nearest_Raytraced_Neighbor_Reg_File=open(Nearest_Raytraced_Neighbor_Reg_FPath)
