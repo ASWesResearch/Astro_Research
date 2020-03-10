@@ -1,3 +1,5 @@
+from astropy.io.fits import Header
+from astropy.io import fits
 def fname_to_counts(fname_L_H):
     """
     fname_L_H:-List, A list of filename lists, called a high list. The filenames are those of the counts files from the 4D interperlation plot, the filenames are strings.
@@ -20,16 +22,23 @@ Counts= fname_to_counts([['Graph 1 3.0 counts.csv','Graph 1 8.4 counts.csv','Gra
 Counts_L_H=[[10,20,70,70],[20,20,70,100],[20,20,70,100],[20,20,70,70]]
 Fluxes_10_Cnts_L=[4.49E-15,1.13E-15,2.81E-15,2.44E-15]
 
-def Counts_To_Flux_Converter(C_L_H,F_K_L,C_K=10):
+def Counts_To_Flux_Converter(evtfpath,C_L_H,F_K_L,CR_K=0.01):
     """
+    evtfpath:-str, Event Filepath, The filepath of the event file of the observation, For Example '/Volumes/xray/simon/chandra_not_csc_GOOD/1618/primary/acisf01618N003_evt2.fits.gz'
     C_L_H:-List, Count List High, This is a list of count lists, each count list is the count list associated with the background used to calculate it, In each count list is a list of the minimum number of counts at which dectection probablity of an object is 90 Percent for each interpolated offaxis angel in order of increasing interpolated offaxis angle, For example, for the interpolated offaxis angles [1,3,4,9] the associated minimum number of counts is [12,17,31,61].
-    C_K:-Float or Int,Counts Known, This is the number of counts for which the equivalent flux is known
+    CR_K:-Float or Int,Count Rate Known, This is the Count Rate for which the equivalent flux is known, This is the PIMMS count rate input used to get the known flux in the PIMMS file
     F_K_L:-List, Flux Known List, This is a high list of all the known fluxes for the known amount of counts Counts Known, grouped by what plot they are being associated with.
     n:-int the total number of count lists in the high list, Note: this will be replaced by len(C_L_H)
 
     This function takes the observered number of counts in the form of a high list and known amount of counts for a certain known flux, that known flux and the number of lists in the high list
     and returns a high list of the observered fluxes grouped by what plot they are associated with. The plots MIGHT be associated with the off-axis angle
     """
+    hdulist = fits.open(evtfpath)
+    #Obs_Date_Str=hdulist[1].header['DATE-OBS']
+    Exposure_Time=hdulist[1].header['EXPOSURE']
+    print "Exposure_Time: ", Exposure_Time
+    print "type(Exposure_Time): ", type(Exposure_Time)
+    #Exposure_Time=float(Exposure_Time_Str) #Not sure if this string is able to be conveted to a float without first parsing it, I have not checked yet
     F_U_L_H=[] # high list,Flux Unknown List High, A high list if the clacluated fluxes, grouped by the plots they came from
     #for i in range(0,n): # n, is the total number of plots? #Note: It is actually the total number of backgrounds but it does not matter because that is allways equal to len(C_L_H)
     for i in range(0,len(C_L_H)): # Indexes through each background
@@ -39,7 +48,7 @@ def Counts_To_Flux_Converter(C_L_H,F_K_L,C_K=10):
         for j in range(0,len(Cur_Counts_L)): # Note, the range might not go to 4 but instead an arbitary variable Note: That "arbitary variable" is actually the amount of interpolated offaxis angles in a given Count list which is just equal to the number of counts in the count list which in turn is just equal to the len(Cur_Counts_L) and thus will be replaced by len(Cur_Counts_L)
             C=Cur_Counts_L[j] # C:-float, Counts, This selects the each count in the current count list
             F_K=Fluxes_10_Cnts_L[i] #This selects the current known flux associated with 10 counts
-            F_U=F_K*(float(C)/C_K) # F_U:-float, Flux Unknown, This converts the current count value to the current flux value by assuming a linear relationship bewteen counts and flux, F_U is the calculated flux
+            F_U=F_K*((float(C)/Exposure_Time)/CR_K) # F_U:-float, Flux Unknown, This converts the current count value to the current flux value by assuming a linear relationship bewteen counts and flux, F_U is the calculated flux
             F_U_L.append(F_U) # This appends the current calculated flux to the Flux Unknown List (The list of calculated IE. observered fluxes)
         F_U_L_H.append(F_U_L) # This appends the current Flux Unknown List to the Flux Unknown High List
     return F_U_L_H # This returns the Flux Unknown High List
