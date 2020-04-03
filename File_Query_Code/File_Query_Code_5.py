@@ -336,3 +336,6 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=
 #print File_Query("NGC 5813","evt2",Obs_Check_B=False,Exp_Max_B=True)
 #print File_Query("NGC 5813","evt2",Exp_Max_B=True)
 #print File_Query("NGC 4559","evt2")
+#print File_Query("NGC 7507","evt2")
+#print File_Query("NGC 7507","reg",".reg")
+print File_Query("MESSIER 063","evt2")
