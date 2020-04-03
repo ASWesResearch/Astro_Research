@@ -199,7 +199,8 @@ def D25_List_Run(Gname_L):
 #NGC 891
 #print D25_Finder("NGC 891")
 #print D25_Finder("NGC 7507")
-print D25_Finder("NGC 3631")
+#print D25_Finder("NGC 3631")
+print D25_Finder("NGC 7507")
 """
 D25_List_Run(['SN 2004am', 'SN 1996aq', 'PGC135659', 'M51', 'SN2011ja', 'N119',
 'SN 2011ja', 'NGC 346', 'SNR 1987A', 'SN 1998S', 'NGC 604', 'NGC5471B', 'NGC 5204 X-1', 'NGC 1818', 'FORNAX CLUSTER', 'SN 2002HH', 'SN 1986J', 'SN 2004dj', 'SN 2004et', 'NGC 1313 X-1', 'NGC 1313 X-2', 'VIRGO CLUSTER', 'ngc 1672', 'SN 1993J',
