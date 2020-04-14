@@ -84,14 +84,17 @@ def Detection_Probability_Calc_3(fname_L_H,B,C,OFF):
                     P_L.append(P_B) #P_L:-list, Probablity List, appends the current Probablity as a function of Background onto the Probablity List
                     P_Check=True
                     #print "P_L is ", P_L
+            print "P_Check: ", P_Check #Checks to see if the observered input background is within the interpolation range of  the 4D Graph Data. If False then the observation input background is out of range
+            if(P_Check==False):
+                return False
             C_Str=fname.split(' ')[2] #C_Str:-str, Count String, The string value of the current count value, the filename is spilt inorder to get the string, the filename must be in the standard form 'Graph 2 8.3 counts'
             C_Num=float(C_Str) #C_Num:-float, Count Number, The float value of the current count
             C_L.append(C_Num) # Appends the current float count value to the count list
             #print P_Check
-        #print "P_L : ", P_L
-        #print "C_L : ", C_L
-        #print "P_L Length : ",len(P_L)
-        #print "C_L Length : ",len(C_L)
+        print "P_L : ", P_L
+        print "C_L : ", C_L
+        print "P_L Length : ",len(P_L)
+        print "C_L Length : ",len(C_L)
         P_C_f=interpolate.interp1d(C_L,P_L,bounds_error=0,fill_value=(float("NaN"),1.0)) #P_C_f:-scipy.interpolate.interpolate.interp1d, Probablity Count Function, This is a function that interpolates the probablity and count arrays and returns the probablity as a function of counts #Note: May have to remove bounds_error variable, it also might make the data for C=30 counts wrong
         #P_C_f=interpolate.interp1d(C_L,P_L,bounds_error=1,fill_value=(float("NaN"),1.0)) #P_C_f:-scipy.interpolate.interpolate.interp1d, Probablity Count Function, This is a function that interpolates the probablity and count arrays and returns the probablity as a function of counts #Note: May have to remove bounds_error variable, it also might make the data for C=30 counts wrong
         #print "P_C_f", type(P_C_f)
@@ -187,6 +190,8 @@ def D_P_C_Big_Input_90_Per_Check(Backgrounds,Off_Angs=[0,1,2,3,4,5,6,7,8,9,10],C
                     #print '\n'+str(count)+'\n'
                     #print "Background: ", Background
                     Cur_P= Detection_Probability_Calc_3([['Graph 1 3.0 counts.csv','Graph 1 8.4 counts.csv','Graph 1 22 counts.csv'],['Graph 2 2.8 counts.csv','Graph 2 8.3 counts.csv','Graph 2 22 counts.csv'],['Graph 3 2.4 counts.csv','Graph 3 7.0 counts.csv','Graph 3 18 counts.csv','Graph 3 23 counts.csv','Graph 3 91 counts.csv'],['Graph 4 3.7 counts.csv','Graph 4 11 counts.csv','Graph 4 29 counts.csv','Graph 4 36 counts.csv','Graph 4 110 counts.csv']],Background,count,Off_Ang) #Calculates the probablity of a detection based on all the current values
+                    if(Cur_P==False):
+                        return False
                     Cur_P_Str=str(Cur_P) # Cur_P_Str:-str, Current Probablity String, The current probablity value as a string
                     Cur_P_N=float(Cur_P_Str) # Cur_P_N:-float, Current Probablity Number, The current probablity value as a float
                     Prob_L.append(Cur_P_N) # Appends the current probablity to the probablity list
