@@ -194,8 +194,12 @@ def Background_Finder_3(gname,evtfpath,objLfpath,R): #Need to apply energy filte
     #BG_Circle_Overlap_Bool=False
     if(Chip_ID_Aimpoint==5):
         Chip_ID_Test_L=[5,7]
+        if(7 not in Chip_ID_L):
+            Chip_ID_Test_L=[5]
     if(Chip_ID_Aimpoint==7):
         Chip_ID_Test_L=[7,5]
+        if(5 not in Chip_ID_L):
+            Chip_ID_Test_L=[7]
     if((Chip_ID_Aimpoint!=7) and (Chip_ID_Aimpoint!=5)):
         print "Front Illuminated"
         Chip_ID_Test_L=Chip_ID_L
@@ -271,7 +275,7 @@ def Background_Finder_3(gname,evtfpath,objLfpath,R): #Need to apply energy filte
                             if((Obj_B==True) and (BG_Circle_Overlap_Bool==False)): #Makes sure that the background circle is not intersecting with any objects or any other other background circle
                                 #print "Background Found ! ! !"
                                 #Dm_Out=dmlist(infile=str(evtfpath)+"[sky=circle("+str(BG_X_Pix)+","+str(BG_Y_Pix)+","+str(BG_R)+")]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Need to apply energy filter (0.3kev to 10kev) to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
-                                print "DMLIST Input: "+str(evtfpath)+"[sky=circle("+str(BG_X_Pix)+","+str(BG_Y_Pix)+","+str(BG_R)+"),energy=300:10000]"
+                                #print "DMLIST Input: "+str(evtfpath)+"[sky=circle("+str(BG_X_Pix)+","+str(BG_Y_Pix)+","+str(BG_R)+"),energy=300:10000]"
                                 Dm_Out=dmlist(infile=str(evtfpath)+"[sky=circle("+str(BG_X_Pix)+","+str(BG_Y_Pix)+","+str(BG_R)+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
                                 #print Dm_Out
                                 #print type(Dm_Out)
