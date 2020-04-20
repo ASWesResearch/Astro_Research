@@ -449,6 +449,11 @@ def Pipeline_C(Gname_L):
                     C_90_Per_First_L_H=Detection_Probability_Calc_7.D_P_C_Big_Input_90_Per_Check(Background_Ratio_L)
                     if(C_90_Per_First_L_H==False):
                         print "ObsID "+str(Cur_Evt2_ObsID)+" background not in range of 4D Graph Data interpolation!"
+                        file=open(path_Obs+Gname_Modifed+"_ObsID_"+str(Cur_Evt2_ObsID)+"_Flux_90.txt","w")
+                        file.write("Background_Ratio:"+str(Background_Ratio)+"|"+"\n")
+                        file.write("Background not in range of 4D Graph Data interpolation")
+                        file.close()
+                        continue #I am pretty sure this should be contine and not break
                     ##except:
                         ##ObsID_Fail_C_L.append([Gname,Cur_Evt2_ObsID])
                         ##continue
@@ -630,5 +635,6 @@ if __name__ == '__main__':
     #Master(['MESSIER 063'])
     #Master(['MESSIER 084'])
     #Master(['NGC 5018'])
-    Master(['MESSIER 049']) #ObsID 12888 has weird bug where the Flux 90 file is not created after the Counts to Flux Bug Fix
+    #Master(['MESSIER 049']) #ObsID 12888 has weird bug where the Flux 90 file is not created after the Counts to Flux Bug Fix
+    Master(['MESSIER 063', 'MESSIER 084', 'NGC 5018', 'MESSIER 049']) #Error list from Source_Overdensity_Master.py after Counts to Flux Bug Fix
     ##Master(['NGC 2841', 'NGC 3877', 'NGC 5054', 'NGC 5813', 'MESSIER 108', 'MESSIER 066', 'MESSIER 061', 'MESSIER 063', 'MESSIER 086', 'MESSIER 084', 'MESSIER 083', 'MESSIER 082', 'NGC 0278', 'MESSIER 088', 'NGC 3585', 'NGC 7507', 'NGC 1637', 'NGC 4473', 'NGC 1365', 'MESSIER 074', 'NGC 4570', 'NGC 4321', 'NGC 5474', 'NGC 7090', 'MESSIER 094', 'MESSIER 095', 'NGC 4494', 'IC 1613', 'NGC 4477', 'NGC 2787', 'IC 5267', 'NGC 3923', 'NGC 891', 'NGC 1300', 'UGC 05340', 'NGC 3631', 'NGC 4314', 'NGC 2681', 'NGC 5018', 'NGC 5253', 'NGC 4742', 'NGC 1672', 'NGC 4725', 'NGC 0891', 'NGC 6946', 'NGC 1291:[LFF2012] 084', 'NGC 3115', 'NGC 1332', 'NGC 1700', 'NGC 5584', 'NGC 7552', 'NGC 2997', 'NGC 4449', 'MESSIER 049', 'NGC 3198', 'NGC 0855', 'NGC 7793', 'NGC 2865', 'MESSIER 059', 'NGC 1427', 'NGC 3628', 'NGC 4457', 'NGC 4214', 'NGC 4459', 'NGC 3521']) #This is the current correct Master Code Input Galaxy Name List, The Master Code is Ready to Run ! ! !
