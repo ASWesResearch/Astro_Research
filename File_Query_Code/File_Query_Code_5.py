@@ -227,13 +227,13 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=
             hdul_header=hdul[1].header
             #print "hdul_header: ", hdul_header
             Num_Rows_in_Array=hdul[1].header['NROWS'] #Num_Rows_in_Array:-int, Number of Row in the Array, The number of rows in a (sub)array, if less then 1024 then the observation is a subarray and will be removed from the sample
-            print "Num_Rows_in_Array : ", Num_Rows_in_Array
+            #print "Num_Rows_in_Array : ", Num_Rows_in_Array
             #print "type(Num_Rows_in_Array) : ", type(Num_Rows_in_Array)
             Exposure_Time=hdul[1].header['EXPOSURE'] #Exposure_Time:-float, Exposure Time, The Exposure Time of the observation (I think the longest time of all the chips) in seconds (not kiloseconds), If this is less the 5000s then the observation is invaild and will be removed from the sample
-            print "Exposure_Time : ", Exposure_Time
+            #print "Exposure_Time : ", Exposure_Time
             #print "type(Exposure_Time) : ", type(Exposure_Time)
             Grating_Flag=hdul[1].header['GRATING']
-            print "Grating_Flag : ", Grating_Flag
+            #print "Grating_Flag : ", Grating_Flag
             #print Grating_Flag
             #print "fname_L_H Before : ", fname_L_H
             #print Count
