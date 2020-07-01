@@ -37,3 +37,5 @@ Histogram_Organizer/*.csv
 Raytrace_Region_File_Generator/Raytrace_Region_Files_Old/
 /Detection_Probablity_Calc/._Detection Probabitlity Plot.jpg
 PIMMS/._PIMMS_Data.csv
+Galaxy_List_to_ObsID_List_Converter/ObsID_to_Galaxy.csv
+Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/
