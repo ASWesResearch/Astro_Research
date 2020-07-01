@@ -11,6 +11,7 @@ path=os.path.realpath('../')
 #system('pwd')
 sys.path.append(os.path.abspath(path))
 from File_Query_Code import File_Query_Code_5
+from Coords_Calc import Coords_Calc
 def Reg_Org(Reg_Str):
     Reg_L=re.split("[(),]",Reg_Str)
     #print "Cur_Raytrace_Reg_L: ", Cur_Raytrace_Reg_L
@@ -138,6 +139,56 @@ def Nearest_Raytraced_Neighbor_Calc(ObsID):
         Nearest_Neighbor_Hybrid_Reg_File.write(Cur_Hybrid_Reg) # I don't know if I need to use the X and Y as sky coordinates or detector coordinates if detector coordinates then this must be changed to "Nearest_Neighbor_Hybrid_Reg_File.write(Cur_Hybrid_Reg_Det)", I don't think the shapes of the regions transfered are vaild in detector coodinates so I'm going with sky coordinates now. Also I'm pretty sure calcuationg flux requires sky coords not detector coords
     Raytrace_Reg_File.close()
     Untraced_File.close()
+    Nearest_Neighbor_Hybrid_Reg_File.close()
+
+    """
+    This creates the Nearest_Neighbor_Hybrid_Sources_Coords.csv Files
+    """
+    Source_C_L=Coords_Calc.Coords_Calc(Evt2_Filepath,Nearest_Neighbor_Hybrid_Reg_Fpath)
+    #print "Source_C_L:\n", Source_C_L
+    Nearest_Neighbor_Hybrid_Coord_Outpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/Nearest_Neighbor_Hybrid_Sources_ObsID_"+str(ObsID)+"_Coords.csv"
+    #print "Nearest_Neighbor_Hybrid_Coord_Outpath: ", Nearest_Neighbor_Hybrid_Coord_Outpath
+    file2=open(Nearest_Neighbor_Hybrid_Coord_Outpath,"w")
+    #[Cur_X,Cur_Y,Cur_Chip_X,Cur_Chip_Y,Cur_Chip_ID,Cur_RA,Cur_DEC,Cur_Theta]
+    file2.write("Phys_X,Phys_Y,Chip_X,Chip_Y,Chip_ID,RA,DEC,Det_X,Det_Y,Offaxis_Angle"+"\n")
+    Nearest_Neighbor_Hybrid_Reg_File=open(Nearest_Neighbor_Hybrid_Reg_Fpath)
+    Nearest_Neighbor_Hybrid_Reg_Str=Nearest_Neighbor_Hybrid_Reg_File.read()
+    #print "Nearest_Neighbor_Hybrid_Reg_Str:\n", Nearest_Neighbor_Hybrid_Reg_Str
+    Nearest_Neighbor_Hybrid_Reg_Str_L=Nearest_Neighbor_Hybrid_Reg_Str.split(Header_String)
+    #print "Nearest_Neighbor_Hybrid_Reg_Str_L: ", Nearest_Neighbor_Hybrid_Reg_Str_L
+    Nearest_Neighbor_Hybrid_Reg_Str_Reduced=Nearest_Neighbor_Hybrid_Reg_Str_L[1]
+    #print "Nearest_Neighbor_Hybrid_Reg_Str_Reduced:\n", Nearest_Neighbor_Hybrid_Reg_Str_Reduced
+    Nearest_Neighbor_Hybrid_Reg_Str_Reduced_L=Nearest_Neighbor_Hybrid_Reg_Str_Reduced.split("\n")
+    #print "Nearest_Neighbor_Hybrid_Reg_Str_Reduced_L: ", Nearest_Neighbor_Hybrid_Reg_Str_Reduced_L
+    #print "len(Nearest_Neighbor_Hybrid_Reg_Str_Reduced_L) Before Pop: ", len(Nearest_Neighbor_Hybrid_Reg_Str_Reduced_L)
+    Nearest_Neighbor_Hybrid_Reg_Str_Reduced_L.pop(len(Nearest_Neighbor_Hybrid_Reg_Str_Reduced_L)-1)
+    #print "Nearest_Neighbor_Hybrid_Reg_Str_Reduced_L After Pop: ", Nearest_Neighbor_Hybrid_Reg_Str_Reduced_L
+    #print "len(Nearest_Neighbor_Hybrid_Reg_Str_Reduced_L) After Pop: ", len(Nearest_Neighbor_Hybrid_Reg_Str_Reduced_L)
+    #print "len(Source_C_L): ", len(Source_C_L)
+    #for Source_C in Source_C_L:
+    for i in range(0,len(Source_C_L)):
+        Source_C=Source_C_L[i]
+        #print "Source_C: ", Source_C
+        Cur_Reg=Nearest_Neighbor_Hybrid_Reg_Str_Reduced_L[i]
+        #print "Cur_Reg: ", Cur_Reg
+        Phys_X=Source_C[0]
+        Phys_Y=Source_C[1]
+        Chip_X=Source_C[2]
+        Chip_Y=Source_C[3]
+        Chip_ID=Source_C[4]
+        RA=Source_C[5]
+        DEC=Source_C[6]
+        Det_X=Source_C[7]
+        Det_Y=Source_C[8]
+        Offaxis_Angle=Source_C[9]
+        file2.write(str(Phys_X)+","+str(Phys_Y)+","+str(Chip_X)+","+str(Chip_Y)+","+str(Chip_ID)+","+str(RA)+","+str(DEC)+","+str(Det_X)+","+str(Det_Y)+","+str(Offaxis_Angle)+"\n")
+        #Cur_Reg_Str="detector;Ellipse("4095.41,3893.44,4.12171,3.24946,2.0637) #"
+        Cur_Reg_String_L=re.split("[(),]",Cur_Reg)
+        #print "Cur_Reg_String_L: ", Cur_Reg_String_L
+        #Cur_Reg_Str="detector;Circle("+str(Det_X)+","+str(Det_Y)+","+str(10)+") #\n" #This needs to be updated to preserve the region shape
+        Cur_Reg_Str=Cur_Reg_String_L[0]+"("+str(Det_X)+","+str(Det_Y)+","+Cur_Reg_String_L[3]+","+Cur_Reg_String_L[4]+","+Cur_Reg_String_L[5]+")"+Cur_Reg_String_L[6]+"\n"
+        #print "Cur_Reg_Str: ", Cur_Reg_Str
+    file2.close()
     Nearest_Neighbor_Hybrid_Reg_File.close()
 
 #Nearest_Raytraced_Neighbor_Calc(10125)
