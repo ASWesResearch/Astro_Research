@@ -83,5 +83,6 @@ def Coords_Calc(evtfpath,regfpath,header=""):
         Cur_Source_Coords=[Cur_X,Cur_Y,Cur_Chip_X,Cur_Chip_Y,Cur_Chip_ID,Cur_RA,Cur_DEC,Cur_Det_X,Cur_Det_Y,Cur_Theta]
         #print "Cur_Source_Coords : ", Cur_Source_Coords
         Source_Data_L.append(Cur_Source_Coords)
+    Region_File.close()
     return Source_Data_L
 #print Coords_Calc("/Volumes/xray/simon/chandra_from_csc/1043/primary/acisf01043N003_evt2.fits","/Volumes/xray/simon/chandra_from_csc/1043/primary/1043_reg.reg")
