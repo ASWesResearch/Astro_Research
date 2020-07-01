@@ -16,6 +16,8 @@ def Galaxy_List_to_ObsID_List_Converter(Gname_L,Bulk_Bool=False):
         Cur_ObsID_L=[]
         Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
         Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2")
+        if(Evt2_File_H_L==False):
+            continue
         for Evt2_File_L in Evt2_File_H_L:
             Cur_ObsID=Evt2_File_L[0]
             Cur_ObsID_L.append(Cur_ObsID)
@@ -26,6 +28,27 @@ def Galaxy_List_to_ObsID_List_Converter(Gname_L,Bulk_Bool=False):
         return ObsID_Bulk_List
     else:
         return Galaxy_Info_H_L
+
+def ObsID_List_to_Galaxy_List_Converter(ObsID_L,Gname_L=['NGC 2841', 'NGC 3877', 'NGC 5054', 'NGC 5813', 'MESSIER 108', 'MESSIER 066', 'MESSIER 061', 'MESSIER 063', 'MESSIER 086', 'MESSIER 084', 'MESSIER 083', 'MESSIER 082', 'NGC 0278', 'MESSIER 088', 'NGC 3585', 'NGC 7507', 'NGC 1637', 'NGC 4473', 'NGC 1365', 'MESSIER 074', 'NGC 4570', 'NGC 4321', 'NGC 5474', 'NGC 7090', 'MESSIER 094', 'MESSIER 095', 'NGC 4494', 'IC 1613', 'NGC 4477', 'NGC 2787', 'IC 5267', 'NGC 3923', 'NGC 891', 'NGC 1300', 'UGC 05340', 'NGC 3631', 'NGC 4314', 'NGC 4559', 'NGC 2681', 'NGC 5018', 'NGC 5253', 'NGC 4742', 'NGC 1672', 'NGC 4725', 'NGC 0891', 'NGC 6946', 'NGC 1291:[LFF2012] 084', 'NGC 3115', 'NGC 1332', 'NGC 1700', 'NGC 5584', 'NGC 7552', 'NGC 2997', 'NGC 4449', 'MESSIER 049', 'NGC 3198', 'NGC 0855', 'NGC 7793', 'NGC 2865', 'MESSIER 059', 'NGC 1427', 'NGC 3628', 'NGC 4457', 'NGC 4214', 'NGC 4459', 'NGC 3521'],Fileout_Bool=False):
+    ObsID_Test_HL=Galaxy_List_to_ObsID_List_Converter(Gname_L)
+    if(Fileout_Bool):
+        f = open("ObsID_to_Galaxy.csv", "w")
+        f.write("ObsID,Galaxy\n")
+    ObsID_Galaxy_HL=[]
+    for ObsID in ObsID_L:
+        for ObsID_Test_L in ObsID_Test_HL:
+            Gname_Test=ObsID_Test_L[0]
+            ObsID_Test=ObsID_Test_L[1][0]
+            if(ObsID_Test==ObsID):
+                ObsID_Galaxy_L=[Gname_Test, ObsID_Test]
+                ObsID_Galaxy_HL.append(ObsID_Galaxy_L)
+                if(Fileout_Bool):
+                    f.write(str(ObsID_Test)+","+str(Gname_Test)+"\n")
+    if(Fileout_Bool):
+        f.close()
+    return ObsID_Galaxy_HL
+
+
 
 #Updated List Without the Erroneously Included NGC 0055 (This is the best and most current version of the sample):
 #print Galaxy_List_to_ObsID_List_Converter(['NGC 2841', 'NGC 3877', 'NGC 5054', 'NGC 5813', 'MESSIER 108', 'MESSIER 066', 'MESSIER 061', 'MESSIER 063', 'MESSIER 086', 'MESSIER 084', 'MESSIER 083', 'MESSIER 082', 'NGC 0278', 'MESSIER 088', 'NGC 3585', 'NGC 7507', 'NGC 1637', 'NGC 4473', 'NGC 1365', 'MESSIER 074', 'NGC 4570', 'NGC 4321', 'NGC 5474', 'NGC 7090', 'MESSIER 094', 'MESSIER 095', 'NGC 4494', 'IC 1613', 'NGC 4477', 'NGC 2787', 'IC 5267', 'NGC 3923', 'NGC 891', 'NGC 1300', 'UGC 05340', 'NGC 3631', 'NGC 4314', 'NGC 4559', 'NGC 2681', 'NGC 5018', 'NGC 5253', 'NGC 4742', 'NGC 1672', 'NGC 4725', 'NGC 0891', 'NGC 6946', 'NGC 1291:[LFF2012] 084', 'NGC 3115', 'NGC 1332', 'NGC 1700', 'NGC 5584', 'NGC 7552', 'NGC 2997', 'NGC 4449', 'MESSIER 049', 'NGC 3198', 'NGC 0855', 'NGC 7793', 'NGC 2865', 'MESSIER 059', 'NGC 1427', 'NGC 3628', 'NGC 4457', 'NGC 4214', 'NGC 4459', 'NGC 3521'])
@@ -39,4 +62,7 @@ def Galaxy_List_to_ObsID_List_Converter(Gname_L,Bulk_Bool=False):
 #Output: #(112 ObsIDs in the sample)
 #[6096, 1971, 1972, 768, 952, 11674, 13255, 13253, 13246, 12952, 12953, 13247, 12951, 2025, 9548, 2149, 2197, 9510, 6131, 5908, 803, 14342, 12995, 2064, 16024, 12992, 14332, 13202, 793, 2933, 11104, 379, 2056, 2055, 2922, 9506, 11344, 766, 4688, 6869, 6872, 3554, 2057, 2058, 8041, 9121, 9546, 7252, 7060, 9553, 5930, 5931, 5929, 2079, 5905, 9527, 4689, 3947, 1563, 9507, 4613, 794, 11775, 11271, 3951, 2062, 2027, 2060, 2061, 2070, 2032, 7154, 7153, 11779, 5932, 2976, 4613, 794, 1043, 4632, 4631, 4633, 4404, 2059, 12095, 2040, 2915, 4372, 2069, 11229, 7848, 15383, 10125, 2031, 10875, 12889, 12888, 321, 322, 9551, 9550, 3954, 2020, 2068, 4742, 2039, 3150, 2030, 4743, 5197, 11784, 9552]
 
-print Galaxy_List_to_ObsID_List_Converter(['NGC 1300'])
+#print Galaxy_List_to_ObsID_List_Converter(['NGC 1300'])
+#print ObsID_List_to_Galaxy_List_Converter(2060)
+#print ObsID_List_to_Galaxy_List_Converter([2060])
+print ObsID_List_to_Galaxy_List_Converter([2060],Fileout_Bool=True)
