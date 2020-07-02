@@ -239,6 +239,79 @@ def Background_Reg_Generator(ObsID):
     Nearest_Neighbor_Hybrid_BG_Reg_File.close()
 
 #Background_Reg_Generator(10125)
+def Deg_to_Rad(Angle):
+    Angle=(np.pi/180.0)*Angle
+    return Angle
+
+def Rad_to_Deg(Angle):
+    Angle=(180.0/np.pi)*Angle
+    return Angle
+
+def Angle_Convert(Angle):
+    """
+    Angle:-float, an anlge in radians
+
+    Converts angles to be in the range of 0 rad<New_Angle<2pi rad
+    """
+    Full_Cricle=2.0*np.pi
+    if(Angle<0):
+        New_Angle=Angle+Full_Cricle
+    elif(Angle>Full_Cricle):
+        New_Angle=Angle-Full_Cricle
+    return New_Angle
+
+def Ellipse_Radius_Calc(a,b,Ang_Rel):
+    """
+    a:-float, Semi-major axis of source ellipse
+    b:-float, Semi-minor axis of source ellipse
+    Ang_Rel:-float, Polar angle at which the ellipse radius will be calculated in radians
+
+    Calcuates the radius of an ellipse at a given polar angle
+    """
+    r=(a*b)/(np.sqrt(((b*np.cos(Ang_Rel))**2.0)+((a*np.sin(Ang_Rel))**2.0)))
+    return r
+
+def Source_Overlap_Calc(x1,x2,y1,y2,a1,b1,a2,b2,rot1,rot2):
+    """
+    x1:-float, X Postion of First source ellipse
+    x2:-float, X Postion of Second source ellipse
+    y1:-float, Y Postion of First source ellipse
+    y2:-float, Y Postion of Second source ellipse
+    a1:-float, Semi-major axis of First source ellipse
+    b1:-float, Semi-minor axis of First source ellipse
+    a2:-float, Semi-major axis of Second source ellipse
+    b2:-float, Semi-minor axis of Second source ellipse
+    rot1:-float, rotation angle of First source ellipse
+    rot2:-float, rotation angle of Second source ellipse
+
+    This function takes the coordinates for two source ellipse region shapes as an input and then returns a list of booleans where
+    the first element bool is True when the first source has the second source in its backgournd area and the second element bool is True
+    when the first soruce area is overlapping with the second source area.
+    """
+    dx=x2-x1
+    dy=y2-y1
+    Position_Angle_1=np.arctan2(dy,dx)
+    Position_Angle_1=Angle_Convert(Position_Angle_1)
+    Position_Angle_2=Position_Angle_1+np.pi
+    Position_Angle_2=Angle_Convert(Position_Angle_2)
+    Dist=np.sqrt((dx**2.0)+(dy**2.0))
+    rot1_Rad=Deg_to_Rad(rot1)
+    rot1_Rad=Angle_Convert(rot1_Rad)
+    rot2_Rad=Deg_to_Rad(rot2)
+    rot2_Rad=Angle_Convert(rot2_Rad)
+    Relative_Angle_1=Position_Angle_1-rot1_Rad #Need to make sure rot1 is in radians
+    Relative_Angle_2=Position_Angle_2-rot2_Rad #Need to make sure rot2 is in radians
+    Relative_Angle_1=Angle_Convert(Relative_Angle_1)
+    Relative_Angle_2=Angle_Convert(Relative_Angle_2)
+    r1=Ellipse_Radius_Calc(a1,b1,Relative_Angle_1)
+    r1_Background=2.0*r1
+    r2=Ellipse_Radius_Calc(a2,b2,Relative_Angle_2)
+    Dgs=Dist-r1-r2
+    Dgb=Dist-r1_Background-r2
+    Background_Overlap_Bool=(Dgb<0)
+    Source_Overlap_Bool=(Dgs<0)
+    Overlap_List=[Background_Overlap_Bool,Source_Overlap_Bool]
+    return Overlap_List
 
 def Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=False):
     Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
@@ -268,6 +341,7 @@ def Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=False):
     for Nearest_Neighbor_Hybrid_Source in Nearest_Neighbor_Hybrid_All_Soruces_L:
         Nearest_Neighbor_Hybrid_All_Soruces_File.write(Nearest_Neighbor_Hybrid_Source)
     Nearest_Neighbor_Hybrid_All_Soruces_File.close()
+
 
 #Nearest_Raytraced_Neighbor_Calc_Big_Input([10125],Generate_Bool=True)
 Nearest_Raytraced_Neighbor_Calc_Big_Input([6096, 1971, 1972, 768, 952, 11674, 13255, 13253, 13246, 12952, 12953, 13247, 12951, 2025, 9548, 2149, 2197, 9510, 6131, 5908, 803, 14342, 12995, 2064, 16024, 12992, 14332, 13202, 793, 2933, 11104, 379, 2056, 2055, 2922, 9506, 11344, 766, 4688, 6869, 6872, 3554, 2057, 2058, 8041, 9121, 9546, 7252, 7060, 9553, 5930, 5931, 5929, 2079, 5905, 9527, 4689, 3947, 1563, 9507, 4613, 794, 11775, 11271, 3951, 2062, 2027, 2060, 2061, 2070, 2032, 7154, 7153, 11779, 5932, 2976, 4613, 794, 1043, 4632, 4631, 4633, 4404, 2059, 12095, 2040, 2915, 4372, 2069, 11229, 7848, 15383, 10125, 2031, 10875, 12889, 12888, 321, 322, 9551, 9550, 3954, 2020, 2068, 4742, 2039, 3150, 2030, 4743, 5197, 11784, 9552],Generate_Bool=True)
