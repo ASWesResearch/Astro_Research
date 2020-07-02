@@ -239,6 +239,36 @@ def Background_Reg_Generator(ObsID):
     Nearest_Neighbor_Hybrid_BG_Reg_File.close()
 
 #Background_Reg_Generator(10125)
+
+def Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=False):
+    Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
+    Raytrace_Files_Path="/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"
+    #Nearest_Neighbor_Hybrid_All_Soruces_File=open(Raytrace_Files_Path+"Nearest_Neighbor_Hybrid_All_Soruces.reg","w")
+    Nearest_Raytraced_Neighbor_FPath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"
+    Nearest_Neighbor_Hybrid_All_Soruces_File=open(Nearest_Raytraced_Neighbor_FPath+"Nearest_Neighbor_Hybrid_All_Soruces.reg","w")
+    Nearest_Neighbor_Hybrid_All_Soruces_File.write(Header_String)
+    Nearest_Neighbor_Hybrid_All_Soruces_L=[]
+    for ObsID in ObsID_L:
+        if(Generate_Bool):
+            Nearest_Raytraced_Neighbor_Calc(ObsID)
+            Background_Reg_Generator(ObsID)
+        #Nearest_Raytraced_Neighbor_Reg_FPath="/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+        Nearest_Raytraced_Neighbor_Reg_FPath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+        Nearest_Raytraced_Neighbor_Reg_File=open(Nearest_Raytraced_Neighbor_Reg_FPath)
+        Nearest_Raytraced_Neighbor_Reg_Str=Nearest_Raytraced_Neighbor_Reg_File.read()
+        Nearest_Raytraced_Neighbor_Reg_Str_L=Nearest_Raytraced_Neighbor_Reg_Str.split("fixed=0\n")
+        #print "Nearest_Raytraced_Neighbor_Reg_Str_L: ", Nearest_Raytraced_Neighbor_Reg_Str_L
+        Nearest_Raytraced_Neighbor_Reg_Str_Reduced=Nearest_Raytraced_Neighbor_Reg_Str_L[1]
+        #print "Nearest_Raytraced_Neighbor_Reg_Str_Reduced:\n", Nearest_Raytraced_Neighbor_Reg_Str_Reduced
+        Nearest_Raytraced_Neighbor_Reg_Str_Reduced_L=Nearest_Raytraced_Neighbor_Reg_Str_Reduced.split("\n")
+        Nearest_Raytraced_Neighbor_Reg_Str_Reduced_L.pop(len(Nearest_Raytraced_Neighbor_Reg_Str_Reduced_L)-1)
+        for Nearest_Raytraced_Neighbor_Reg in Nearest_Raytraced_Neighbor_Reg_Str_Reduced_L:
+            Nearest_Neighbor_Hybrid_All_Soruces_L.append(Nearest_Raytraced_Neighbor_Reg+"\n")
+    Nearest_Neighbor_Hybrid_All_Soruces_L.sort(key=Reg_Org,reverse=True)
+    for Nearest_Neighbor_Hybrid_Source in Nearest_Neighbor_Hybrid_All_Soruces_L:
+        Nearest_Neighbor_Hybrid_All_Soruces_File.write(Nearest_Neighbor_Hybrid_Source)
+    Nearest_Neighbor_Hybrid_All_Soruces_File.close()
+
 def Deg_to_Rad(Angle):
     Angle=(np.pi/180.0)*Angle
     return Angle
@@ -312,36 +342,6 @@ def Source_Overlap_Calc(x1,x2,y1,y2,a1,b1,a2,b2,rot1,rot2):
     Source_Overlap_Bool=(Dgs<0)
     Overlap_List=[Background_Overlap_Bool,Source_Overlap_Bool]
     return Overlap_List
-
-def Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=False):
-    Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
-    Raytrace_Files_Path="/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"
-    #Nearest_Neighbor_Hybrid_All_Soruces_File=open(Raytrace_Files_Path+"Nearest_Neighbor_Hybrid_All_Soruces.reg","w")
-    Nearest_Raytraced_Neighbor_FPath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"
-    Nearest_Neighbor_Hybrid_All_Soruces_File=open(Nearest_Raytraced_Neighbor_FPath+"Nearest_Neighbor_Hybrid_All_Soruces.reg","w")
-    Nearest_Neighbor_Hybrid_All_Soruces_File.write(Header_String)
-    Nearest_Neighbor_Hybrid_All_Soruces_L=[]
-    for ObsID in ObsID_L:
-        if(Generate_Bool):
-            Nearest_Raytraced_Neighbor_Calc(ObsID)
-            Background_Reg_Generator(ObsID)
-        #Nearest_Raytraced_Neighbor_Reg_FPath="/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
-        Nearest_Raytraced_Neighbor_Reg_FPath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
-        Nearest_Raytraced_Neighbor_Reg_File=open(Nearest_Raytraced_Neighbor_Reg_FPath)
-        Nearest_Raytraced_Neighbor_Reg_Str=Nearest_Raytraced_Neighbor_Reg_File.read()
-        Nearest_Raytraced_Neighbor_Reg_Str_L=Nearest_Raytraced_Neighbor_Reg_Str.split("fixed=0\n")
-        #print "Nearest_Raytraced_Neighbor_Reg_Str_L: ", Nearest_Raytraced_Neighbor_Reg_Str_L
-        Nearest_Raytraced_Neighbor_Reg_Str_Reduced=Nearest_Raytraced_Neighbor_Reg_Str_L[1]
-        #print "Nearest_Raytraced_Neighbor_Reg_Str_Reduced:\n", Nearest_Raytraced_Neighbor_Reg_Str_Reduced
-        Nearest_Raytraced_Neighbor_Reg_Str_Reduced_L=Nearest_Raytraced_Neighbor_Reg_Str_Reduced.split("\n")
-        Nearest_Raytraced_Neighbor_Reg_Str_Reduced_L.pop(len(Nearest_Raytraced_Neighbor_Reg_Str_Reduced_L)-1)
-        for Nearest_Raytraced_Neighbor_Reg in Nearest_Raytraced_Neighbor_Reg_Str_Reduced_L:
-            Nearest_Neighbor_Hybrid_All_Soruces_L.append(Nearest_Raytraced_Neighbor_Reg+"\n")
-    Nearest_Neighbor_Hybrid_All_Soruces_L.sort(key=Reg_Org,reverse=True)
-    for Nearest_Neighbor_Hybrid_Source in Nearest_Neighbor_Hybrid_All_Soruces_L:
-        Nearest_Neighbor_Hybrid_All_Soruces_File.write(Nearest_Neighbor_Hybrid_Source)
-    Nearest_Neighbor_Hybrid_All_Soruces_File.close()
-
 
 #Nearest_Raytraced_Neighbor_Calc_Big_Input([10125],Generate_Bool=True)
 Nearest_Raytraced_Neighbor_Calc_Big_Input([6096, 1971, 1972, 768, 952, 11674, 13255, 13253, 13246, 12952, 12953, 13247, 12951, 2025, 9548, 2149, 2197, 9510, 6131, 5908, 803, 14342, 12995, 2064, 16024, 12992, 14332, 13202, 793, 2933, 11104, 379, 2056, 2055, 2922, 9506, 11344, 766, 4688, 6869, 6872, 3554, 2057, 2058, 8041, 9121, 9546, 7252, 7060, 9553, 5930, 5931, 5929, 2079, 5905, 9527, 4689, 3947, 1563, 9507, 4613, 794, 11775, 11271, 3951, 2062, 2027, 2060, 2061, 2070, 2032, 7154, 7153, 11779, 5932, 2976, 4613, 794, 1043, 4632, 4631, 4633, 4404, 2059, 12095, 2040, 2915, 4372, 2069, 11229, 7848, 15383, 10125, 2031, 10875, 12889, 12888, 321, 322, 9551, 9550, 3954, 2020, 2068, 4742, 2039, 3150, 2030, 4743, 5197, 11784, 9552],Generate_Bool=True)
