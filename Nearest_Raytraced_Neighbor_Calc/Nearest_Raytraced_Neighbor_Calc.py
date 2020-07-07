@@ -286,8 +286,10 @@ def Angle_Convert(Angle):
     Full_Cricle=2.0*np.pi
     if(Angle<0):
         New_Angle=Angle+Full_Cricle
-    elif(Angle>Full_Cricle):
+    if(Angle>Full_Cricle):
         New_Angle=Angle-Full_Cricle
+    else:
+        New_Angle=Angle
     return New_Angle
 
 def Ellipse_Radius_Calc(a,b,Ang_Rel):
@@ -301,15 +303,15 @@ def Ellipse_Radius_Calc(a,b,Ang_Rel):
     r=(a*b)/(np.sqrt(((b*np.cos(Ang_Rel))**2.0)+((a*np.sin(Ang_Rel))**2.0)))
     return r
 
-def Source_Overlap_Calc(x1,x2,y1,y2,a1,b1,a2,b2,rot1,rot2):
+def Source_Overlap_Calc(x1,x2,y1,y2,a1,a2,b1,b2,rot1,rot2,M=2.0):
     """
     x1:-float, X Postion of First source ellipse
     x2:-float, X Postion of Second source ellipse
     y1:-float, Y Postion of First source ellipse
     y2:-float, Y Postion of Second source ellipse
     a1:-float, Semi-major axis of First source ellipse
-    b1:-float, Semi-minor axis of First source ellipse
     a2:-float, Semi-major axis of Second source ellipse
+    b1:-float, Semi-minor axis of First source ellipse
     b2:-float, Semi-minor axis of Second source ellipse
     rot1:-float, rotation angle of First source ellipse
     rot2:-float, rotation angle of Second source ellipse
@@ -320,6 +322,9 @@ def Source_Overlap_Calc(x1,x2,y1,y2,a1,b1,a2,b2,rot1,rot2):
     """
     dx=x2-x1
     dy=y2-y1
+    if((dx==0) and (dy==0)):
+        #print "Same_Source"
+        return [False,False]
     Position_Angle_1=np.arctan2(dy,dx)
     Position_Angle_1=Angle_Convert(Position_Angle_1)
     Position_Angle_2=Position_Angle_1+np.pi
@@ -334,14 +339,122 @@ def Source_Overlap_Calc(x1,x2,y1,y2,a1,b1,a2,b2,rot1,rot2):
     Relative_Angle_1=Angle_Convert(Relative_Angle_1)
     Relative_Angle_2=Angle_Convert(Relative_Angle_2)
     r1=Ellipse_Radius_Calc(a1,b1,Relative_Angle_1)
-    r1_Background=2.0*r1
+    r1_Background=M*r1
     r2=Ellipse_Radius_Calc(a2,b2,Relative_Angle_2)
     Dgs=Dist-r1-r2
     Dgb=Dist-r1_Background-r2
+    #print "Dgb: ", Dgb
     Background_Overlap_Bool=(Dgb<0)
     Source_Overlap_Bool=(Dgs<0)
     Overlap_List=[Background_Overlap_Bool,Source_Overlap_Bool]
     return Overlap_List
 
+def Background_Overlap_Corrected_Reg_Generator(ObsID):
+    Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
+    Nearest_Neighbor_Hybrid_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+    Nearest_Neighbor_Reg_File=open(Nearest_Neighbor_Hybrid_Reg_Fpath)
+    Nearest_Neighbor_Reg_Str=Nearest_Neighbor_Reg_File.read()
+    #print "Nearest_Neighbor_Reg_Str:\n", Nearest_Neighbor_Reg_Str
+    Nearest_Neighbor_Reg_Str_L=Nearest_Neighbor_Reg_Str.split(Header_String)
+    #print "Nearest_Neighbor_Reg_Str_L: ", Nearest_Neighbor_Reg_Str_L
+    Nearest_Neighbor_Reg_Str_Reduced=Nearest_Neighbor_Reg_Str_L[1]
+    #print "Nearest_Neighbor_Reg_Str_Reduced:\n", Nearest_Neighbor_Reg_Str_Reduced
+    Nearest_Neighbor_Reg_Str_Reduced_L=Nearest_Neighbor_Reg_Str_Reduced.split("\n")
+    #print "Nearest_Neighbor_Reg_Str_Reduced_L: ", Nearest_Neighbor_Reg_Str_Reduced_L
+    #print "len(Nearest_Neighbor_Reg_Str_Reduced_L) Before Pop: ", len(Nearest_Neighbor_Reg_Str_Reduced_L)
+    Nearest_Neighbor_Reg_Str_Reduced_L.pop(len(Nearest_Neighbor_Reg_Str_Reduced_L)-1)
+    Nearest_Neighbor_Hybrid_BG_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid_Overlap_Corrected_Background.reg"
+    Nearest_Neighbor_Hybrid_BG_Reg_File=open(Nearest_Neighbor_Hybrid_BG_Reg_Fpath,"w")
+    Nearest_Neighbor_Hybrid_BG_Reg_File.write(Header_String)
+    Source_Num=1
+    for Nearest_Neighbor_Reg_Str_Reduced in Nearest_Neighbor_Reg_Str_Reduced_L:
+        Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/Individual_Source_Regions/"+"Source_"+str(Source_Num)+"_ObsID_"+str(ObsID)+"_Nearest_Neighbor_Hybrid_Overlap_Corrected_Background.reg"
+        directory_Obs=os.path.dirname(Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_Fpath)
+        if not os.path.exists(directory_Obs):
+            os.makedirs(directory_Obs)
+        Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_File=open(Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_Fpath,"w")
+        Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_File.write(Header_String)
+        Nearest_Neighbor_Reg_Str_Reduced_Split_L=re.split("[(),]", Nearest_Neighbor_Reg_Str_Reduced)
+        #print "Nearest_Neighbor_Reg_Str_Reduced_Split_L: ", Nearest_Neighbor_Reg_Str_Reduced_Split_L
+        X_Str=Nearest_Neighbor_Reg_Str_Reduced_Split_L[1]
+        #print "X_Str: ", X_Str
+        X=float(X_Str)
+        Y_Str=Nearest_Neighbor_Reg_Str_Reduced_Split_L[2]
+        Y=float(Y_Str)
+        Maj_Ax_Str=Nearest_Neighbor_Reg_Str_Reduced_Split_L[3]
+        Maj_Ax=float(Maj_Ax_Str)
+        Min_Ax_Str=Nearest_Neighbor_Reg_Str_Reduced_Split_L[4]
+        Min_Ax=float(Min_Ax_Str)
+        Angle_Str=Nearest_Neighbor_Reg_Str_Reduced_Split_L[5]
+        Angle=float(Angle_Str)
+        Reg_Front_Str=Nearest_Neighbor_Reg_Str_Reduced_Split_L[0]
+        Reg_Front_Str_L=Reg_Front_Str.split(";")
+        Units_Str=Reg_Front_Str_L[0]
+        Shape_Str=Reg_Front_Str_L[1]
+        Reg_Back_Str=Nearest_Neighbor_Reg_Str_Reduced_Split_L[len(Nearest_Neighbor_Reg_Str_Reduced_Split_L)-1]
+        BG_Maj=2.0*Maj_Ax
+        BG_Min=2.0*Min_Ax
+        Cur_BG_Reg=Units_Str+";"+Shape_Str+"("+str(X)+","+str(Y)+","+str(BG_Maj)+","+str(BG_Min)+","+str(Angle)+")"+Reg_Back_Str+"\n"
+        Cur_Reg=Units_Str+";-"+Shape_Str+"("+str(X)+","+str(Y)+","+str(Maj_Ax)+","+str(Min_Ax)+","+str(Angle)+")"+Reg_Back_Str+"\n"
+        Nearest_Neighbor_Hybrid_BG_Reg_File.write(Cur_BG_Reg)
+        Nearest_Neighbor_Hybrid_BG_Reg_File.write(Cur_Reg)
+        Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_File.write(Cur_BG_Reg)
+        Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_File.write(Cur_Reg)
+        for Nearest_Neighbor_Reg_Str_Reduced_Test in Nearest_Neighbor_Reg_Str_Reduced_L:
+            Nearest_Neighbor_Reg_Str_Reduced_Split_L_Test=re.split("[(),]", Nearest_Neighbor_Reg_Str_Reduced_Test)
+            #print "Nearest_Neighbor_Reg_Str_Reduced_Split_L: ", Nearest_Neighbor_Reg_Str_Reduced_Split_L
+            X_Str_Test=Nearest_Neighbor_Reg_Str_Reduced_Split_L_Test[1]
+            #print "X_Str: ", X_Str
+            X_Test=float(X_Str_Test)
+            Y_Str_Test=Nearest_Neighbor_Reg_Str_Reduced_Split_L_Test[2]
+            Y_Test=float(Y_Str_Test)
+            Maj_Ax_Str_Test=Nearest_Neighbor_Reg_Str_Reduced_Split_L_Test[3]
+            Maj_Ax_Test=float(Maj_Ax_Str_Test)
+            Min_Ax_Str_Test=Nearest_Neighbor_Reg_Str_Reduced_Split_L_Test[4]
+            Min_Ax_Test=float(Min_Ax_Str_Test)
+            Angle_Str_Test=Nearest_Neighbor_Reg_Str_Reduced_Split_L_Test[5]
+            Angle_Test=float(Angle_Str_Test)
+            Reg_Front_Str_Test=Nearest_Neighbor_Reg_Str_Reduced_Split_L[0]
+            Reg_Front_Str_L_Test=Reg_Front_Str.split(";")
+            Units_Str_Test=Reg_Front_Str_L[0]
+            Shape_Str_Test=Reg_Front_Str_L[1]
+            Reg_Back_Str_Test=Nearest_Neighbor_Reg_Str_Reduced_Split_L[len(Nearest_Neighbor_Reg_Str_Reduced_Split_L)-1]
+            Overlap_Bool_L=Source_Overlap_Calc(X,X_Test,Y,Y_Test,Maj_Ax,Maj_Ax_Test,Min_Ax,Min_Ax_Test,Angle,Angle_Test)
+            Cur_Reg_Test=Units_Str_Test+";-"+Shape_Str_Test+"("+str(X_Test)+","+str(Y_Test)+","+str(Maj_Ax_Test)+","+str(Min_Ax_Test)+","+str(Angle_Test)+")"+Reg_Back_Str_Test+"\n"
+            #print Overlap_Bool_L
+            """
+            if(True in Overlap_Bool_L):
+                print "Overlap! "
+                print Overlap_Bool_L
+                print "Overlaping Region: ", Cur_Reg_Test
+            """
+            if(Overlap_Bool_L[0]):
+                Cur_Reg_Test=Units_Str_Test+";-"+Shape_Str_Test+"("+str(X_Test)+","+str(Y_Test)+","+str(Maj_Ax_Test)+","+str(Min_Ax_Test)+","+str(Angle_Test)+")"+Reg_Back_Str_Test+"color=yellow"+"\n"
+                Nearest_Neighbor_Hybrid_BG_Reg_File.write(Cur_Reg_Test)
+                Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_File.write(Cur_Reg_Test)
+
+            #Cur_Reg_Test=Units_Str_Test+";-"+Shape_Str_Test+"("+str(X_Test)+","+str(Y_Test)+","+str(Maj_Ax_Test)+","+str(Min_Ax_Test)+","+str(Angle_Test)+")"+Reg_Back_Str_Test+"\n"
+        #print "Cur_BG_Reg: ", Cur_BG_Reg
+        #print "Cur_Reg: ", Cur_Reg
+        #Nearest_Neighbor_Hybrid_BG_Reg_File.write(Cur_BG_Reg)
+        #Nearest_Neighbor_Hybrid_BG_Reg_File.write(Cur_Reg)
+        Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_File.close()
+        Source_Num=Source_Num+1
+    Nearest_Neighbor_Hybrid_BG_Reg_File.close()
+
+def Source_Overlap_Calc_Testing():
+    X_L=[-2,2]
+    Y_L=[-2,2]
+    a2=0.2
+    b2=0.1
+    rot2= 0
+    for X in X_L:
+        for Y in Y_L:
+            print "("+str(X)+","+str(Y)+")"
+            print Source_Overlap_Calc(0,X,0,Y,2,a2,1,b2,0,rot2,M=3.0)
+
 #Nearest_Raytraced_Neighbor_Calc_Big_Input([10125],Generate_Bool=True)
-Nearest_Raytraced_Neighbor_Calc_Big_Input([6096, 1971, 1972, 768, 952, 11674, 13255, 13253, 13246, 12952, 12953, 13247, 12951, 2025, 9548, 2149, 2197, 9510, 6131, 5908, 803, 14342, 12995, 2064, 16024, 12992, 14332, 13202, 793, 2933, 11104, 379, 2056, 2055, 2922, 9506, 11344, 766, 4688, 6869, 6872, 3554, 2057, 2058, 8041, 9121, 9546, 7252, 7060, 9553, 5930, 5931, 5929, 2079, 5905, 9527, 4689, 3947, 1563, 9507, 4613, 794, 11775, 11271, 3951, 2062, 2027, 2060, 2061, 2070, 2032, 7154, 7153, 11779, 5932, 2976, 4613, 794, 1043, 4632, 4631, 4633, 4404, 2059, 12095, 2040, 2915, 4372, 2069, 11229, 7848, 15383, 10125, 2031, 10875, 12889, 12888, 321, 322, 9551, 9550, 3954, 2020, 2068, 4742, 2039, 3150, 2030, 4743, 5197, 11784, 9552],Generate_Bool=True)
+#Background_Overlap_Corrected_Reg_Generator(10125)
+#Background_Overlap_Corrected_Reg_Generator(12888)
+Source_Overlap_Calc_Testing()
+#Nearest_Raytraced_Neighbor_Calc_Big_Input([6096, 1971, 1972, 768, 952, 11674, 13255, 13253, 13246, 12952, 12953, 13247, 12951, 2025, 9548, 2149, 2197, 9510, 6131, 5908, 803, 14342, 12995, 2064, 16024, 12992, 14332, 13202, 793, 2933, 11104, 379, 2056, 2055, 2922, 9506, 11344, 766, 4688, 6869, 6872, 3554, 2057, 2058, 8041, 9121, 9546, 7252, 7060, 9553, 5930, 5931, 5929, 2079, 5905, 9527, 4689, 3947, 1563, 9507, 4613, 794, 11775, 11271, 3951, 2062, 2027, 2060, 2061, 2070, 2032, 7154, 7153, 11779, 5932, 2976, 4613, 794, 1043, 4632, 4631, 4633, 4404, 2059, 12095, 2040, 2915, 4372, 2069, 11229, 7848, 15383, 10125, 2031, 10875, 12889, 12888, 321, 322, 9551, 9550, 3954, 2020, 2068, 4742, 2039, 3150, 2030, 4743, 5197, 11784, 9552],Generate_Bool=True)
