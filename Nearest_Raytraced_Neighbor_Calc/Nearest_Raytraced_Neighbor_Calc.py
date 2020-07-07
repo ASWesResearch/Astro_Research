@@ -366,6 +366,9 @@ def Background_Overlap_Corrected_Reg_Generator(ObsID):
     Nearest_Neighbor_Hybrid_BG_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid_Overlap_Corrected_Background.reg"
     Nearest_Neighbor_Hybrid_BG_Reg_File=open(Nearest_Neighbor_Hybrid_BG_Reg_Fpath,"w")
     Nearest_Neighbor_Hybrid_BG_Reg_File.write(Header_String)
+    Overlapping_Sources_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Overlapping_Sources.csv"
+    Overlapping_Sources_File=open(Overlapping_Sources_Fpath,"w")
+    Overlapping_Sources_File.write("Source_Num;Background_Overlap;Source_Overlap\n")
     Source_Num=1
     for Nearest_Neighbor_Reg_Str_Reduced in Nearest_Neighbor_Reg_Str_Reduced_L:
         Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/Individual_Source_Regions/"+"Source_"+str(Source_Num)+"_ObsID_"+str(ObsID)+"_Nearest_Neighbor_Hybrid_Overlap_Corrected_Background.reg"
@@ -400,6 +403,9 @@ def Background_Overlap_Corrected_Reg_Generator(ObsID):
         Nearest_Neighbor_Hybrid_BG_Reg_File.write(Cur_Reg)
         Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_File.write(Cur_BG_Reg)
         Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_File.write(Cur_Reg)
+        Background_Overlap_List=[]
+        Source_Overlap_List=[]
+        Source_Num_Test=1
         for Nearest_Neighbor_Reg_Str_Reduced_Test in Nearest_Neighbor_Reg_Str_Reduced_L:
             Nearest_Neighbor_Reg_Str_Reduced_Split_L_Test=re.split("[(),]", Nearest_Neighbor_Reg_Str_Reduced_Test)
             #print "Nearest_Neighbor_Reg_Str_Reduced_Split_L: ", Nearest_Neighbor_Reg_Str_Reduced_Split_L
@@ -426,21 +432,27 @@ def Background_Overlap_Corrected_Reg_Generator(ObsID):
             if(True in Overlap_Bool_L):
                 print "Overlap! "
                 print Overlap_Bool_L
-                print "Overlaping Region: ", Cur_Reg_Test
+                print "Overlapping Region: ", Cur_Reg_Test
             """
             if(Overlap_Bool_L[0]):
                 Cur_Reg_Test=Units_Str_Test+";-"+Shape_Str_Test+"("+str(X_Test)+","+str(Y_Test)+","+str(Maj_Ax_Test)+","+str(Min_Ax_Test)+","+str(Angle_Test)+")"+Reg_Back_Str_Test+"color=yellow"+"\n"
                 Nearest_Neighbor_Hybrid_BG_Reg_File.write(Cur_Reg_Test)
                 Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_File.write(Cur_Reg_Test)
-
+                Background_Overlap_List.append(Source_Num_Test)
+            if(Overlap_Bool_L[1]):
+                Source_Overlap_List.append(Source_Num_Test)
+            Source_Num_Test=Source_Num_Test+1
             #Cur_Reg_Test=Units_Str_Test+";-"+Shape_Str_Test+"("+str(X_Test)+","+str(Y_Test)+","+str(Maj_Ax_Test)+","+str(Min_Ax_Test)+","+str(Angle_Test)+")"+Reg_Back_Str_Test+"\n"
         #print "Cur_BG_Reg: ", Cur_BG_Reg
         #print "Cur_Reg: ", Cur_Reg
         #Nearest_Neighbor_Hybrid_BG_Reg_File.write(Cur_BG_Reg)
         #Nearest_Neighbor_Hybrid_BG_Reg_File.write(Cur_Reg)
+        Source_Overlap_Str=str(Source_Num)+";"+str(Background_Overlap_List)+";"+str(Source_Overlap_List)+"\n"
+        Overlapping_Sources_File.write(Source_Overlap_Str)
         Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_File.close()
         Source_Num=Source_Num+1
     Nearest_Neighbor_Hybrid_BG_Reg_File.close()
+    Overlapping_Sources_File.close()
 
 def Source_Overlap_Calc_Testing():
     X_L=[-2,2]
@@ -455,6 +467,6 @@ def Source_Overlap_Calc_Testing():
 
 #Nearest_Raytraced_Neighbor_Calc_Big_Input([10125],Generate_Bool=True)
 #Background_Overlap_Corrected_Reg_Generator(10125)
-#Background_Overlap_Corrected_Reg_Generator(12888)
-Source_Overlap_Calc_Testing()
+Background_Overlap_Corrected_Reg_Generator(12888)
+#Source_Overlap_Calc_Testing()
 #Nearest_Raytraced_Neighbor_Calc_Big_Input([6096, 1971, 1972, 768, 952, 11674, 13255, 13253, 13246, 12952, 12953, 13247, 12951, 2025, 9548, 2149, 2197, 9510, 6131, 5908, 803, 14342, 12995, 2064, 16024, 12992, 14332, 13202, 793, 2933, 11104, 379, 2056, 2055, 2922, 9506, 11344, 766, 4688, 6869, 6872, 3554, 2057, 2058, 8041, 9121, 9546, 7252, 7060, 9553, 5930, 5931, 5929, 2079, 5905, 9527, 4689, 3947, 1563, 9507, 4613, 794, 11775, 11271, 3951, 2062, 2027, 2060, 2061, 2070, 2032, 7154, 7153, 11779, 5932, 2976, 4613, 794, 1043, 4632, 4631, 4633, 4404, 2059, 12095, 2040, 2915, 4372, 2069, 11229, 7848, 15383, 10125, 2031, 10875, 12889, 12888, 321, 322, 9551, 9550, 3954, 2020, 2068, 4742, 2039, 3150, 2030, 4743, 5197, 11784, 9552],Generate_Bool=True)
