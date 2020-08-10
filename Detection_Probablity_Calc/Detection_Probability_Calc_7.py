@@ -1,4 +1,4 @@
-def Detection_Probability_Calc_3(fname_L_H,B,C,OFF):
+def Detection_Probability_Calc_3(B,C,OFF,fname_L_H=[['Graph 1 3.0 counts.csv','Graph 1 8.4 counts.csv','Graph 1 22 counts.csv'],['Graph 2 2.8 counts.csv','Graph 2 8.3 counts.csv','Graph 2 22 counts.csv'],['Graph 3 2.4 counts.csv','Graph 3 7.0 counts.csv','Graph 3 18 counts.csv','Graph 3 23 counts.csv','Graph 3 91 counts.csv'],['Graph 4 3.7 counts.csv','Graph 4 11 counts.csv','Graph 4 29 counts.csv','Graph 4 36 counts.csv','Graph 4 110 counts.csv']]):
     """
     fname_L_H:-hlist, Filename High List, a high list of the filenames of the files contianing the data from the 4D dectection probablity plot, The filenames must in in the form of 'Graph 1 3.0 counts.csv'
     B:-float, Background, The background of the observation
@@ -122,6 +122,7 @@ def Detection_Probability_Calc_3(fname_L_H,B,C,OFF):
 #Detection_Probability_Calc_3([['Graph 1 3.0 counts.csv','Graph 1 8.4 counts.csv','Graph 1 22 counts.csv'],['Graph 2 2.8 counts.csv','Graph 2 8.3 counts.csv','Graph 2 22 counts.csv'],['Graph 3 2.4 counts.csv','Graph 3 7.0 counts.csv','Graph 3 18 counts.csv','Graph 3 23 counts.csv','Graph 3 91 counts.csv'],['Graph 4 3.7 counts.csv','Graph 4 11 counts.csv','Graph 4 29 counts.csv','Graph 4 36 counts.csv','Graph 4 110 counts.csv']],0.153680013049534,10.0,7.5)
 #print Detection_Probability_Calc_3([['Graph 1 3.0 counts.csv','Graph 1 8.4 counts.csv','Graph 1 22 counts.csv'],['Graph 2 2.8 counts.csv','Graph 2 8.3 counts.csv','Graph 2 22 counts.csv'],['Graph 3 2.4 counts.csv','Graph 3 7.0 counts.csv','Graph 3 18 counts.csv','Graph 3 23 counts.csv','Graph 3 91 counts.csv'],['Graph 4 3.7 counts.csv','Graph 4 11 counts.csv','Graph 4 29 counts.csv','Graph 4 36 counts.csv','Graph 4 110 counts.csv']],0.153680013049534,10.0,7.5)
 #print Detection_Probability_Calc_3([['Graph 1 3.0 counts.csv','Graph 1 8.4 counts.csv','Graph 1 22 counts.csv'],['Graph 2 2.8 counts.csv','Graph 2 8.3 counts.csv','Graph 2 22 counts.csv'],['Graph 3 2.4 counts.csv','Graph 3 7.0 counts.csv','Graph 3 18 counts.csv','Graph 3 23 counts.csv','Graph 3 91 counts.csv'],['Graph 4 3.7 counts.csv','Graph 4 11 counts.csv','Graph 4 29 counts.csv','Graph 4 36 counts.csv','Graph 4 110 counts.csv']],0.03,10.0,5) #According to Kim et al. 2004 this should have a dection probablity of about 50% and the actual output is 53.8% which is consistant.
+#print Detection_Probability_Calc_3(0.03,10.0,5) #According to Kim et al. 2004 this should have a dection probablity of about 50% and the actual output is 53.8% which is consistant.
 
 def D_P_C_Big_Input(Backgrounds,counts,Off_Angs):
     #counts=[10,20]
@@ -135,20 +136,21 @@ def D_P_C_Big_Input(Backgrounds,counts,Off_Angs):
     """
     for Background in Backgrounds: # Background:-float, Background, The current background (of one of multiple observations?)
         Prob_L=[] # Prob_L:-list, Probablity List, A list of the probablity of detecting an object given the background, counts and offaxis angle
-        #print '\n'+str(Background)+'\n' # Prints the current background
+        print '\n'+str(Background)+'\n' # Prints the current background
         for count in counts: #count:-float, Count, The current count value, Selects the current count value from the count list
             Prob_L=[] # Prob_L:-list, Probablity List, A list of the probablity of detecting an object given the background, counts and offaxis angle
             #print "count", count #Debug
             for Off_Ang in Off_Angs: # Off_Ang:-int, Offaxis Angle, The current offaxis angle
                 #print "Off_Ang", Off_Ang
-                Cur_P= Detection_Probability_Calc_3([['Graph 1 3.0 counts.csv','Graph 1 8.4 counts.csv','Graph 1 22 counts.csv'],['Graph 2 2.8 counts.csv','Graph 2 8.3 counts.csv','Graph 2 22 counts.csv'],['Graph 3 2.4 counts.csv','Graph 3 7.0 counts.csv','Graph 3 18 counts.csv','Graph 3 23 counts.csv','Graph 3 91 counts.csv'],['Graph 4 3.7 counts.csv','Graph 4 11 counts.csv','Graph 4 29 counts.csv','Graph 4 36 counts.csv','Graph 4 110 counts.csv']],Background,count,Off_Ang) #Calculates the probablity of a detection based on all the current values
+                #Cur_P= Detection_Probability_Calc_3([['Graph 1 3.0 counts.csv','Graph 1 8.4 counts.csv','Graph 1 22 counts.csv'],['Graph 2 2.8 counts.csv','Graph 2 8.3 counts.csv','Graph 2 22 counts.csv'],['Graph 3 2.4 counts.csv','Graph 3 7.0 counts.csv','Graph 3 18 counts.csv','Graph 3 23 counts.csv','Graph 3 91 counts.csv'],['Graph 4 3.7 counts.csv','Graph 4 11 counts.csv','Graph 4 29 counts.csv','Graph 4 36 counts.csv','Graph 4 110 counts.csv']],Background,count,Off_Ang) #Calculates the probablity of a detection based on all the current values
+                Cur_P= Detection_Probability_Calc_3(Background,count,Off_Ang) #Calculates the probablity of a detection based on all the current values
                 Cur_P_Str=str(Cur_P) # Cur_P_Str:-str, Current Probablity String, The current probablity value as a string
                 Cur_P_N=float(Cur_P_Str) # Cur_P_N:-float, Current Probablity Number, The current probablity value as a float
                 Prob_L.append(Cur_P_N)
                 #if(len(Cur_P_Str)==3): # For debugging, when not debugging Prob_L.append(Cur_P_N) allways
                     #Prob_L.append(Cur_P_N) # Appends the current probablity to the probablity list
-            #print count # prints the current counts value
-            #print Prob_L # Prints the current probablity list
+            print count # prints the current counts value
+            print Prob_L # Prints the current probablity list
 
 #D_P_C_Big_Input([0.0411256372949457,0.135727335468768,0.13725522292245054,0.153680013049534],[10,20],[0,2,5,10])
 
@@ -190,7 +192,8 @@ def D_P_C_Big_Input_90_Per_Check(Backgrounds,Off_Angs=[0,1,2,3,4,5,6,7,8,9,10],C
                 for count in range(Count_Min,Count_Max+1,step): # This finds the minimum value of counts for which
                     #print '\n'+str(count)+'\n'
                     #print "Background: ", Background
-                    Cur_P= Detection_Probability_Calc_3([['Graph 1 3.0 counts.csv','Graph 1 8.4 counts.csv','Graph 1 22 counts.csv'],['Graph 2 2.8 counts.csv','Graph 2 8.3 counts.csv','Graph 2 22 counts.csv'],['Graph 3 2.4 counts.csv','Graph 3 7.0 counts.csv','Graph 3 18 counts.csv','Graph 3 23 counts.csv','Graph 3 91 counts.csv'],['Graph 4 3.7 counts.csv','Graph 4 11 counts.csv','Graph 4 29 counts.csv','Graph 4 36 counts.csv','Graph 4 110 counts.csv']],Background,count,Off_Ang) #Calculates the probablity of a detection based on all the current values
+                    #Cur_P= Detection_Probability_Calc_3([['Graph 1 3.0 counts.csv','Graph 1 8.4 counts.csv','Graph 1 22 counts.csv'],['Graph 2 2.8 counts.csv','Graph 2 8.3 counts.csv','Graph 2 22 counts.csv'],['Graph 3 2.4 counts.csv','Graph 3 7.0 counts.csv','Graph 3 18 counts.csv','Graph 3 23 counts.csv','Graph 3 91 counts.csv'],['Graph 4 3.7 counts.csv','Graph 4 11 counts.csv','Graph 4 29 counts.csv','Graph 4 36 counts.csv','Graph 4 110 counts.csv']],Background,count,Off_Ang) #Calculates the probablity of a detection based on all the current values
+                    Cur_P= Detection_Probability_Calc_3(Background,count,Off_Ang) #Calculates the probablity of a detection based on all the current values
                     if(Cur_P==False):
                         return False
                     Cur_P_Str=str(Cur_P) # Cur_P_Str:-str, Current Probablity String, The current probablity value as a string
@@ -241,3 +244,4 @@ def Count_Range_Generator(C_Min,C_Max,Step):
 #D_P_C_Big_Input_90_Per_Check([0.03]) #This is the current working version's input
 #D_P_C_Big_Input_90_Per_Check([0.0005,0.0007,0.005,0.03,0.05,0.1]) #This is the current working version's input
 #print D_P_C_Big_Input_90_Per_Check([0.0005,0.0007,0.001,0.002,0.005,0.03,0.05,0.1]) #This is the current working version's input
+#print D_P_C_Big_Input_90_Per_Check([0.0005]) #This is the current working version's input
