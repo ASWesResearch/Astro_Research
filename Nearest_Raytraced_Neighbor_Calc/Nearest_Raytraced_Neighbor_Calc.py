@@ -4,6 +4,8 @@ import sys
 import numpy as np
 import re
 from ciao_contrib.runtool import *
+import glob
+import matplotlib.pyplot as plt
 #import time
 dir = os.path.dirname(__file__)
 path=os.path.realpath('../')
@@ -457,6 +459,234 @@ def Source_Overlap_Calc_Testing():
             print "("+str(X)+","+str(Y)+")"
             print Source_Overlap_Calc(0,X,0,Y,2,a2,1,b2,0,rot2,M=3.0)
 
+def Evt2_File_Query(ObsID):
+    query_path='/Volumes/xray/simon/all_chandra_observations/'+str(ObsID)+'/primary/*evt2*'
+    evtfpath_L=glob.glob(query_path)
+    if(len(evtfpath_L)!=1):
+        #print str(ObsID)+" has "+str(len(evtfpath_L)-1)+"Additional Evt2 Files ! ! !"
+        print str(ObsID)+" has "+str(len(evtfpath_L))+" Evt2 Files ! ! !"
+        return "Error"
+    evtfpath=evtfpath_L[0]
+    return evtfpath
+
+def Postion_Error_Calc(OFF,C):
+    """
+    OFF:-float, Offaxis Angle of the source in units of arcmin
+    C:-float, The number of Counts in the soruce
+
+    returns: Error_Radius:-float, the raduis of the positional error of the source. #I have to check if this is actually a radius rather than a diameter or "Error Box" (From Kim et al. 2004)
+    """
+    Error_Radius_20_Counts=1-(0.02*(OFF**2.0))+(0.0067*(OFF**3.0)) #OFF is in units of arcmin, Error Radius in units of arcsec
+    Error_Radius_100_Counts=1-(0.01*(OFF**2.0))+(0.0025*(OFF**3.0)) #OFF is in units of arcmin, Error Radius in units of arcsec
+    Point_1=[20,Error_Radius_20_Counts]
+    Point_2=[100,Error_Radius_100_Counts]
+    Slope=(Point_2[1]-Point_1[1])/(Point_2[0]-Point_1[0])
+    #Solved Point Slope Formula y=m(x-x1)+y1
+    Error_Radius=Slope*(C-Point_1[0])+Point_1[1]
+    #print "Error_Radius: ", Error_Radius
+    """
+    if(Error_Radius<1.0): #This needs to be implimented to work with numpy
+        Error_Radius=1.0
+    """
+    return Error_Radius
+
+def Postion_Error_Simple_Calc(OFF,C="None"):
+    return OFF
+
+def Heat_Map(A):
+    #plt.imshow(A, cmap='viridis')
+    plt.imshow(A, extent=[0, 10, 0, 100], origin='lower',
+                  cmap='viridis')
+    plt.colorbar()
+    plt.axis(aspect='image')
+    plt.show()
+
+def Contour_Map(x,y,f):
+    X, Y = np.meshgrid(x, y)
+    Z = f(X, Y)
+    #plt.contourf(X, Y, Z, 20, cmap='viridis')
+    plt.contourf(X, Y, Z, 20, cmap='viridis',vmin=0,vmax=10)
+    plt.colorbar()
+    #plt.show()
+
+def Postion_Error_Plot(F):
+    Off_A=np.linspace(0,10,100)
+    Counts_A=np.arange(0,100)
+    Data=np.zeros((100,100))
+    for i in range(0,len(Off_A)):
+        Cur_Row=[]
+        Off=Off_A[i]
+        for j in range(0,len(Counts_A)):
+            Counts=Counts_A[j]
+            Data[i][j]=Postion_Error_Calc(Off,Counts)
+    #print Data
+    Contour_Map(Off_A,Counts_A,F)
+    plt.xlabel("Offaxis (arcmin)")
+    plt.ylabel("Counts")
+    plt.title("Positional Error (arcsec)")
+    Fname=F.__name__+"_Plot.pdf"
+    print "Fname: ", Fname
+    plt.savefig(Fname)
+    plt.show()
+    #Heat_Map(Data)
+
+
+def Duplicate_Source_Remover(ObsID):
+    Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
+    evtfpath=Evt2_File_Query(ObsID)
+    Nearest_Neighbor_Hybrid_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+    Nearest_Neighbor_Reg_File=open(Nearest_Neighbor_Hybrid_Reg_Fpath)
+    Nearest_Neighbor_Reg_Str=Nearest_Neighbor_Reg_File.read()
+    #print "Nearest_Neighbor_Reg_Str:\n", Nearest_Neighbor_Reg_Str
+    Nearest_Neighbor_Reg_Str_L=Nearest_Neighbor_Reg_Str.split(Header_String)
+    #print "Nearest_Neighbor_Reg_Str_L: ", Nearest_Neighbor_Reg_Str_L
+    Nearest_Neighbor_Reg_Str_Reduced=Nearest_Neighbor_Reg_Str_L[1]
+    #print "Nearest_Neighbor_Reg_Str_Reduced:\n", Nearest_Neighbor_Reg_Str_Reduced
+    Nearest_Neighbor_Reg_Str_Reduced_L=Nearest_Neighbor_Reg_Str_Reduced.split("\n")
+    #print "Nearest_Neighbor_Reg_Str_Reduced_L: ", Nearest_Neighbor_Reg_Str_Reduced_L
+    #print "len(Nearest_Neighbor_Reg_Str_Reduced_L) Before Pop: ", len(Nearest_Neighbor_Reg_Str_Reduced_L)
+    Nearest_Neighbor_Reg_Str_Reduced_L.pop(len(Nearest_Neighbor_Reg_Str_Reduced_L)-1)
+    #for Nearest_Neighbor_Reg_Str in Nearest_Neighbor_Reg_Str_Reduced_L:
+    Number_Duplicate_Sources=0
+    for i in range(0,len(Nearest_Neighbor_Reg_Str_Reduced_L)):
+        Nearest_Neighbor_Reg_Str=Nearest_Neighbor_Reg_Str_Reduced_L[i]
+        Nearest_Neighbor_Reg_Str_Split_L=re.split("[(),]", Nearest_Neighbor_Reg_Str)
+        #print "Nearest_Neighbor_Reg_Str_Split_L: ", Nearest_Neighbor_Reg_Str_Split_L
+        X_Str=Nearest_Neighbor_Reg_Str_Split_L[1]
+        #print "X_Str: ", X_Str
+        X=float(X_Str)
+        Y_Str=Nearest_Neighbor_Reg_Str_Split_L[2]
+        Y=float(Y_Str)
+        dmcoords(infile=str(evtfpath),x=float(X), y=float(Y), option='sky', verbose=0, celfmt='deg') #Calls dmcoords to get the offaxis angle from the physical coordinates
+        Cur_Theta_Arcmin=dmcoords.theta #Cur_Theta:-float, Current Theta, The current offaxis angle of the object in arcmin
+        #print "Cur_Theta_Arcmin: ", Cur_Theta_Arcmin
+        Nearest_Neighbor_Reg_Str_Reduced=Nearest_Neighbor_Reg_Str.split(";")[1].split(" ")[0]
+        Infile_String=evtfpath+"[sky="+Nearest_Neighbor_Reg_Str_Reduced+"]"
+        #print "Infile_String: ", Infile_String
+        Counts_Output=dmlist(infile=str(Infile_String), opt="counts")
+        #print "Counts_Output: ", Counts_Output
+        #print "type(Counts_Output): ", type(Counts_Output)
+        Counts=float(Counts_Output)
+        #print "Counts: ", Counts
+        Cur_Source_Radius_Arcsec=Postion_Error_Calc(Cur_Theta_Arcmin,Counts)
+        """
+        if(Cur_Theta_Arcmin<2.0):
+            Cur_Source_Radius_Arcsec=2.0
+        else:
+            Cur_Source_Radius_Arcsec=Cur_Theta_Arcmin #Source radius in arcsec ~= off-axis angle in arcmin. So 2 min off-axis = 2 arcsec, etc.
+        """
+        Cur_Source_Radius_Pixels=Cur_Source_Radius_Arcsec*2.03252032520325 #The converstion factor is 2.03252032520325pix/arcsec
+        #print "Cur_Source_Radius_Pixels: ", Cur_Source_Radius_Pixels
+        #for Nearest_Neighbor_Reg_Str_Test in Nearest_Neighbor_Reg_Str_Reduced_L:
+        for j in range(i+1,len(Nearest_Neighbor_Reg_Str_Reduced_L)): #i+1 to ignore current source. This might not be right
+            Nearest_Neighbor_Reg_Str_Test=Nearest_Neighbor_Reg_Str_Reduced_L[j]
+            Nearest_Neighbor_Reg_Str_Test_Split_L=re.split("[(),]", Nearest_Neighbor_Reg_Str_Test)
+            #print "Nearest_Neighbor_Reg_Str_Split_L: ", Nearest_Neighbor_Reg_Str_Split_L
+            X_Str=Nearest_Neighbor_Reg_Str_Test_Split_L[1]
+            #print "X_Str: ", X_Str
+            X_Test=float(X_Str)
+            Y_Str=Nearest_Neighbor_Reg_Str_Test_Split_L[2]
+            Y_Test=float(Y_Str)
+            Dist=Distance_Calc(X,Y,X_Test,Y_Test)
+            #Cur_Theta_Pixels #
+            if(Dist<2.0*Cur_Source_Radius_Pixels):
+                print "Matching Cur_Theta_Arcmin: ", Cur_Theta_Arcmin
+                print "Matching Counts: ", Counts
+                print "Cur_Source_Radius_Arcsec: ", Cur_Source_Radius_Arcsec
+                print "Cur_Source_Radius_Pixels: ", Cur_Source_Radius_Pixels
+                print "Matching Dist: ", Dist
+                #"""
+                #print "Region: ", Nearest_Neighbor_Reg_Str
+                ##Nearest_Neighbor_Reg_Str_Reduced=Nearest_Neighbor_Reg_Str.split(";")[1].split(" ")[0]
+                #print "Nearest_Neighbor_Reg_Str_Reduced: ", Nearest_Neighbor_Reg_Str_Reduced
+                #print "Test Region: ", Nearest_Neighbor_Reg_Str_Test
+                Nearest_Neighbor_Reg_Str_Test_Reduced=Nearest_Neighbor_Reg_Str_Test.split(";")[1].split(" ")[0]
+                #print "Nearest_Neighbor_Reg_Str_Test_Reduced: ", Nearest_Neighbor_Reg_Str_Test_Reduced
+                #dmcoords(infile=str(evtfpath),x=float(Cur_X), y=float(Cur_Y), option='sky', verbose=0, celfmt='deg') #Calls dmcoords to get the offaxis angle from the physical coordinates #I should just use the RA and DEC of each X-ray object instead of the SKY coordinate #Note: This is only here for symtax
+                #dmlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts
+                ##Infile_String=evtfpath+"[sky="+Nearest_Neighbor_Reg_Str_Reduced+"]"
+                print "Infile_String: ", Infile_String
+                Infile_String_Test=evtfpath+"[sky="+Nearest_Neighbor_Reg_Str_Test_Reduced+"]"
+                print "Infile_String_Test: ", Infile_String_Test
+                ##Region_Output=dmlist(infile=str(Infile_String), opt="counts")
+                #print "Region_Output: ", Region_Output
+                ##Region_Test_Output=dmlist(infile=str(Infile_String_Test), opt="counts")
+                #print "Region_Test_Output: ", Region_Test_Output
+                #"""
+                Number_Duplicate_Sources=Number_Duplicate_Sources+1
+    print "Number_Duplicate_Sources: ", Number_Duplicate_Sources
+    Nearest_Neighbor_Reg_File.close()
+def Source_Number_Comparer(ObsID):
+    #/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/12888/Raytraced_Sources_ObsID_12888_Coords.csv
+    #Raytrace_Coords_Fpath="/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"+str(ObsID)+"/Raytraced_Sources_ObsID_"+str(ObsID)+"_Coords.csv"
+    Raytrace_ObsID_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"+str(ObsID)+"/ObsID_"+str(ObsID)+"_Raytraced_Source_Regions.reg"
+    Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
+    #Raytrace_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/Detector_Coord_All_Soruces.reg"
+    Raytrace_ObsID_Reg_File=open(Raytrace_ObsID_Reg_Fpath)
+    Raytrace_ObsID_Reg_Str=Raytrace_ObsID_Reg_File.read()
+    #print "Raytrace_ObsID_Reg_Str:\n", Raytrace_ObsID_Reg_Str
+    Raytrace_ObsID_Reg_Str_L=Raytrace_ObsID_Reg_Str.split(Header_String)
+    #print "Raytrace_ObsID_Reg_Str_L: ", Raytrace_ObsID_Reg_Str_L
+    Raytrace_ObsID_Reg_Str_Reduced=Raytrace_ObsID_Reg_Str_L[1]
+    #print "Raytrace_ObsID_Reg_Str_Reduced:\n", Raytrace_ObsID_Reg_Str_Reduced
+    Raytrace_ObsID_Reg_Str_Reduced_L=Raytrace_ObsID_Reg_Str_Reduced.split("\n")
+    #print "Raytrace_ObsID_Reg_Str_Reduced_L: ", Raytrace_ObsID_Reg_Str_Reduced_L
+    #print "len(Raytrace_ObsID_Reg_Str_Reduced_L) Before Pop: ", len(Raytrace_ObsID_Reg_Str_Reduced_L)
+    Raytrace_ObsID_Reg_Str_Reduced_L.pop(len(Raytrace_ObsID_Reg_Str_Reduced_L)-1)
+    #Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
+    Nearest_Neighbor_Hybrid_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+    Nearest_Neighbor_Reg_File=open(Nearest_Neighbor_Hybrid_Reg_Fpath)
+    Nearest_Neighbor_Reg_Str=Nearest_Neighbor_Reg_File.read()
+    #print "Nearest_Neighbor_Reg_Str:\n", Nearest_Neighbor_Reg_Str
+    Nearest_Neighbor_Reg_Str_L=Nearest_Neighbor_Reg_Str.split(Header_String)
+    #print "Nearest_Neighbor_Reg_Str_L: ", Nearest_Neighbor_Reg_Str_L
+    Nearest_Neighbor_Reg_Str_Reduced=Nearest_Neighbor_Reg_Str_L[1]
+    #print "Nearest_Neighbor_Reg_Str_Reduced:\n", Nearest_Neighbor_Reg_Str_Reduced
+    Nearest_Neighbor_Reg_Str_Reduced_L=Nearest_Neighbor_Reg_Str_Reduced.split("\n")
+    #print "Nearest_Neighbor_Reg_Str_Reduced_L: ", Nearest_Neighbor_Reg_Str_Reduced_L
+    #print "len(Nearest_Neighbor_Reg_Str_Reduced_L) Before Pop: ", len(Nearest_Neighbor_Reg_Str_Reduced_L)
+    Nearest_Neighbor_Reg_Str_Reduced_L.pop(len(Nearest_Neighbor_Reg_Str_Reduced_L)-1)
+    Matching_Source_Num_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Matching_Source_Number.csv"
+    Matching_Source_Num_File=open(Matching_Source_Num_Fpath,"w")
+    Source_Number_CSV_Header_String="Raytrace_Source_Num,Nearest_Neighbor_Num\n"
+    Matching_Source_Num_File.write(Source_Number_CSV_Header_String)
+    Raytrace_Source_Num=1
+    for Raytrace_Reg_Str in Raytrace_ObsID_Reg_Str_Reduced_L:
+        Raytrace_Reg_Str_Split_L=re.split("[(),]", Raytrace_Reg_Str)
+        #print "Raytrace_Reg_Str_Split_L: ", Raytrace_Reg_Str_Split_L
+        X_Str=Raytrace_Reg_Str_Split_L[1]
+        #print "X_Str: ", X_Str
+        X=float(X_Str)
+        Y_Str=Raytrace_Reg_Str_Split_L[2]
+        Y=float(Y_Str)
+        Matching_Nearest_Neighbor_Source_Num_L=[]
+        Nearest_Neighbor_Source_Num=1
+        for Nearest_Neighbor_Reg_Str in Nearest_Neighbor_Reg_Str_Reduced_L:
+            Nearest_Neighbor_Reg_Str_Split_L=re.split("[(),]", Nearest_Neighbor_Reg_Str)
+            #print "Nearest_Neighbor_Reg_Str_Split_L: ", Nearest_Neighbor_Reg_Str_Split_L
+            X_Str=Nearest_Neighbor_Reg_Str_Split_L[1]
+            #print "X_Str: ", X_Str
+            X_Test=float(X_Str)
+            Y_Str=Nearest_Neighbor_Reg_Str_Split_L[2]
+            Y_Test=float(Y_Str)
+            Dist=Distance_Calc(X,Y,X_Test,Y_Test)
+            if(Dist<4.0):
+                Matching_Nearest_Neighbor_Source_Num_L.append(Nearest_Neighbor_Source_Num)
+            Nearest_Neighbor_Source_Num=Nearest_Neighbor_Source_Num+1
+        if(len(Matching_Nearest_Neighbor_Source_Num_L)!=1):
+            print "Error: ObsID "+str(ObsID)+" Raytrace_Source_Num "+str(Raytrace_Source_Num)+" has "+str(len(Matching_Nearest_Neighbor_Source_Num_L))+" Matching Source Numbers !"
+            print "Matching_Nearest_Neighbor_Source_Num_L: ", Matching_Nearest_Neighbor_Source_Num_L
+        if(len(Matching_Nearest_Neighbor_Source_Num_L)==0):
+            Matching_Nearest_Neighbor_Source_Num=None
+        else:
+            Matching_Nearest_Neighbor_Source_Num=Matching_Nearest_Neighbor_Source_Num_L[0]
+        Cur_Match_Str=str(Raytrace_Source_Num)+","+str(Matching_Nearest_Neighbor_Source_Num)+"\n"
+        Matching_Source_Num_File.write(Cur_Match_Str)
+        Raytrace_Source_Num=Raytrace_Source_Num+1
+    Raytrace_ObsID_Reg_File.close()
+    Nearest_Neighbor_Reg_File.close()
+    Matching_Source_Num_File.close()
+
 def Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=False):
     Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
     Raytrace_Files_Path="/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"
@@ -467,9 +697,11 @@ def Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=False):
     Nearest_Neighbor_Hybrid_All_Soruces_L=[]
     for ObsID in ObsID_L:
         if(Generate_Bool):
-            Nearest_Raytraced_Neighbor_Calc(ObsID)
-            Background_Reg_Generator(ObsID)
-            Background_Overlap_Corrected_Reg_Generator(ObsID)
+            ##Nearest_Raytraced_Neighbor_Calc(ObsID)
+            ##Background_Reg_Generator(ObsID)
+            ##Background_Overlap_Corrected_Reg_Generator(ObsID)
+            Duplicate_Source_Remover(ObsID)
+            ##Source_Number_Comparer(ObsID)
         #Nearest_Raytraced_Neighbor_Reg_FPath="/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
         Nearest_Raytraced_Neighbor_Reg_FPath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
         Nearest_Raytraced_Neighbor_Reg_File=open(Nearest_Raytraced_Neighbor_Reg_FPath)
@@ -492,5 +724,9 @@ def Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=False):
 #Nearest_Raytraced_Neighbor_Calc_Big_Input([12888],Generate_Bool=True)
 #Background_Overlap_Corrected_Reg_Generator(10125)
 #Background_Overlap_Corrected_Reg_Generator(12888)
+#Source_Number_Comparer(10125)
+#Source_Number_Comparer(12888)
 #Source_Overlap_Calc_Testing()
-Nearest_Raytraced_Neighbor_Calc_Big_Input([6096, 1971, 1972, 768, 952, 11674, 13255, 13253, 13246, 12952, 12953, 13247, 12951, 2025, 9548, 2149, 2197, 9510, 6131, 5908, 803, 14342, 12995, 2064, 16024, 12992, 14332, 13202, 793, 2933, 11104, 379, 2056, 2055, 2922, 9506, 11344, 766, 4688, 6869, 6872, 3554, 2057, 2058, 8041, 9121, 9546, 7252, 7060, 9553, 5930, 5931, 5929, 2079, 5905, 9527, 4689, 3947, 1563, 9507, 4613, 794, 11775, 11271, 3951, 2062, 2027, 2060, 2061, 2070, 2032, 7154, 7153, 11779, 5932, 2976, 4613, 794, 1043, 4632, 4631, 4633, 4404, 2059, 12095, 2040, 2915, 4372, 2069, 11229, 7848, 15383, 10125, 2031, 10875, 12889, 12888, 321, 322, 9551, 9550, 3954, 2020, 2068, 4742, 2039, 3150, 2030, 4743, 5197, 11784, 9552],Generate_Bool=True)
+#Postion_Error_Plot(Postion_Error_Calc)
+Postion_Error_Plot(Postion_Error_Simple_Calc)
+#Nearest_Raytraced_Neighbor_Calc_Big_Input([6096, 1971, 1972, 768, 952, 11674, 13255, 13253, 13246, 12952, 12953, 13247, 12951, 2025, 9548, 2149, 2197, 9510, 6131, 5908, 803, 14342, 12995, 2064, 16024, 12992, 14332, 13202, 793, 2933, 11104, 379, 2056, 2055, 2922, 9506, 11344, 766, 4688, 6869, 6872, 3554, 2057, 2058, 8041, 9121, 9546, 7252, 7060, 9553, 5930, 5931, 5929, 2079, 5905, 9527, 4689, 3947, 1563, 9507, 4613, 794, 11775, 11271, 3951, 2062, 2027, 2060, 2061, 2070, 2032, 7154, 7153, 11779, 5932, 2976, 4613, 794, 1043, 4632, 4631, 4633, 4404, 2059, 12095, 2040, 2915, 4372, 2069, 11229, 7848, 15383, 10125, 2031, 10875, 12889, 12888, 321, 322, 9551, 9550, 3954, 2020, 2068, 4742, 2039, 3150, 2030, 4743, 5197, 11784, 9552],Generate_Bool=True)
