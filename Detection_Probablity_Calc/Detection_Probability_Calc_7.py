@@ -1,3 +1,11 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import interpolate
+from scipy.interpolate import interp1d
+import astropy.io.ascii as ascii
+import os
+from os import system
+import glob
 def Detection_Probability_Calc_3(B,C,OFF,fname_L_H=[['Graph 1 3.0 counts.csv','Graph 1 8.4 counts.csv','Graph 1 22 counts.csv'],['Graph 2 2.8 counts.csv','Graph 2 8.3 counts.csv','Graph 2 22 counts.csv'],['Graph 3 2.4 counts.csv','Graph 3 7.0 counts.csv','Graph 3 18 counts.csv','Graph 3 23 counts.csv','Graph 3 91 counts.csv'],['Graph 4 3.7 counts.csv','Graph 4 11 counts.csv','Graph 4 29 counts.csv','Graph 4 36 counts.csv','Graph 4 110 counts.csv']]):
     """
     fname_L_H:-hlist, Filename High List, a high list of the filenames of the files contianing the data from the 4D dectection probablity plot, The filenames must in in the form of 'Graph 1 3.0 counts.csv'
@@ -8,6 +16,7 @@ def Detection_Probability_Calc_3(B,C,OFF,fname_L_H=[['Graph 1 3.0 counts.csv','G
 
     This funtion takes the names of datafiles contianing data
     """
+    """
     import numpy as np
     import matplotlib.pyplot as plt
     from scipy import interpolate
@@ -15,6 +24,7 @@ def Detection_Probability_Calc_3(B,C,OFF,fname_L_H=[['Graph 1 3.0 counts.csv','G
     import astropy.io.ascii as ascii
     import os
     from os import system
+    """
     C_L=[] # Count List, A list of float count values
     P_L=[] # A list of the probabilities as a function of the background
     P_C_L=[] # P_C_L:-list, Probablity as a function of Counts List, The Probablity as a function of the user given background and user given count value in a list, with each value and the order of the list associated with a list of offaxis anlges Off_T_L=[0,2,5,10], Example The first probablity in the list is associated with 0'
@@ -117,12 +127,23 @@ def Detection_Probability_Calc_3(B,C,OFF,fname_L_H=[['Graph 1 3.0 counts.csv','G
     #print "P_Off", type (P_Off)
     P_Off_Str=str(P_Off) #P_Off_Str:-str, Probablity as a function of Offaxis String, The string value of the probablity of finding an object
     P_Off_N=float(P_Off_Str) #P_Off_N:-float, Probablity as a function of Offaxis Number, The float value of the probablity of a finding an object
+    """
+    This clipping has been added in to test the plotting. More work needs to be done to dertermine if it will be completely included
+    """
+    if(P_Off_N>1.0):
+        P_Off_N=1.0
+    if(P_Off_N<0.0):
+        P_Off_N=0.0
     return P_Off_N # Returns the probablity of finding an object
 
 #Detection_Probability_Calc_3([['Graph 1 3.0 counts.csv','Graph 1 8.4 counts.csv','Graph 1 22 counts.csv'],['Graph 2 2.8 counts.csv','Graph 2 8.3 counts.csv','Graph 2 22 counts.csv'],['Graph 3 2.4 counts.csv','Graph 3 7.0 counts.csv','Graph 3 18 counts.csv','Graph 3 23 counts.csv','Graph 3 91 counts.csv'],['Graph 4 3.7 counts.csv','Graph 4 11 counts.csv','Graph 4 29 counts.csv','Graph 4 36 counts.csv','Graph 4 110 counts.csv']],0.153680013049534,10.0,7.5)
 #print Detection_Probability_Calc_3([['Graph 1 3.0 counts.csv','Graph 1 8.4 counts.csv','Graph 1 22 counts.csv'],['Graph 2 2.8 counts.csv','Graph 2 8.3 counts.csv','Graph 2 22 counts.csv'],['Graph 3 2.4 counts.csv','Graph 3 7.0 counts.csv','Graph 3 18 counts.csv','Graph 3 23 counts.csv','Graph 3 91 counts.csv'],['Graph 4 3.7 counts.csv','Graph 4 11 counts.csv','Graph 4 29 counts.csv','Graph 4 36 counts.csv','Graph 4 110 counts.csv']],0.153680013049534,10.0,7.5)
 #print Detection_Probability_Calc_3([['Graph 1 3.0 counts.csv','Graph 1 8.4 counts.csv','Graph 1 22 counts.csv'],['Graph 2 2.8 counts.csv','Graph 2 8.3 counts.csv','Graph 2 22 counts.csv'],['Graph 3 2.4 counts.csv','Graph 3 7.0 counts.csv','Graph 3 18 counts.csv','Graph 3 23 counts.csv','Graph 3 91 counts.csv'],['Graph 4 3.7 counts.csv','Graph 4 11 counts.csv','Graph 4 29 counts.csv','Graph 4 36 counts.csv','Graph 4 110 counts.csv']],0.03,10.0,5) #According to Kim et al. 2004 this should have a dection probablity of about 50% and the actual output is 53.8% which is consistant.
 #print Detection_Probability_Calc_3(0.03,10.0,5) #According to Kim et al. 2004 this should have a dection probablity of about 50% and the actual output is 53.8% which is consistant.
+#print Detection_Probability_Calc_3(0.1,4.0,0)
+#print Detection_Probability_Calc_3(0.0005,22,0)
+#print Detection_Probability_Calc_3(0.26,22,0)
+#print Detection_Probability_Calc_3(0.3,22,0)
 
 def D_P_C_Big_Input(Backgrounds,counts,Off_Angs):
     #counts=[10,20]
@@ -233,6 +254,89 @@ def Count_Range_Generator(C_Min,C_Max,Step):
 
 #print Count_Range_Generator(2,110,1)
 
+def Contour_Map(x,y,f,V_min,V_max,Step,Colorbar_Label,*args):
+    X, Y = np.meshgrid(x, y)
+    print "x:\n", x
+    print "y:\n", y
+    print "X:\n", X
+    print "Y:\n", Y
+    print "args: ", args
+    #Z = f(X, Y, args[0])
+    Z=np.zeros((len(X),len(X)))
+    for i in range(0,len(X)):
+        for j in range(0,len(X)):
+            Z[i][j]=f(X[i][j],Y[i][j],args[0])
+    #Z = f(X, Y)
+    print "Z:\n", Z
+    #plt.contourf(X, Y, Z, 20, cmap='viridis')
+    plt.xscale('log')
+    plt.contourf(X, Y, Z, np.arange(V_min,V_max+Step,Step), cmap='viridis',vmin=V_min,vmax=V_max)
+    #plt.contour(X, Y, Z, [0.9], colors='black',vmin=V_min,vmax=V_max)
+    #plt.contourf(X, Y, Z, 20, cmap='Wistia',vmin=V_min,vmax=V_max)
+    #plt.colorbar(ticks=np.arange(V_min,V_max))
+    #plt.colorbar()
+    Colorbar=plt.colorbar(ticks=np.arange(V_min,V_max+Step,Step))
+    Colorbar.set_label(Colorbar_Label)
+    plt.contour(X, Y, Z, [0.9], colors='black',vmin=V_min,vmax=V_max, linewidths=0.5, linestyles="dashed")
+    #plt.show()
+def Offaxis_to_Graph_Num(Off):
+    Graph_Num_to_Off_HL=[[1,0],[2,2],[3,5],[4,10]]
+    for Graph_Num_to_Off_L in Graph_Num_to_Off_HL:
+        if(Graph_Num_to_Off_L[1]==Off):
+            return Graph_Num_to_Off_L[0]
+
+def Detection_Probability_Plot(F):
+    #Off_A=np.linspace(0,10,100)
+    #Fname_L=glob.glob("/Volumes/xray/anthony/Research_Git/Background_Graph_Data_2/"+)
+    Off_Known_L=[0,2,5,10]
+    #Off_A=[0]
+    Off_A=range(0,11)
+    for Off in Off_A:
+        #Background_A=np.linspace(0.0005,0.5,10)
+        #Background_A=np.linspace(0.0001,1,10)
+        Background_A=np.geomspace(0.0001,1,200)
+        #Background_A=np.logspace(0.0005,0.5,10)
+        #Background_A=np.linspace(0.0005,0.2,10) #Weird bug here #Update: The bug was from undersamping the data it has nothing do do with this location
+        #Counts_A=np.arange(0,10)
+        Counts_A=np.linspace(0,115,200) #Update: The bug was from undersamping the data it has nothing do do with this location
+        #Counts_A=np.linspace(0,5,10) #Weird bug here
+        #Data=np.zeros((100,100))
+        """
+        for i in range(0,len(Off_A)):
+            Cur_Row=[]
+            Off=Off_A[i]
+            for j in range(0,len(Counts_A)):
+                Counts=Counts_A[j]
+                Data[i][j]=Postion_Error_Calc(Off,Counts)
+        """
+        #print Data
+        Contour_Map(Background_A,Counts_A,F,0,1,0.1,"Probability",Off)
+        if(Off in Off_A):
+            Graph_Num=Offaxis_to_Graph_Num(Off)
+            Graph_Data_Fpath_L=glob.glob("/Volumes/xray/anthony/Research_Git/Background_Graph_Data_2/"+"Graph "+str(Graph_Num)+"*")
+            print "Graph_Data_Fpath_L: ", Graph_Data_Fpath_L
+            for Graph_Data_Fpath in Graph_Data_Fpath_L:
+                data = ascii.read(Graph_Data_Fpath) #data:-astropy.table.table.Table, data, The graph data for the current offaxis angle and number of counts.
+                B_A=data['col1'] # B_A:-array, Background Array, The array contianing the background data from the current data file, in order of increasing background
+                B_A=np.array(B_A) #Converts B_A to a numpy array
+                B_A_Length=B_A.size
+                #P_A=data['col2'] # P_A:-array, Probablity Array, The array of probabilities in the order of the increasing backgrounds they are associated with
+                Counts_Known=float(Graph_Data_Fpath.split(" ")[2])
+                C_A=np.zeros(B_A_Length)
+                C_A.fill(Counts_Known)
+                #plt.plot([0.04],[4],".",color="red")
+                plt.plot(B_A,C_A,".",color="red")
+        plt.xlabel("Background")
+        plt.ylabel("Counts")
+        plt.title("Detection Probability  "+"["+str(Off)+"']")
+        Outpath="/Volumes/xray/anthony/Research_Git/Detection_Probablity_Calc/Detection_Probability_Plots/"
+        ##Fname=F.__name__+"_"+str(Off)+"_Arcmin_Plot.pdf"
+        Fname=F.__name__+"_"+str(Off)+"_Arcmin_Test_Plot.pdf"
+        print "Fname: ", Fname
+        plt.savefig(Outpath+Fname)
+        #plt.show()
+        plt.close()
+
 #D_P_C_Big_Input_90_Per_Check([0.0411256372949457,0.135727335468768,0.13725522292245054,0.153680013049534],Count_Range_Generator(2,110,1),[0,2,5,10])
 #D_P_C_Big_Input_90_Per_Check([0.0411256372949457,0.135727335468768,0.13725522292245054,0.153680013049534],[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110],[0,2,5,10])
 #D_P_C_Big_Input_90_Per_Check([0.0411256372949457,0.135727335468768,0.13725522292245054,0.153680013049534],2,110,[0,2,5,10])
@@ -245,3 +349,4 @@ def Count_Range_Generator(C_Min,C_Max,Step):
 #D_P_C_Big_Input_90_Per_Check([0.0005,0.0007,0.005,0.03,0.05,0.1]) #This is the current working version's input
 #print D_P_C_Big_Input_90_Per_Check([0.0005,0.0007,0.001,0.002,0.005,0.03,0.05,0.1]) #This is the current working version's input
 #print D_P_C_Big_Input_90_Per_Check([0.0005]) #This is the current working version's input
+Detection_Probability_Plot(Detection_Probability_Calc_3)
