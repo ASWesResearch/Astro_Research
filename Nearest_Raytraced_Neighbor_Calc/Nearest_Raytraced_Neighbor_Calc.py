@@ -484,13 +484,15 @@ def Postion_Error_Calc(OFF,C):
     #Solved Point Slope Formula y=m(x-x1)+y1
     Error_Radius=Slope*(C-Point_1[0])+Point_1[1]
     #print "Error_Radius: ", Error_Radius
-    """
-    if(Error_Radius<1.0): #This needs to be implimented to work with numpy
+    #"""
+    if(Error_Radius<1.0): #This needs to be implimented to work with numpy #Update: This will now work with numpy
         Error_Radius=1.0
-    """
+    #"""
     return Error_Radius
 
 def Postion_Error_Simple_Calc(OFF,C="None"):
+    if(OFF<2.0):
+        return 2.0
     return OFF
 
 def Heat_Map(A):
@@ -501,17 +503,23 @@ def Heat_Map(A):
     plt.axis(aspect='image')
     plt.show()
 
-def Contour_Map(x,y,f):
+def Contour_Map(x,y,f,V_min,V_max):
     X, Y = np.meshgrid(x, y)
-    Z = f(X, Y)
+    Z=np.zeros((len(X),len(X)))
+    for i in range(0,len(X)):
+        for j in range(0,len(X)):
+            Z[i][j]=f(X[i][j],Y[i][j])
+    #Z = f(X, Y)
     #plt.contourf(X, Y, Z, 20, cmap='viridis')
-    plt.contourf(X, Y, Z, 20, cmap='viridis',vmin=0,vmax=10)
-    plt.colorbar()
+    plt.contourf(X, Y, Z, 500, cmap='viridis',vmin=V_min,vmax=V_max)
+    #plt.contourf(X, Y, Z, 20, cmap='Wistia',vmin=V_min,vmax=V_max)
+    plt.colorbar(ticks=np.arange(V_min,V_max))
     #plt.show()
 
 def Postion_Error_Plot(F):
     Off_A=np.linspace(0,10,100)
     Counts_A=np.arange(0,100)
+    """
     Data=np.zeros((100,100))
     for i in range(0,len(Off_A)):
         Cur_Row=[]
@@ -520,14 +528,17 @@ def Postion_Error_Plot(F):
             Counts=Counts_A[j]
             Data[i][j]=Postion_Error_Calc(Off,Counts)
     #print Data
-    Contour_Map(Off_A,Counts_A,F)
+    """
+    Contour_Map(Off_A,Counts_A,F,0,10)
     plt.xlabel("Offaxis (arcmin)")
     plt.ylabel("Counts")
     plt.title("Positional Error (arcsec)")
-    Fname=F.__name__+"_Plot.pdf"
+    #Fname=F.__name__+"_Plot.pdf"
+    Fname=F.__name__+"_Plot.png"
     print "Fname: ", Fname
     plt.savefig(Fname)
-    plt.show()
+    ##plt.show()
+    plt.close()
     #Heat_Map(Data)
 
 
@@ -727,6 +738,6 @@ def Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=False):
 #Source_Number_Comparer(10125)
 #Source_Number_Comparer(12888)
 #Source_Overlap_Calc_Testing()
-#Postion_Error_Plot(Postion_Error_Calc)
+Postion_Error_Plot(Postion_Error_Calc)
 Postion_Error_Plot(Postion_Error_Simple_Calc)
 #Nearest_Raytraced_Neighbor_Calc_Big_Input([6096, 1971, 1972, 768, 952, 11674, 13255, 13253, 13246, 12952, 12953, 13247, 12951, 2025, 9548, 2149, 2197, 9510, 6131, 5908, 803, 14342, 12995, 2064, 16024, 12992, 14332, 13202, 793, 2933, 11104, 379, 2056, 2055, 2922, 9506, 11344, 766, 4688, 6869, 6872, 3554, 2057, 2058, 8041, 9121, 9546, 7252, 7060, 9553, 5930, 5931, 5929, 2079, 5905, 9527, 4689, 3947, 1563, 9507, 4613, 794, 11775, 11271, 3951, 2062, 2027, 2060, 2061, 2070, 2032, 7154, 7153, 11779, 5932, 2976, 4613, 794, 1043, 4632, 4631, 4633, 4404, 2059, 12095, 2040, 2915, 4372, 2069, 11229, 7848, 15383, 10125, 2031, 10875, 12889, 12888, 321, 322, 9551, 9550, 3954, 2020, 2068, 4742, 2039, 3150, 2030, 4743, 5197, 11784, 9552],Generate_Bool=True)
