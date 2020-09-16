@@ -543,6 +543,7 @@ def Postion_Error_Plot(F):
 
 
 def Duplicate_Source_Remover(ObsID):
+    print ObsID
     Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
     evtfpath=Evt2_File_Query(ObsID)
     Nearest_Neighbor_Hybrid_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
@@ -559,6 +560,8 @@ def Duplicate_Source_Remover(ObsID):
     Nearest_Neighbor_Reg_Str_Reduced_L.pop(len(Nearest_Neighbor_Reg_Str_Reduced_L)-1)
     #for Nearest_Neighbor_Reg_Str in Nearest_Neighbor_Reg_Str_Reduced_L:
     Number_Duplicate_Sources=0
+    Duplicate_Source_Index_L=[]
+    Duplicate_Source_Index_HL=[]
     for i in range(0,len(Nearest_Neighbor_Reg_Str_Reduced_L)):
         Nearest_Neighbor_Reg_Str=Nearest_Neighbor_Reg_Str_Reduced_L[i]
         Nearest_Neighbor_Reg_Str_Split_L=re.split("[(),]", Nearest_Neighbor_Reg_Str)
@@ -589,44 +592,56 @@ def Duplicate_Source_Remover(ObsID):
         Cur_Source_Radius_Pixels=Cur_Source_Radius_Arcsec*2.03252032520325 #The converstion factor is 2.03252032520325pix/arcsec
         #print "Cur_Source_Radius_Pixels: ", Cur_Source_Radius_Pixels
         #for Nearest_Neighbor_Reg_Str_Test in Nearest_Neighbor_Reg_Str_Reduced_L:
+        Cur_Duplicate_Source_Index_L=[]
         for j in range(i+1,len(Nearest_Neighbor_Reg_Str_Reduced_L)): #i+1 to ignore current source. This might not be right
-            Nearest_Neighbor_Reg_Str_Test=Nearest_Neighbor_Reg_Str_Reduced_L[j]
-            Nearest_Neighbor_Reg_Str_Test_Split_L=re.split("[(),]", Nearest_Neighbor_Reg_Str_Test)
-            #print "Nearest_Neighbor_Reg_Str_Split_L: ", Nearest_Neighbor_Reg_Str_Split_L
-            X_Str=Nearest_Neighbor_Reg_Str_Test_Split_L[1]
-            #print "X_Str: ", X_Str
-            X_Test=float(X_Str)
-            Y_Str=Nearest_Neighbor_Reg_Str_Test_Split_L[2]
-            Y_Test=float(Y_Str)
-            Dist=Distance_Calc(X,Y,X_Test,Y_Test)
-            #Cur_Theta_Pixels #
-            if(Dist<2.0*Cur_Source_Radius_Pixels):
-                print "Matching Cur_Theta_Arcmin: ", Cur_Theta_Arcmin
-                print "Matching Counts: ", Counts
-                print "Cur_Source_Radius_Arcsec: ", Cur_Source_Radius_Arcsec
-                print "Cur_Source_Radius_Pixels: ", Cur_Source_Radius_Pixels
-                print "Matching Dist: ", Dist
-                #"""
-                #print "Region: ", Nearest_Neighbor_Reg_Str
-                ##Nearest_Neighbor_Reg_Str_Reduced=Nearest_Neighbor_Reg_Str.split(";")[1].split(" ")[0]
-                #print "Nearest_Neighbor_Reg_Str_Reduced: ", Nearest_Neighbor_Reg_Str_Reduced
-                #print "Test Region: ", Nearest_Neighbor_Reg_Str_Test
-                Nearest_Neighbor_Reg_Str_Test_Reduced=Nearest_Neighbor_Reg_Str_Test.split(";")[1].split(" ")[0]
-                #print "Nearest_Neighbor_Reg_Str_Test_Reduced: ", Nearest_Neighbor_Reg_Str_Test_Reduced
-                #dmcoords(infile=str(evtfpath),x=float(Cur_X), y=float(Cur_Y), option='sky', verbose=0, celfmt='deg') #Calls dmcoords to get the offaxis angle from the physical coordinates #I should just use the RA and DEC of each X-ray object instead of the SKY coordinate #Note: This is only here for symtax
-                #dmlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts
-                ##Infile_String=evtfpath+"[sky="+Nearest_Neighbor_Reg_Str_Reduced+"]"
-                print "Infile_String: ", Infile_String
-                Infile_String_Test=evtfpath+"[sky="+Nearest_Neighbor_Reg_Str_Test_Reduced+"]"
-                print "Infile_String_Test: ", Infile_String_Test
-                ##Region_Output=dmlist(infile=str(Infile_String), opt="counts")
-                #print "Region_Output: ", Region_Output
-                ##Region_Test_Output=dmlist(infile=str(Infile_String_Test), opt="counts")
-                #print "Region_Test_Output: ", Region_Test_Output
-                #"""
-                Number_Duplicate_Sources=Number_Duplicate_Sources+1
+            if(i not in Duplicate_Source_Index_L):
+                Nearest_Neighbor_Reg_Str_Test=Nearest_Neighbor_Reg_Str_Reduced_L[j]
+                Nearest_Neighbor_Reg_Str_Test_Split_L=re.split("[(),]", Nearest_Neighbor_Reg_Str_Test)
+                #print "Nearest_Neighbor_Reg_Str_Split_L: ", Nearest_Neighbor_Reg_Str_Split_L
+                X_Str=Nearest_Neighbor_Reg_Str_Test_Split_L[1]
+                #print "X_Str: ", X_Str
+                X_Test=float(X_Str)
+                Y_Str=Nearest_Neighbor_Reg_Str_Test_Split_L[2]
+                Y_Test=float(Y_Str)
+                Dist=Distance_Calc(X,Y,X_Test,Y_Test)
+                #Cur_Theta_Pixels #
+                if(Dist<2.0*Cur_Source_Radius_Pixels):
+                    print "Matching Cur_Theta_Arcmin: ", Cur_Theta_Arcmin
+                    print "Matching Counts: ", Counts
+                    print "Cur_Source_Radius_Arcsec: ", Cur_Source_Radius_Arcsec
+                    print "Cur_Source_Radius_Pixels: ", Cur_Source_Radius_Pixels
+                    print "Matching Dist: ", Dist
+                    #"""
+                    #print "Region: ", Nearest_Neighbor_Reg_Str
+                    ##Nearest_Neighbor_Reg_Str_Reduced=Nearest_Neighbor_Reg_Str.split(";")[1].split(" ")[0]
+                    #print "Nearest_Neighbor_Reg_Str_Reduced: ", Nearest_Neighbor_Reg_Str_Reduced
+                    #print "Test Region: ", Nearest_Neighbor_Reg_Str_Test
+                    Nearest_Neighbor_Reg_Str_Test_Reduced=Nearest_Neighbor_Reg_Str_Test.split(";")[1].split(" ")[0]
+                    #print "Nearest_Neighbor_Reg_Str_Test_Reduced: ", Nearest_Neighbor_Reg_Str_Test_Reduced
+                    #dmcoords(infile=str(evtfpath),x=float(Cur_X), y=float(Cur_Y), option='sky', verbose=0, celfmt='deg') #Calls dmcoords to get the offaxis angle from the physical coordinates #I should just use the RA and DEC of each X-ray object instead of the SKY coordinate #Note: This is only here for symtax
+                    #dmlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts
+                    ##Infile_String=evtfpath+"[sky="+Nearest_Neighbor_Reg_Str_Reduced+"]"
+                    print "Infile_String: ", Infile_String
+                    Infile_String_Test=evtfpath+"[sky="+Nearest_Neighbor_Reg_Str_Test_Reduced+"]"
+                    print "Infile_String_Test: ", Infile_String_Test
+                    Cur_Duplicate_Source_Index_L.append(j)
+                    #Duplicate_Source_Index_HL.append()
+                    if(j not in Duplicate_Source_Index_L):
+                        Duplicate_Source_Index_L.append(j)
+                        ##Region_Output=dmlist(infile=str(Infile_String), opt="counts")
+                        #print "Region_Output: ", Region_Output
+                        ##Region_Test_Output=dmlist(infile=str(Infile_String_Test), opt="counts")
+                        #print "Region_Test_Output: ", Region_Test_Output
+                        #"""
+                        Number_Duplicate_Sources=Number_Duplicate_Sources+1
+        Cur_Duplicate_Source_Index_HL=[i,Cur_Duplicate_Source_Index_L]
+        Duplicate_Source_Index_HL.append(Cur_Duplicate_Source_Index_HL)
     print "Number_Duplicate_Sources: ", Number_Duplicate_Sources
     Nearest_Neighbor_Reg_File.close()
+    print "Duplicate_Source_Index_L: ", Duplicate_Source_Index_L
+    print "Duplicate_Source_Index_HL: ", Duplicate_Source_Index_HL
+    return Duplicate_Source_Index_L
+
 def Source_Number_Comparer(ObsID):
     #/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/12888/Raytraced_Sources_ObsID_12888_Coords.csv
     #Raytrace_Coords_Fpath="/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"+str(ObsID)+"/Raytraced_Sources_ObsID_"+str(ObsID)+"_Coords.csv"
@@ -738,6 +753,6 @@ def Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=False):
 #Source_Number_Comparer(10125)
 #Source_Number_Comparer(12888)
 #Source_Overlap_Calc_Testing()
-Postion_Error_Plot(Postion_Error_Calc)
-Postion_Error_Plot(Postion_Error_Simple_Calc)
-#Nearest_Raytraced_Neighbor_Calc_Big_Input([6096, 1971, 1972, 768, 952, 11674, 13255, 13253, 13246, 12952, 12953, 13247, 12951, 2025, 9548, 2149, 2197, 9510, 6131, 5908, 803, 14342, 12995, 2064, 16024, 12992, 14332, 13202, 793, 2933, 11104, 379, 2056, 2055, 2922, 9506, 11344, 766, 4688, 6869, 6872, 3554, 2057, 2058, 8041, 9121, 9546, 7252, 7060, 9553, 5930, 5931, 5929, 2079, 5905, 9527, 4689, 3947, 1563, 9507, 4613, 794, 11775, 11271, 3951, 2062, 2027, 2060, 2061, 2070, 2032, 7154, 7153, 11779, 5932, 2976, 4613, 794, 1043, 4632, 4631, 4633, 4404, 2059, 12095, 2040, 2915, 4372, 2069, 11229, 7848, 15383, 10125, 2031, 10875, 12889, 12888, 321, 322, 9551, 9550, 3954, 2020, 2068, 4742, 2039, 3150, 2030, 4743, 5197, 11784, 9552],Generate_Bool=True)
+#Postion_Error_Plot(Postion_Error_Calc)
+#Postion_Error_Plot(Postion_Error_Simple_Calc)
+Nearest_Raytraced_Neighbor_Calc_Big_Input([6096, 1971, 1972, 768, 952, 11674, 13255, 13253, 13246, 12952, 12953, 13247, 12951, 2025, 9548, 2149, 2197, 9510, 6131, 5908, 803, 14342, 12995, 2064, 16024, 12992, 14332, 13202, 793, 2933, 11104, 379, 2056, 2055, 2922, 9506, 11344, 766, 4688, 6869, 6872, 3554, 2057, 2058, 8041, 9121, 9546, 7252, 7060, 9553, 5930, 5931, 5929, 2079, 5905, 9527, 4689, 3947, 1563, 9507, 4613, 794, 11775, 11271, 3951, 2062, 2027, 2060, 2061, 2070, 2032, 7154, 7153, 11779, 5932, 2976, 4613, 794, 1043, 4632, 4631, 4633, 4404, 2059, 12095, 2040, 2915, 4372, 2069, 11229, 7848, 15383, 10125, 2031, 10875, 12889, 12888, 321, 322, 9551, 9550, 3954, 2020, 2068, 4742, 2039, 3150, 2030, 4743, 5197, 11784, 9552],Generate_Bool=True)
