@@ -640,7 +640,21 @@ def Duplicate_Source_Remover(ObsID):
     Nearest_Neighbor_Reg_File.close()
     print "Duplicate_Source_Index_L: ", Duplicate_Source_Index_L
     print "Duplicate_Source_Index_HL: ", Duplicate_Source_Index_HL
-    return Duplicate_Source_Index_L
+    Duplicate_Source_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Duplicate_Sources.csv"
+    Duplicate_Source_File=open(Duplicate_Source_Fpath,"w")
+    Duplicate_Source_Header_Str="Source_Num;Duplicate_Sources\n"
+    Duplicate_Source_File.write(Duplicate_Source_Header_Str)
+    for Cur_Duplicate_Source_Index_L in Duplicate_Source_Index_HL:
+        Source_Num=Cur_Duplicate_Source_Index_L[0]+1
+        Duplicate_Source_Idx_L=Cur_Duplicate_Source_Index_L[1]
+        Duplicate_Source_Num_L=[]
+        for Duplicate_Source_Idx in Duplicate_Source_Idx_L:
+            Duplicate_Source_Num=Duplicate_Source_Idx+1
+            Duplicate_Source_Num_L.append(Duplicate_Source_Num)
+        Cur_Line_Str=str(Source_Num)+";"+str(Duplicate_Source_Num_L)+"\n"
+        Duplicate_Source_File.write(Cur_Line_Str)
+    Duplicate_Source_File.close()
+    #return Duplicate_Source_Index_L
 
 def Source_Number_Comparer(ObsID):
     #/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/12888/Raytraced_Sources_ObsID_12888_Coords.csv
