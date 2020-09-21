@@ -349,4 +349,4 @@ def Detection_Probability_Plot(F):
 #D_P_C_Big_Input_90_Per_Check([0.0005,0.0007,0.005,0.03,0.05,0.1]) #This is the current working version's input
 #print D_P_C_Big_Input_90_Per_Check([0.0005,0.0007,0.001,0.002,0.005,0.03,0.05,0.1]) #This is the current working version's input
 #print D_P_C_Big_Input_90_Per_Check([0.0005]) #This is the current working version's input
-Detection_Probability_Plot(Detection_Probability_Calc_3)
+#Detection_Probability_Plot(Detection_Probability_Calc_3)
