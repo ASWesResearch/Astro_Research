@@ -198,11 +198,14 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfpath,rchange=121.95121955,B=1,D
     for cur_poly in cur_polys_L: #cur_poly:-str, Current_Polygon, The Current_Polygon string in Current_Polygons_List
         polystring_L.append(cur_poly) #Appends the Current_Polygon string to polystring_L
     while((cur_r)<=outer_r): #makes sure the largest area circle used is not larger then the outer radius outer_r
-        cur_r=(n*rchange) + inner_r #increases the current radius by n times the change in radius
+        cur_r=(n*rchange) + inner_r #increases the current radius by n times the change in radius #This is the outer radius of the annulus
+        cur_inner_r=((n-1)*rchange) + inner_r #Calculates the inner radius of the annulus
         #print "cur_r 1 : ",cur_r
-        shape1 ='circle(' + str(X_Phys) +','+ str(Y_Phys)+','+ str(cur_r)+')' #shape1:-str, shape1, The shape string of the current area circle
+        #shape1 ='circle(' + str(X_Phys) +','+ str(Y_Phys)+','+ str(cur_r)+')' #shape1:-str, shape1, The shape string of the current area circle #Bug: This should be an annulus not a circle. The Subpipe B data products and the data products dependent upon Subpipe B must be recalculated.
+        ##shape1 ='circle(' + str(X_Phys) +','+ str(Y_Phys)+','+ str(cur_r)+')'+'-'+'circle(' + str(X_Phys) +','+ str(Y_Phys)+','+ str(cur_inner_r)+')' #shape1:-str, shape1, The shape string of the current area annulus #Note: This used to be the area circle but that was not a useful metric as all further calculations assume annulus
+        shape1 ='annulus(' + str(X_Phys) +','+ str(Y_Phys)+','+ str(cur_inner_r)+','+ str(cur_r)+')' #shape1:-str, shape1, The shape string of the current area annulus #Note: This used to be the area circle but that was not a useful metric as all further calculations assume annulus
         #print "shape1 : ",shape1
-        r1 = regParse(shape1) #r1:-Region, Region 1, the region of the current area circle
+        r1 = regParse(shape1) #r1:-Region, Region 1, the region of the current annulus circle
         a_tot=0.0 #a_tot:-float, Area_Total, The total intersecting area of all the CCDs currently intersecting with the area circle
         if(((X_Phys<cur_r) or (Y_Phys<cur_r)) or (((8192-X_Phys)<cur_r) or ((8192-Y_Phys)<cur_r))):
             a_ratio=False
@@ -222,11 +225,12 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfpath,rchange=121.95121955,B=1,D
         #print "a_tot ", a_tot #When the previous area total is equal to the current area total the previous radius is greater then or equal to the maximum radius, this could be used to tell the code when to stop
         #print "float(a1_cur) : ",float(a1_cur)
         #print "float(a_tot) : ",float(a_tot)
-        a_ratio=float(a_tot)/float(a1_cur) # a_ratio:-float, Area_Ratio, The ratio of the total intersecting area on the total area of the current area circle
+        a_ratio=float(a_tot)/float(a1_cur) # a_ratio:-float, Area_Ratio, The ratio of the total intersecting area on the total area of the current area annulus
         #print "Area Ratio is ", a_ratio
         a_L.append(a_ratio) #a_L:-list, Area_List, The list of Area Ratios for each n
         n=n+1 # Itterates n
         cur_r=(n*rchange) + inner_r #Increases the current radius by n times the change in radius
+        cur_inner_r=((n-1)*rchange) + inner_r #Calculates the inner radius of the annulus
     Remainder_FOV=cur_r-outer_r
     print "Remainder_FOV : ", Remainder_FOV
     for Current_Ratio in a_L: #Current_Ratio:-float, Current_Ratio, The Current_Ratio of the total intersecting area on the total area of the current area circle in a_L
@@ -245,3 +249,5 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfpath,rchange=121.95121955,B=1,D
 #print Area_Calc_Frac_B_2_Alt_2("NGC 253","/home/asantini/Desktop/CCD_Incompleteness_Correction/Area Calc/acisf13830_repro_evt2.fits","acisf13830_repro_CCD_Regions_simple_region_modifed_Code.txt")
 #print Area_Calc_Frac_B_2_Alt_2("NGC 253","/Network/Servers/vimes.astro.wesleyan.edu/Volumes/vvodata/home/asantini/Desktop/CCD_Incompleteness_Correction/Area_Calc/acisf13830_repro_evt2.fits","acisf13830_repro_CCD_Regions_simple_region_modifed_Code.txt",Fnamekey="Arcmin_Test")
 #print Area_Calc_Frac_B_2_Alt_2("NGC 253","/Network/Servers/vimes.astro.wesleyan.edu/Volumes/vvodata/home/asantini/Desktop/CCD_Incompleteness_Correction/Area_Calc/acisf13830_repro_evt2.fits","acisf13830_repro_CCD_Regions_simple_region_modifed_Code.txt",D25_Steps_Bool=True,Fnamekey="D25_Test")
+#print Area_Calc_Frac_B_2_Alt_2("NGC 253","/Network/Servers/vimes.astro.wesleyan.edu/Volumes/vvodata/home/asantini/Desktop/CCD_Incompleteness_Correction/Area_Calc/acisf13830_repro_evt2.fits","acisf13830_repro_CCD_Regions_simple_region_modifed_Code.txt",Fnamekey="Annulus_Arcmin_Test")
+#print Area_Calc_Frac_B_2_Alt_2("NGC 253","/Network/Servers/vimes.astro.wesleyan.edu/Volumes/vvodata/home/asantini/Desktop/CCD_Incompleteness_Correction/Area_Calc/acisf13830_repro_evt2.fits","acisf13830_repro_CCD_Regions_simple_region_modifed_Code.txt",D25_Steps_Bool=True,Fnamekey="Annulus_D25_Test")
