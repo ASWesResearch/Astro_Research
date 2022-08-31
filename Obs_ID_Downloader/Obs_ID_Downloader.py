@@ -58,7 +58,10 @@ def Obs_ID_Downloader_2(Obs_ID_L,Outpath,Repo_Bool=False):
         if(Repo_Bool):
             #chandra_repro(indir= "/Volumes/xray/anthony/Research_Git/Obs_ID_Downloader/" + str(Obs_Id_N), outdir="/Volumes/xray/anthony/Research_Git/Obs_ID_Downloader/" + str(Obs_Id_N) + "/new", cleanup=no)
             #chandra_repro(indir=cwd + str(Obs_ID_N), outdir=cwd + str(Obs_ID_N) + "/new", cleanup='no')
-            os.system("chandra_repro "+str(cwd)+str(Obs_ID_N)+" outdir="+str(cwd)+ str(Obs_ID_N)+" /new cleanup=no")
+            Repo_Command="chandra_repro "+str(cwd)+"/"+str(Obs_ID_N)+" outdir="+str(cwd)+"/"+str(Obs_ID_N)+"/new cleanup=no"
+            print("Repo_Command: ", Repo_Command)
+            #os.system("chandra_repro "+str(cwd)+str(Obs_ID_N)+" outdir="+str(cwd)+ str(Obs_ID_N)+" /new cleanup=no")
+            os.system(Repo_Command)
 
 def Obs_ID_Downloader_2_Big_Input(Data_Path,Outpath,Remove_Dups_Bool=True,Raw_Bool=False,Repo_Bool_Var=False):
     ObsID_List=Read_ObsIDs(Data_Path,Remove_Dups=Remove_Dups_Bool,Raw=Raw_Bool)
@@ -73,4 +76,7 @@ def Obs_ID_Downloader_2_Big_Input(Data_Path,Outpath,Remove_Dups_Bool=True,Raw_Bo
 #Read_ObsIDs("/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv",Remove_Dups=True,Raw=True)
 ##print(Read_ObsIDs("/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv"))
 #Obs_ID_Downloader([10125])
-Obs_ID_Downloader_2_Big_Input("/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv","/Volumes/expansion/ObsIDs",Remove_Dups_Bool=False,Raw_Bool=True)
+##Obs_ID_Downloader_2_Big_Input("/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv","/Volumes/expansion/ObsIDs",Remove_Dups_Bool=False,Raw_Bool=True)
+##Obs_ID_Downloader_2([316, 361, 378, 380, 388, 389, 392, 393, 394, 395, 400, 407, 409, 414, 784, 790, 792, 864, 870, 871, 963, 969, 1302, 1578, 349, 353],"/Volumes/expansion/ObsIDs", Repo_Bool=True) # Wavdetect Fail List after parameter file bug fix
+#Obs_ID_Downloader_2([316],"/Volumes/expansion/ObsIDs", Repo_Bool=True)
+Obs_ID_Downloader_2_Big_Input("/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv","/Volumes/expansion/ObsIDs", Remove_Dups_Bool=False, Raw_Bool=True, Repo_Bool_Var=True)
