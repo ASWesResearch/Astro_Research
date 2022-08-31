@@ -45,3 +45,4 @@ ObsID_List/
 Galaxy_Names_Manuel_Correction/
 Galaxy_Name_Query/*.csv
 Obs_ID_Downloader/testdir/
+Observation_Status_Query/Observation_Status.csv
