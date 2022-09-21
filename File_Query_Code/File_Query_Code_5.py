@@ -238,7 +238,7 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=
             #print "fname_L_H Before : ", fname_L_H
             #print Count
             if((Num_Rows_in_Array!=1024) or (Exposure_Time<5000) or (Grating_Flag!="NONE")): #Checks to see if the current observation is invaild (invalid if: it is a subarray or has an exposure time less then 5000s)
-                print "Current Observation Invalid ! ! !"
+                print("Current Observation Invalid ! ! !")
                 #fname_L_H.remove(Filename_L) #I think I need to change this to return all indexes that corresepond to invaild observations and then remove it from the list AFTER iterating though it
                 Invalid_Index_L.append(i)
                 #print "Void Observation"
@@ -253,7 +253,7 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=
         Number_of_ObsIDs=len(fname_L_H)
         #print "Number_of_ObsIDs : ", Number_of_ObsIDs
         if(Number_of_ObsIDs==0):
-            print "There are no vaild observations for this galaxy"
+            print("There are no vaild observations for this galaxy")
             return False
             #Need to test vailidity of galaxy here
         if(Exp_Max_B==True): #The max exposure bug may be here!
