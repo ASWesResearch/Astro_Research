@@ -14,6 +14,9 @@ path=os.path.realpath('../')
 sys.path.append(os.path.abspath(path))
 from File_Query_Code import File_Query_Code_5
 from Coords_Calc import Coords_Calc
+#Constants:
+#Root_Path="/Volumes/"
+Root_Path="/opt/"
 def Reg_Org(Reg_Str):
     Reg_L=re.split("[(),]",Reg_Str)
     #print "Cur_Raytrace_Reg_L: ", Cur_Raytrace_Reg_L
@@ -29,7 +32,7 @@ def Nearest_Raytraced_Neighbor_Calc(ObsID):
     #For Accessing the Raytraced Region Files:
     #THIS STILL NEEDS TO BE CHECKED FOR BUGS ! ! !
     Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
-    Raytrace_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/Detector_Coord_All_Soruces.reg"
+    Raytrace_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/Detector_Coord_All_Soruces.reg"
     Raytrace_Reg_File=open(Raytrace_Reg_Fpath)
     Raytrace_Reg_Str=Raytrace_Reg_File.read()
     #print "Raytrace_Reg_Str:\n", Raytrace_Reg_Str
@@ -45,7 +48,7 @@ def Nearest_Raytraced_Neighbor_Calc(ObsID):
     #print "len(Raytrace_Reg_Str_Reduced_L) After Pop: ", len(Raytrace_Reg_Str_Reduced_L)
     #print "len(Source_C_L): ", len(Source_C_L)
     """
-    path_Coords="/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"
+    path_Coords=Root_Path+"xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"
     path_Obs=path_Coords+str(ObsID)+'/'
     #directory_Obs=os.path.dirname(path_Obs)
     #if not os.path.exists(directory_Obs):
@@ -58,8 +61,11 @@ def Nearest_Raytraced_Neighbor_Calc(ObsID):
     print "ObsID_Reg_Str: ", ObsID_Reg_Str
     """
     #For Accessing the Unraytraced Region Files:
-    Obervations_Path="/Volumes/xray/simon/all_chandra_observations/"
-    ObsID_Filepath=Obervations_Path+str(ObsID)+"/primary/"
+    ##Obervations_Path=Root_Path+"xray/simon/all_chandra_observations/" #This is an the path for Vetinari
+    #/Volumes/expansion/ObsIDs/10125/new/exposure_correction/10125_src.reg
+    Obervations_Path="/Volumes/expansion/ObsIDs/" #This is an the path for Mando
+    ##ObsID_Filepath=Obervations_Path+str(ObsID)+"/primary/" #This is an the path for Vetinari
+    ObsID_Filepath=Obervations_Path+str(ObsID)+"/new/" #This is an the path for Mando
     Evt2_LS_String=os.popen("ls " +ObsID_Filepath+"| grep 'evt2.fit'").read()
     #print "Evt2_LS_String: ", Evt2_LS_String
     Evt2_LS_String_L=Evt2_LS_String.split("\n")
@@ -67,8 +73,9 @@ def Nearest_Raytraced_Neighbor_Calc(ObsID):
     Evt2_Fname=Evt2_LS_String_L[0]
     #print "Evt2_Fname: ", Evt2_Fname
     Evt2_Filepath=ObsID_Filepath+Evt2_Fname
-    print "Evt2_Filepath: ", Evt2_Filepath
-    Untraced_Path=Obervations_Path+str(ObsID)+"/primary/"+str(ObsID)+"_reg.reg" #This needs to be converted to detector coordinates
+    print("Evt2_Filepath: ", Evt2_Filepath)
+    ##Untraced_Path=Obervations_Path+str(ObsID)+"/primary/"+str(ObsID)+"_reg.reg" #This needs to be converted to detector coordinates #This is an the path for Vetinari
+    Untraced_Path=Obervations_Path+str(ObsID)+"/new/exposure_correction/"+str(ObsID)+"_src.reg" #This needs to be converted to detector coordinates #This is an the path for Mando
     Untraced_File=open(Untraced_Path)
     Untraced_Str=Untraced_File.read() # Note: The order of the sources may not be enfored here. It is totaly possible that the soruce are saved in the order of first number how simon did it (For example 1.reg, 10.reg, 11.reg, 2.reg) rather then the way I do it (1.reg, 2.reg...n.reg), Note_Update: Nevermind these are not from trace but wavedect sources the order has no meaning
     #print "Untraced_Str: \n", Untraced_Str
@@ -77,8 +84,8 @@ def Nearest_Raytraced_Neighbor_Calc(ObsID):
     Untraced_Reg_L.pop(len(Untraced_Reg_L)-1)
     #print "Untraced_Reg_L After Pop: ", Untraced_Reg_L
     #for Untraced_Reg in Untraced_Reg_L:
-    #Nearest_Neighbor_Hybrid_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
-    Nearest_Neighbor_Hybrid_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+    #Nearest_Neighbor_Hybrid_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+    Nearest_Neighbor_Hybrid_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
     directory_Obs=os.path.dirname(Nearest_Neighbor_Hybrid_Reg_Fpath)
     if not os.path.exists(directory_Obs):
         os.makedirs(directory_Obs)
@@ -140,7 +147,7 @@ def Nearest_Raytraced_Neighbor_Calc(ObsID):
         #print "Cur_Hybrid_Reg: ", Cur_Hybrid_Reg
         #print "type(Cur_Hybrid_Reg): ", type(Cur_Hybrid_Reg)
         Nearest_Neighbor_Hybrid_Reg_File.write(Cur_Hybrid_Reg) # I don't know if I need to use the X and Y as sky coordinates or detector coordinates if detector coordinates then this must be changed to "Nearest_Neighbor_Hybrid_Reg_File.write(Cur_Hybrid_Reg_Det)", I don't think the shapes of the regions transfered are vaild in detector coodinates so I'm going with sky coordinates now. Also I'm pretty sure calcuationg flux requires sky coords not detector coords
-        Cur_Source_Nearest_Neighbor_Hybrid_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/Individual_Source_Regions/"+"Source_"+str(Source_Num)+"_ObsID_"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+        Cur_Source_Nearest_Neighbor_Hybrid_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/Individual_Source_Regions/"+"Source_"+str(Source_Num)+"_ObsID_"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
         directory_Obs=os.path.dirname(Cur_Source_Nearest_Neighbor_Hybrid_Reg_Fpath)
         if not os.path.exists(directory_Obs):
             os.makedirs(directory_Obs)
@@ -158,7 +165,7 @@ def Nearest_Raytraced_Neighbor_Calc(ObsID):
     """
     Source_C_L=Coords_Calc.Coords_Calc(Evt2_Filepath,Nearest_Neighbor_Hybrid_Reg_Fpath)
     #print "Source_C_L:\n", Source_C_L
-    Nearest_Neighbor_Hybrid_Coord_Outpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/Nearest_Neighbor_Hybrid_Sources_ObsID_"+str(ObsID)+"_Coords.csv"
+    Nearest_Neighbor_Hybrid_Coord_Outpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/Nearest_Neighbor_Hybrid_Sources_ObsID_"+str(ObsID)+"_Coords.csv"
     #print "Nearest_Neighbor_Hybrid_Coord_Outpath: ", Nearest_Neighbor_Hybrid_Coord_Outpath
     file2=open(Nearest_Neighbor_Hybrid_Coord_Outpath,"w")
     #[Cur_X,Cur_Y,Cur_Chip_X,Cur_Chip_Y,Cur_Chip_ID,Cur_RA,Cur_DEC,Cur_Theta]
@@ -206,7 +213,7 @@ def Nearest_Raytraced_Neighbor_Calc(ObsID):
 #Nearest_Raytraced_Neighbor_Calc(10125)
 def Background_Reg_Generator(ObsID):
     Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
-    Nearest_Neighbor_Hybrid_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+    Nearest_Neighbor_Hybrid_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
     Nearest_Neighbor_Reg_File=open(Nearest_Neighbor_Hybrid_Reg_Fpath)
     Nearest_Neighbor_Reg_Str=Nearest_Neighbor_Reg_File.read()
     #print "Nearest_Neighbor_Reg_Str:\n", Nearest_Neighbor_Reg_Str
@@ -218,7 +225,7 @@ def Background_Reg_Generator(ObsID):
     #print "Nearest_Neighbor_Reg_Str_Reduced_L: ", Nearest_Neighbor_Reg_Str_Reduced_L
     #print "len(Nearest_Neighbor_Reg_Str_Reduced_L) Before Pop: ", len(Nearest_Neighbor_Reg_Str_Reduced_L)
     Nearest_Neighbor_Reg_Str_Reduced_L.pop(len(Nearest_Neighbor_Reg_Str_Reduced_L)-1)
-    Nearest_Neighbor_Hybrid_BG_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid_Background.reg"
+    Nearest_Neighbor_Hybrid_BG_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid_Background.reg"
     Nearest_Neighbor_Hybrid_BG_Reg_File=open(Nearest_Neighbor_Hybrid_BG_Reg_Fpath,"w")
     Nearest_Neighbor_Hybrid_BG_Reg_File.write(Header_String)
     Source_Num=1
@@ -249,7 +256,7 @@ def Background_Reg_Generator(ObsID):
         #print "Cur_Reg: ", Cur_Reg
         Nearest_Neighbor_Hybrid_BG_Reg_File.write(Cur_BG_Reg)
         Nearest_Neighbor_Hybrid_BG_Reg_File.write(Cur_Reg)
-        Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/Individual_Source_Regions/"+"Source_"+str(Source_Num)+"_ObsID_"+str(ObsID)+"_Nearest_Neighbor_Hybrid_Background.reg"
+        Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/Individual_Source_Regions/"+"Source_"+str(Source_Num)+"_ObsID_"+str(ObsID)+"_Nearest_Neighbor_Hybrid_Background.reg"
         directory_Obs=os.path.dirname(Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_Fpath)
         if not os.path.exists(directory_Obs):
             os.makedirs(directory_Obs)
@@ -345,7 +352,7 @@ def Source_Overlap_Calc(x1,x2,y1,y2,a1,a2,b1,b2,rot1,rot2,M=2.0):
 
 def Background_Overlap_Corrected_Reg_Generator(ObsID):
     Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
-    Nearest_Neighbor_Hybrid_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+    Nearest_Neighbor_Hybrid_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
     Nearest_Neighbor_Reg_File=open(Nearest_Neighbor_Hybrid_Reg_Fpath)
     Nearest_Neighbor_Reg_Str=Nearest_Neighbor_Reg_File.read()
     #print "Nearest_Neighbor_Reg_Str:\n", Nearest_Neighbor_Reg_Str
@@ -357,15 +364,15 @@ def Background_Overlap_Corrected_Reg_Generator(ObsID):
     #print "Nearest_Neighbor_Reg_Str_Reduced_L: ", Nearest_Neighbor_Reg_Str_Reduced_L
     #print "len(Nearest_Neighbor_Reg_Str_Reduced_L) Before Pop: ", len(Nearest_Neighbor_Reg_Str_Reduced_L)
     Nearest_Neighbor_Reg_Str_Reduced_L.pop(len(Nearest_Neighbor_Reg_Str_Reduced_L)-1)
-    Nearest_Neighbor_Hybrid_BG_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid_Overlap_Corrected_Background.reg"
+    Nearest_Neighbor_Hybrid_BG_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid_Overlap_Corrected_Background.reg"
     Nearest_Neighbor_Hybrid_BG_Reg_File=open(Nearest_Neighbor_Hybrid_BG_Reg_Fpath,"w")
     Nearest_Neighbor_Hybrid_BG_Reg_File.write(Header_String)
-    Overlapping_Sources_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Overlapping_Sources.csv"
+    Overlapping_Sources_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Overlapping_Sources.csv"
     Overlapping_Sources_File=open(Overlapping_Sources_Fpath,"w")
     Overlapping_Sources_File.write("Source_Num;Background_Overlap;Source_Overlap\n")
     Source_Num=1
     for Nearest_Neighbor_Reg_Str_Reduced in Nearest_Neighbor_Reg_Str_Reduced_L:
-        Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/Individual_Source_Regions/"+"Source_"+str(Source_Num)+"_ObsID_"+str(ObsID)+"_Nearest_Neighbor_Hybrid_Overlap_Corrected_Background.reg"
+        Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/Individual_Source_Regions/"+"Source_"+str(Source_Num)+"_ObsID_"+str(ObsID)+"_Nearest_Neighbor_Hybrid_Overlap_Corrected_Background.reg"
         directory_Obs=os.path.dirname(Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_Fpath)
         if not os.path.exists(directory_Obs):
             os.makedirs(directory_Obs)
@@ -456,15 +463,17 @@ def Source_Overlap_Calc_Testing():
     rot2= 0
     for X in X_L:
         for Y in Y_L:
-            print "("+str(X)+","+str(Y)+")"
-            print Source_Overlap_Calc(0,X,0,Y,2,a2,1,b2,0,rot2,M=3.0)
+            print("("+str(X)+","+str(Y)+")")
+            print(Source_Overlap_Calc(0,X,0,Y,2,a2,1,b2,0,rot2,M=3.0))
 
 def Evt2_File_Query(ObsID):
-    query_path='/Volumes/xray/simon/all_chandra_observations/'+str(ObsID)+'/primary/*evt2*'
+    ##query_path='/Volumes/xray/simon/all_chandra_observations/'+str(ObsID)+'/primary/*evt2*' #Path for Vetinari
+    #/Volumes/expansion/ObsIDs/10125/new/exposure_correction/10125_src.reg
+    query_path='/Volumes/expansion/ObsIDs/'+str(ObsID)+'/new/*evt2*' #Fot Mando
     evtfpath_L=glob.glob(query_path)
     if(len(evtfpath_L)!=1):
         #print str(ObsID)+" has "+str(len(evtfpath_L)-1)+"Additional Evt2 Files ! ! !"
-        print str(ObsID)+" has "+str(len(evtfpath_L))+" Evt2 Files ! ! !"
+        print(str(ObsID)+" has "+str(len(evtfpath_L))+" Evt2 Files ! ! !")
         return "Error"
     evtfpath=evtfpath_L[0]
     return evtfpath
@@ -535,7 +544,7 @@ def Postion_Error_Plot(F):
     plt.title("Positional Error (arcsec)")
     #Fname=F.__name__+"_Plot.pdf"
     Fname=F.__name__+"_Plot.png"
-    print "Fname: ", Fname
+    print("Fname: ", Fname)
     plt.savefig(Fname)
     ##plt.show()
     plt.close()
@@ -543,10 +552,10 @@ def Postion_Error_Plot(F):
 
 
 def Duplicate_Source_Remover(ObsID):
-    print ObsID
+    print(ObsID)
     Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
     evtfpath=Evt2_File_Query(ObsID)
-    Nearest_Neighbor_Hybrid_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+    Nearest_Neighbor_Hybrid_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
     Nearest_Neighbor_Reg_File=open(Nearest_Neighbor_Hybrid_Reg_Fpath)
     Nearest_Neighbor_Reg_Str=Nearest_Neighbor_Reg_File.read()
     #print "Nearest_Neighbor_Reg_Str:\n", Nearest_Neighbor_Reg_Str
@@ -606,11 +615,11 @@ def Duplicate_Source_Remover(ObsID):
                 Dist=Distance_Calc(X,Y,X_Test,Y_Test)
                 #Cur_Theta_Pixels #
                 if(Dist<2.0*Cur_Source_Radius_Pixels):
-                    print "Matching Cur_Theta_Arcmin: ", Cur_Theta_Arcmin
-                    print "Matching Counts: ", Counts
-                    print "Cur_Source_Radius_Arcsec: ", Cur_Source_Radius_Arcsec
-                    print "Cur_Source_Radius_Pixels: ", Cur_Source_Radius_Pixels
-                    print "Matching Dist: ", Dist
+                    print("Matching Cur_Theta_Arcmin: ", Cur_Theta_Arcmin)
+                    print("Matching Counts: ", Counts)
+                    print("Cur_Source_Radius_Arcsec: ", Cur_Source_Radius_Arcsec)
+                    print("Cur_Source_Radius_Pixels: ", Cur_Source_Radius_Pixels)
+                    print("Matching Dist: ", Dist)
                     #"""
                     #print "Region: ", Nearest_Neighbor_Reg_Str
                     ##Nearest_Neighbor_Reg_Str_Reduced=Nearest_Neighbor_Reg_Str.split(";")[1].split(" ")[0]
@@ -621,9 +630,9 @@ def Duplicate_Source_Remover(ObsID):
                     #dmcoords(infile=str(evtfpath),x=float(Cur_X), y=float(Cur_Y), option='sky', verbose=0, celfmt='deg') #Calls dmcoords to get the offaxis angle from the physical coordinates #I should just use the RA and DEC of each X-ray object instead of the SKY coordinate #Note: This is only here for symtax
                     #dmlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts
                     ##Infile_String=evtfpath+"[sky="+Nearest_Neighbor_Reg_Str_Reduced+"]"
-                    print "Infile_String: ", Infile_String
+                    print("Infile_String: ", Infile_String)
                     Infile_String_Test=evtfpath+"[sky="+Nearest_Neighbor_Reg_Str_Test_Reduced+"]"
-                    print "Infile_String_Test: ", Infile_String_Test
+                    print("Infile_String_Test: ", Infile_String_Test)
                     Cur_Duplicate_Source_Index_L.append(j)
                     #Duplicate_Source_Index_HL.append()
                     if(j not in Duplicate_Source_Index_L):
@@ -636,11 +645,11 @@ def Duplicate_Source_Remover(ObsID):
                         Number_Duplicate_Sources=Number_Duplicate_Sources+1
         Cur_Duplicate_Source_Index_HL=[i,Cur_Duplicate_Source_Index_L]
         Duplicate_Source_Index_HL.append(Cur_Duplicate_Source_Index_HL)
-    print "Number_Duplicate_Sources: ", Number_Duplicate_Sources
+    print("Number_Duplicate_Sources: ", Number_Duplicate_Sources)
     Nearest_Neighbor_Reg_File.close()
-    print "Duplicate_Source_Index_L: ", Duplicate_Source_Index_L
-    print "Duplicate_Source_Index_HL: ", Duplicate_Source_Index_HL
-    Duplicate_Source_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Duplicate_Sources.csv"
+    print("Duplicate_Source_Index_L: ", Duplicate_Source_Index_L)
+    print("Duplicate_Source_Index_HL: ", Duplicate_Source_Index_HL)
+    Duplicate_Source_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Duplicate_Sources.csv"
     Duplicate_Source_File=open(Duplicate_Source_Fpath,"w")
     Duplicate_Source_Header_Str="Source_Num;Duplicate_Sources\n"
     Duplicate_Source_File.write(Duplicate_Source_Header_Str)
@@ -658,10 +667,10 @@ def Duplicate_Source_Remover(ObsID):
 
 def Source_Number_Comparer(ObsID):
     #/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/12888/Raytraced_Sources_ObsID_12888_Coords.csv
-    #Raytrace_Coords_Fpath="/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"+str(ObsID)+"/Raytraced_Sources_ObsID_"+str(ObsID)+"_Coords.csv"
-    Raytrace_ObsID_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"+str(ObsID)+"/ObsID_"+str(ObsID)+"_Raytraced_Source_Regions.reg"
+    #Raytrace_Coords_Fpath=Root_Path+"xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"+str(ObsID)+"/Raytraced_Sources_ObsID_"+str(ObsID)+"_Coords.csv"
+    Raytrace_ObsID_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"+str(ObsID)+"/ObsID_"+str(ObsID)+"_Raytraced_Source_Regions.reg"
     Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
-    #Raytrace_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/Detector_Coord_All_Soruces.reg"
+    #Raytrace_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/Detector_Coord_All_Soruces.reg"
     Raytrace_ObsID_Reg_File=open(Raytrace_ObsID_Reg_Fpath)
     Raytrace_ObsID_Reg_Str=Raytrace_ObsID_Reg_File.read()
     #print "Raytrace_ObsID_Reg_Str:\n", Raytrace_ObsID_Reg_Str
@@ -674,7 +683,7 @@ def Source_Number_Comparer(ObsID):
     #print "len(Raytrace_ObsID_Reg_Str_Reduced_L) Before Pop: ", len(Raytrace_ObsID_Reg_Str_Reduced_L)
     Raytrace_ObsID_Reg_Str_Reduced_L.pop(len(Raytrace_ObsID_Reg_Str_Reduced_L)-1)
     #Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
-    Nearest_Neighbor_Hybrid_Reg_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+    Nearest_Neighbor_Hybrid_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
     Nearest_Neighbor_Reg_File=open(Nearest_Neighbor_Hybrid_Reg_Fpath)
     Nearest_Neighbor_Reg_Str=Nearest_Neighbor_Reg_File.read()
     #print "Nearest_Neighbor_Reg_Str:\n", Nearest_Neighbor_Reg_Str
@@ -686,7 +695,7 @@ def Source_Number_Comparer(ObsID):
     #print "Nearest_Neighbor_Reg_Str_Reduced_L: ", Nearest_Neighbor_Reg_Str_Reduced_L
     #print "len(Nearest_Neighbor_Reg_Str_Reduced_L) Before Pop: ", len(Nearest_Neighbor_Reg_Str_Reduced_L)
     Nearest_Neighbor_Reg_Str_Reduced_L.pop(len(Nearest_Neighbor_Reg_Str_Reduced_L)-1)
-    Matching_Source_Num_Fpath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Matching_Source_Number.csv"
+    Matching_Source_Num_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Matching_Source_Number.csv"
     Matching_Source_Num_File=open(Matching_Source_Num_Fpath,"w")
     Source_Number_CSV_Header_String="Raytrace_Source_Num,Nearest_Neighbor_Num\n"
     Matching_Source_Num_File.write(Source_Number_CSV_Header_String)
@@ -710,12 +719,13 @@ def Source_Number_Comparer(ObsID):
             Y_Str=Nearest_Neighbor_Reg_Str_Split_L[2]
             Y_Test=float(Y_Str)
             Dist=Distance_Calc(X,Y,X_Test,Y_Test)
+            print("Dist: ", Dist)
             if(Dist<4.0):
                 Matching_Nearest_Neighbor_Source_Num_L.append(Nearest_Neighbor_Source_Num)
             Nearest_Neighbor_Source_Num=Nearest_Neighbor_Source_Num+1
         if(len(Matching_Nearest_Neighbor_Source_Num_L)!=1):
-            print "Error: ObsID "+str(ObsID)+" Raytrace_Source_Num "+str(Raytrace_Source_Num)+" has "+str(len(Matching_Nearest_Neighbor_Source_Num_L))+" Matching Source Numbers !"
-            print "Matching_Nearest_Neighbor_Source_Num_L: ", Matching_Nearest_Neighbor_Source_Num_L
+            print("Error: ObsID "+str(ObsID)+" Raytrace_Source_Num "+str(Raytrace_Source_Num)+" has "+str(len(Matching_Nearest_Neighbor_Source_Num_L))+" Matching Source Numbers !")
+            print("Matching_Nearest_Neighbor_Source_Num_L: ", Matching_Nearest_Neighbor_Source_Num_L)
         if(len(Matching_Nearest_Neighbor_Source_Num_L)==0):
             Matching_Nearest_Neighbor_Source_Num=None
         else:
@@ -729,9 +739,9 @@ def Source_Number_Comparer(ObsID):
 
 def Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=False):
     Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
-    Raytrace_Files_Path="/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"
+    Raytrace_Files_Path=Root_Path+"xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"
     #Nearest_Neighbor_Hybrid_All_Soruces_File=open(Raytrace_Files_Path+"Nearest_Neighbor_Hybrid_All_Soruces.reg","w")
-    Nearest_Raytraced_Neighbor_FPath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"
+    Nearest_Raytraced_Neighbor_FPath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"
     Nearest_Neighbor_Hybrid_All_Soruces_File=open(Nearest_Raytraced_Neighbor_FPath+"Nearest_Neighbor_Hybrid_All_Soruces.reg","w")
     Nearest_Neighbor_Hybrid_All_Soruces_File.write(Header_String)
     Nearest_Neighbor_Hybrid_All_Soruces_L=[]
@@ -742,8 +752,8 @@ def Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=False):
             Background_Overlap_Corrected_Reg_Generator(ObsID)
             Duplicate_Source_Remover(ObsID)
             Source_Number_Comparer(ObsID)
-        #Nearest_Raytraced_Neighbor_Reg_FPath="/Volumes/xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
-        Nearest_Raytraced_Neighbor_Reg_FPath="/Volumes/xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+        #Nearest_Raytraced_Neighbor_Reg_FPath=Root_Path+"xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+        Nearest_Raytraced_Neighbor_Reg_FPath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
         Nearest_Raytraced_Neighbor_Reg_File=open(Nearest_Raytraced_Neighbor_Reg_FPath)
         Nearest_Raytraced_Neighbor_Reg_Str=Nearest_Raytraced_Neighbor_Reg_File.read()
         Nearest_Raytraced_Neighbor_Reg_Str_L=Nearest_Raytraced_Neighbor_Reg_Str.split("fixed=0\n")
@@ -764,7 +774,7 @@ def Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=False):
 #Nearest_Raytraced_Neighbor_Calc_Big_Input([12888],Generate_Bool=True)
 #Background_Overlap_Corrected_Reg_Generator(10125)
 #Background_Overlap_Corrected_Reg_Generator(12888)
-#Source_Number_Comparer(10125)
+Source_Number_Comparer(10125)
 #Source_Number_Comparer(12888)
 #Source_Overlap_Calc_Testing()
 #Postion_Error_Plot(Postion_Error_Calc)
@@ -775,3 +785,4 @@ def Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=False):
 ##Nearest_Raytraced_Neighbor_Calc_Big_Input([6096, 1971, 1972, 768, 952, 11674, 13255, 13253, 13246, 12952, 12953, 13247, 12951, 2025, 9548, 2149, 2197, 9510, 6131, 5908, 803, 14342, 12995, 2064, 16024, 12992, 14332, 13202, 793, 2933, 11104, 379, 2056, 2055, 2922, 9506, 11344, 766, 4688, 3554, 2057, 2058, 8041, 9121, 9546, 7252, 7060, 9553, 5930, 5931, 5929, 2079, 5905, 9527, 4689, 3947, 1563, 9507, 4613, 794, 11775, 11271, 3951, 2062, 2060, 2061, 2070, 2032, 7154, 7153, 11779, 5932, 2976, 4613, 794, 1043, 4632, 4631, 4633, 4404, 2059, 12095, 2040, 2915, 4372, 2069, 11229, 7848, 15383, 10125, 2031, 10875, 12889, 12888, 321, 322, 9551, 9550, 3954, 2020, 2068, 4742, 2039, 3150, 2030, 4743, 5197, 11784, 9552],Generate_Bool=True)
 #List of all ObsIDs NOT in the galaxy sample (There might be two ObsIDs in there that are included but I can't find them)
 #Nearest_Raytraced_Neighbor_Calc_Big_Input([10534, 10985, 10986, 11269, 11358, 11781, 11782, 11783, 11978, 11979, 11988, 11989, 12019, 12124, 12130, 12134, 12136, 12437, 12562, 12668, 12988, 12990, 13726, 13727, 13791, 13830, 13831, 13832, 14031, 14412, 15384, 1575, 1576, 1579, 1580, 1581, 1582, 1584, 1586, 1587, 1611, 1618, 1619, 1622, 1730, 1881, 1967, 2014, 2015, 2022, 2023, 2024, 2026, 2027, 2048, 2049, 2050, 2066, 2067, 2073, 2107, 2147, 2196, 2198, 2223, 2241, 2255, 2454, 2686, 2707, 2779, 2894, 2895, 2896, 2897, 2899, 2900, 2901, 2902, 2950, 3008, 3040, 3042, 3043, 3044, 308, 310, 311, 314, 3149, 3217, 3355, 350, 352, 354, 3550, 3551, 3717, 3718, 3810, 383, 390, 3908, 3931, 3933, 3945, 3950, 4017, 404, 4169, 4177, 4360, 4536, 4541, 4628, 4629, 4630, 4725, 4726, 4732, 4736, 4741, 4747, 4748, 4750, 517, 5309, 5935, 5936, 5937, 5938, 5939, 5940, 5941, 5942, 5943, 5944, 5945, 5946, 5947, 5948, 5949, 6114, 6152, 6167, 6376, 6377, 6380, 6381, 6383, 6385, 6386, 6389, 6862, 6868, 6869, 6870, 6871, 6872, 6873, 7073, 7074, 7075, 7076, 7077, 7078, 7079, 7080, 7081, 7196, 7197, 7198, 7199, 735, 7635, 785, 7853, 786, 788, 797, 8047, 805, 8050, 8057, 8063, 8107, 8182, 8210, 8507, 8554, 9100, 9120, 9122, 934, 9530, 9532, 9535, 9540, 9810],Generate_Bool=True]
+#Nearest_Raytraced_Neighbor_Calc_Big_Input([10125], Generate_Bool=True) #For Testing
