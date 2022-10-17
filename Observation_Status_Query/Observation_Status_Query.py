@@ -80,6 +80,7 @@ def Read_ObsIDs(Fpath,Remove_Dups=True,Raw=False):
 def Main():
     #"/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv"
     ObsID_L=Read_ObsIDs("/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv",Remove_Dups=False,Raw=True)
-    print(Observation_Status_Query_Big_Input(ObsID_L,Outfile_Bool=True))
+    #print(Observation_Status_Query_Big_Input(ObsID_L,Outfile_Bool=True))
+    #print(Observation_Status_Query_Big_Input(ObsID_L,Outfile_Bool=False))
 
 Main()
