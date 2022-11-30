@@ -3,10 +3,15 @@ import os
 from os import system
 import sys
 import numpy
+import glob
+import pandas as pd
 #from ciao_contrib.runtool import *
 from astropy.io import fits
+#Constants:
+#Root_Path="/Volumes/"
+Root_Path="/opt/"
 #path_Modules=os.path.realpath('../')
-path_Modules="/Volumes/xray/anthony/Research_Git"
+path_Modules=Root_Path+"xray/anthony/Research_Git"
 sys.path.append(os.path.abspath(path_Modules))
 from Galaxy_Name_Reducer import Galaxy_Name_Reducer
 def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=False): #Still bugs, Bug:(UnboundLocalError: local variable 'File_Path_With_Filename_Str' referenced before assignment), Update(I fixed this bug, but I need to bug check more)
@@ -18,17 +23,23 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=
     dir = os.path.dirname(__file__)
     #path=os.path.realpath('../SQL_Standard_File/SQL_Standard_File.csv')
     #path=os.path.realpath('../SQL_Standard_File/Source_Flux_Table.csv')
-    path=os.path.realpath('/Volumes/xray/anthony/Research_Git/SQL_Standard_File/Source_Flux_Table.csv') #MAJOR BUG HERE ! ! !  THIS SQL FILE DOES NOT INCLUDE ALL OBSERVATIONS IN THE SAMPLE ! (FOR EXAMPLE: OBS_ID 790 FROM NGC 253 IS MISSING AND SHOULD BE INCLUDED)
+    ##path=os.path.realpath(Root_Path+'xray/anthony/Research_Git/SQL_Standard_File/Source_Flux_Table.csv') #MAJOR BUG HERE ! ! !  THIS SQL FILE DOES NOT INCLUDE ALL OBSERVATIONS IN THE SAMPLE ! (FOR EXAMPLE: OBS_ID 790 FROM NGC 253 IS MISSING AND SHOULD BE INCLUDED)
+    #ocatResult_Modified.csv
+    ##path=os.path.realpath(Root_Path+'xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv')
+    path=os.path.realpath(Root_Path+'xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv')
     #print "Path=",path
-    data = ascii.read(path)
+    ##data = ascii.read(path)
+    data=pd.read_csv(path)
     #data = ascii.read("/home/asantini/Desktop/SQL_Standard_File/SQL_Sandard_File.csv") #data:-astropy.table.table.Table, data, The data from the SQL_Standard_File
-    #print data
+    #print(data)
     #print type(data)
     #Standard_File=open("/home/asantini/Desktop/SQL_Standard_File/SQL_Sandard_File.csv","r")
     #print Standard_File
     #Obs_ID_A=data["obsid"] #Obs_ID_A:-astropy.table.column.Column, Observation_Idenification_Array, The array containing all Observation IDs in the SQL_Standard_File (not indexable)
     #OBSID
-    Obs_ID_A=data["OBSID"] #Obs_ID_A:-astropy.table.column.Column, Observation_Idenification_Array, The array containing all Observation IDs in the SQL_Standard_File (not indexable)
+    ##Obs_ID_A=data["OBSID"] #Obs_ID_A:-astropy.table.column.Column, Observation_Idenification_Array, The array containing all Observation IDs in the SQL_Standard_File (not indexable)
+    #Target Name
+    Obs_ID_A=data["Obs ID"] #Obs_ID_A:-astropy.table.column.Column, Observation_Idenification_Array, The array containing all Observation IDs in the SQL_Standard_File (not indexable)
     #print type(Obs_ID_A)
     Obs_ID_L=list(Obs_ID_A) #Obs_ID_L:-List, Observation_Idenification_List, The list containing all Observation IDs in the SQL_Standard_File (So it is indexable)
     #print "Obs_ID_L ", Obs_ID_L
@@ -38,20 +49,25 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=
     #FGname_L=list(FGname_A)
     #print FGname_A
     #QGname_A=data["queriedName"] #QGname_A:-Obs_ID_A:-astropy.table.column.Column, Query_Galaxy_Name_Array, The array containing all Query Galaxy Names in the SQL_Standard_File (not indexable)
-    QGname_A=data["resolvedObject"] #QGname_A:-Obs_ID_A:-astropy.table.column.Column, Query_Galaxy_Name_Array, The array containing all Query Galaxy Names in the SQL_Standard_File (not indexable)
+    ##QGname_A=data["resolvedObject"] #QGname_A:-Obs_ID_A:-astropy.table.column.Column, Query_Galaxy_Name_Array, The array containing all Query Galaxy Names in the SQL_Standard_File (not indexable)
+    QTarget_A=data["Target Name"] #QGname_A:-Obs_ID_A:-astropy.table.column.Column, Query_Galaxy_Name_Array, The array containing all Query Galaxy Names in the SQL_Standard_File (not indexable)
+    QGname_A=data["Gname"] #QGname_A:-Obs_ID_A:-astropy.table.column.Column, Query_Galaxy_Name_Array, The array containing all Query Galaxy Names in the SQL_Standard_File (not indexable)
     QGname_L=list(QGname_A) #QGname_L:-List, Query_Galaxy_Name_Array, The list containing all Query Galaxy Names in the SQL_Standard_File (So it is indexable)
     #print type(QGname_A)
-    #print QGname_A
+    #print("QGname_A: ",QGname_A)
     Matching_Index_List=[] #Matching_Index_List:-List, Matching_Index_List, The list of all indexes (ref. QGname_L) that corresepond to the input Galaxy Name, All arrays are of equal lenth, and "ith" value of an array is the correseponding value for any other arrays "ith" value, so for example Obs_ID_L[228]=794 and the Galaxy in the Observation is QGname_L[228]="NGC 891", Note both lists have the same index
     for i in range(0,len(QGname_L)): # i:-int, i, the "ith" index of QGname_L
-        #print "i ", i
+        #print("i: ", i)
         QGname=QGname_L[i] #QGname:-string, Query_Galaxy_Name, The current test Galaxy Name, if this Galaxy name equals the input Galaxy Name (Gname) then this Matching_Index, i (ref. QGname_L) will be appended to the Matching_Index_List
+        #if(QTarget==pd.nan):
+            #QGname=QTarget[i]
         #QGname_Reduced=QGname.replace(" ", "")
         #print "QGname : ", QGname
         #print "type(QGname) : ", type(QGname)
         #print "type(type(QGname)) : ", type(type(QGname))
         #if(type(QGname)=='numpy.ma.core.MaskedConstant'):
-        if isinstance(QGname, numpy.ma.core.MaskedConstant):
+        #if isinstance(QGname, numpy.ma.core.MaskedConstant):
+        if not isinstance(QGname, str):
             #print "Empty QGname Found"
             continue
         #print "QGname_Reduced ", QGname_Reduced
@@ -70,6 +86,7 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=
     #print "Matching_Index_List ", Matching_Index_List
     #print "Matching_Obs_ID_L ", Matching_Obs_ID_L
     fname_L_H=[]
+    """
     for Cur_Obs_ID in Matching_Obs_ID_L: #Cur_Obs_ID:-numpy.int64, Current_Observation_Idenification, The current Observation ID in the list of all obsevation IDs for the current Galaxy Name (Matching_Obs_ID_L)
         #print "Cur_Obs_ID ", Cur_Obs_ID
         #print "type(Cur_Obs_ID) ", type(Cur_Obs_ID)
@@ -165,6 +182,10 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=
                 Fits_Gz_Bool=True #Sets Fits_Gz_Bool=True so the code starts checking for ".gz" compressed files
                 "Finding compressed"
         #print "Filename_String ", Filename_String
+        """
+    for Cur_Obs_ID in Matching_Obs_ID_L: #Cur_Obs_ID:-numpy.int64, Current_Observation_Idenification, The current Observation ID in the list of all obsevation IDs for the current Galaxy Name (Matching_Obs_ID_L)
+        Filepath_L=glob.glob("/Volumes/expansion/ObsIDs/"+str(Cur_Obs_ID)+"/new/*evt2*")
+        File_Path_With_Filename_Str=Filepath_L[0]
         fname_L=[Cur_Obs_ID,File_Path_With_Filename_Str]
         #print "fname_L ", fname_L
         fname_L_H.append(fname_L)
@@ -238,7 +259,8 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=
             #print "fname_L_H Before : ", fname_L_H
             #print Count
             if((Num_Rows_in_Array!=1024) or (Exposure_Time<5000) or (Grating_Flag!="NONE")): #Checks to see if the current observation is invaild (invalid if: it is a subarray or has an exposure time less then 5000s)
-                print("Current Observation Invalid ! ! !")
+                print("Current Observation Invalid! ! !")
+                print("Observation Invalid: "+Filepath)
                 #fname_L_H.remove(Filename_L) #I think I need to change this to return all indexes that corresepond to invaild observations and then remove it from the list AFTER iterating though it
                 Invalid_Index_L.append(i)
                 #print "Void Observation"
@@ -299,7 +321,7 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=
         """
         return fname_L_H
 
-#print File_Query("NGC 891","evt2") #In in CSC
+#print(File_Query("NGC 891","evt2")) #In in CSC
 #print File_Query("NGC 6946","evt2") #In CSC
 #print File_Query("NGC 891","fov1") #In in CSC
 #print File_Query("NGC 891","reg",".reg") #In in CSC
