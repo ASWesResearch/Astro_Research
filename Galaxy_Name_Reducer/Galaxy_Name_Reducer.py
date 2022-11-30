@@ -4,6 +4,8 @@ def Galaxy_Name_Reducer(Gname):
     """
     #print "Hello_World"
     Gname_R=Gname
+    #print("Gname: ", Gname)
+    #print("type(Gname): ", type(Gname))
     i=0
     while(Gname_R[i]==" "):
         #print "Gname_R[i] : ", Gname_R[i]
