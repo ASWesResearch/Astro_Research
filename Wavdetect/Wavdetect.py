@@ -11,6 +11,7 @@ dir = os.path.dirname(__file__)
 path=os.path.realpath('../')
 #print "Path=",path
 #system('pwd')
+#print(sys.version)
 sys.path.append(os.path.abspath(path))
 from ObsID_From_CSV_Query import ObsID_From_CSV_Query
 def File_Query(ObsID,ObsID_Path='/Volumes/expansion/ObsIDs/',key="evt2"):
