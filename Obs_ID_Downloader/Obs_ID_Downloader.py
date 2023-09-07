@@ -1,8 +1,17 @@
 import os
 from os import system
 import sys
-##import pandas as pd
+import pandas as pd
 from ciao_contrib.runtool import * #Imports ciao tools into python
+import ciao_contrib.runtool as rt
+import glob
+dir = os.path.dirname(__file__)
+path=os.path.realpath('../')
+#print "Path=",path
+#system('pwd')
+#print(sys.version)
+sys.path.append(os.path.abspath(path))
+from ObsID_From_CSV_Query import ObsID_From_CSV_Query
 def Obs_ID_Downloader(Obs_ID_L):
     """
     Obs_ID_L:- List   This is a list of strings, each string being a Obs ID that will be downloaded
@@ -24,7 +33,8 @@ def Read_ObsIDs(Fpath,Remove_Dups=True,Raw=False):
         ObsID_L_With_Head=[]
         for Line in File:
             #print(Line)
-            ObsID_Str_With_Head=Line.split(",")[1]
+            #ObsID_Str_With_Head=Line.split(",")[1]
+            ObsID_Str_With_Head=Line.split(",")[2]
             #print(ObsID_Str_With_Head)
             ObsID_L_With_Head.append(ObsID_Str_With_Head)
         ObsID_Str_L=ObsID_L_With_Head[1:]
@@ -43,28 +53,40 @@ def Read_ObsIDs(Fpath,Remove_Dups=True,Raw=False):
         print("Number of Duplicates: ",len(ObsID_L_With_Dups)-len(ObsID_L))
     return ObsID_L
 
-def Obs_ID_Downloader_2(Obs_ID_L,Outpath,Repo_Bool=False):
-    os.chdir(Outpath) #Change Directory to where the output will be saved
-    cwd = os.getcwd()
-    print("Current_Working_Directory: "+str(cwd))
-    #Outpath="/Volumes/expansion/" #Wrong Outpath for Testing
-    print("Outpath: ",Outpath)
-    if(cwd!=Outpath):
-        raise Exception("The Current_Working_Directory is NOT the intended Outpath!!!")
-    for Obs_ID in Obs_ID_L:
-        Obs_ID_N=int(Obs_ID)
-        ##download_chandra_obsid(obsid=Obs_ID_N)
-        os.system("download_chandra_obsid "+str(Obs_ID_N))
-        if(Repo_Bool):
-            #chandra_repro(indir= "/Volumes/xray/anthony/Research_Git/Obs_ID_Downloader/" + str(Obs_Id_N), outdir="/Volumes/xray/anthony/Research_Git/Obs_ID_Downloader/" + str(Obs_Id_N) + "/new", cleanup=no)
-            #chandra_repro(indir=cwd + str(Obs_ID_N), outdir=cwd + str(Obs_ID_N) + "/new", cleanup='no')
-            Repo_Command="chandra_repro "+str(cwd)+"/"+str(Obs_ID_N)+" outdir="+str(cwd)+"/"+str(Obs_ID_N)+"/new cleanup=no"
-            print("Repo_Command: ", Repo_Command)
-            #os.system("chandra_repro "+str(cwd)+str(Obs_ID_N)+" outdir="+str(cwd)+ str(Obs_ID_N)+" /new cleanup=no")
-            os.system(Repo_Command)
+def Obs_ID_Downloader_2(Obs_ID_L,Outpath,Repo_Bool=False, Clobber_Bool=False):
+    with rt.new_pfiles_environment(ardlib=True):
+        with new_tmpdir() as tmpdir:
+            os.chdir(Outpath) #Change Directory to where the output will be saved
+            cwd = os.getcwd()
+            print("Current_Working_Directory: "+str(cwd))
+            #Outpath="/Volumes/expansion/" #Wrong Outpath for Testing
+            print("Outpath: ",Outpath)
+            if(cwd!=Outpath):
+                raise Exception("The Current_Working_Directory is NOT the intended Outpath!!!")
+            for Obs_ID in Obs_ID_L:
+                Obs_ID_N=int(Obs_ID)
+                if(Clobber_Bool==False):
+                    Glob_L=glob.glob(str(cwd)+"/"+str(Obs_ID_N))
+                    print("Glob_L: ", Glob_L)
+                    if(len(Glob_L)>0):
+                        print(str(Obs_ID_N)+" Already exists and Clobber is set to NO")
+                        continue
+                ##download_chandra_obsid(obsid=Obs_ID_N)
+                print("Downloading ObsID "+str(Obs_ID_N))
+                ###os.system("download_chandra_obsid "+str(Obs_ID_N))
+                if(Repo_Bool):
+                    #chandra_repro(indir= "/Volumes/xray/anthony/Research_Git/Obs_ID_Downloader/" + str(Obs_Id_N), outdir="/Volumes/xray/anthony/Research_Git/Obs_ID_Downloader/" + str(Obs_Id_N) + "/new", cleanup=no)
+                    #chandra_repro(indir=cwd + str(Obs_ID_N), outdir=cwd + str(Obs_ID_N) + "/new", cleanup='no')
+                    Repo_Command="chandra_repro "+str(cwd)+"/"+str(Obs_ID_N)+" outdir="+str(cwd)+"/"+str(Obs_ID_N)+"/new cleanup=no"
+                    #Repo_Command="chandra_repro "+str(cwd)+"/"+str(Obs_ID_N)+" outdir="+str(cwd)+"/"+str(Obs_ID_N)+"/new cleanup=no clobber=no"
+                    print("Repo_Command: ", Repo_Command)
+                    #os.system("chandra_repro "+str(cwd)+str(Obs_ID_N)+" outdir="+str(cwd)+ str(Obs_ID_N)+" /new cleanup=no")
+                    print("Reprocessing ObsID "+str(Obs_ID_N))
+                    ###os.system(Repo_Command)
 
 def Obs_ID_Downloader_2_Big_Input(Data_Path,Outpath,Remove_Dups_Bool=True,Raw_Bool=False,Repo_Bool_Var=False):
-    ObsID_List=Read_ObsIDs(Data_Path,Remove_Dups=Remove_Dups_Bool,Raw=Raw_Bool)
+    #ObsID_List=Read_ObsIDs(Data_Path,Remove_Dups=Remove_Dups_Bool,Raw=Raw_Bool)
+    ObsID_List=ObsID_From_CSV_Query.Read_ObsIDs(Remove_Unarchived=True)
     Obs_ID_Downloader_2(ObsID_List,Outpath,Repo_Bool=Repo_Bool_Var)
 ##Obs_ID_Downloader_2([10125],"/Volumes/xray/anthony/Research_Git/Obs_ID_Downloader/testdir",Repo_Bool=True)
 #Obs_ID_Downloader_2([10125],"/opt/xray/anthony/Research_Git/Obs_ID_Downloader/testdir",Repo_Bool=True)
@@ -74,9 +96,10 @@ def Obs_ID_Downloader_2_Big_Input(Data_Path,Outpath,Remove_Dups_Bool=True,Raw_Bo
 #Obs_ID_Downloader_2([10125],"/Volumes/expansion/ObsID_Test")
 #print(Read_ObsIDs("/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv",Remove_Dups=True,Raw=True))
 #Read_ObsIDs("/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv",Remove_Dups=True,Raw=True)
-##print(Read_ObsIDs("/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv"))
+#print(Read_ObsIDs("/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv"))
 #Obs_ID_Downloader([10125])
 ##Obs_ID_Downloader_2_Big_Input("/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv","/Volumes/expansion/ObsIDs",Remove_Dups_Bool=False,Raw_Bool=True)
 ##Obs_ID_Downloader_2([316, 361, 378, 380, 388, 389, 392, 393, 394, 395, 400, 407, 409, 414, 784, 790, 792, 864, 870, 871, 963, 969, 1302, 1578, 349, 353],"/Volumes/expansion/ObsIDs", Repo_Bool=True) # Wavdetect Fail List after parameter file bug fix
 #Obs_ID_Downloader_2([316],"/Volumes/expansion/ObsIDs", Repo_Bool=True)
-Obs_ID_Downloader_2_Big_Input("/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv","/Volumes/expansion/ObsIDs", Remove_Dups_Bool=False, Raw_Bool=True, Repo_Bool_Var=True)
+#Obs_ID_Downloader_2_Big_Input("/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv","/Volumes/expansion/ObsIDs", Remove_Dups_Bool=False, Raw_Bool=True, Repo_Bool_Var=True)
+Obs_ID_Downloader_2_Big_Input("/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv","/Volumes/expansion/ObsIDs", Remove_Dups_Bool=False, Repo_Bool_Var=True)
