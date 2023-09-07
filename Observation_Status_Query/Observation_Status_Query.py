@@ -3,10 +3,15 @@ from os import system
 import sys
 from ciao_contrib.runtool import * #Imports ciao tools into python
 import re
-def Observation_Status_Query(ObsID):
+import pandas as pd
+def Observation_Status_Query(ObsID,Threshold=22480):
     #Query_Str=os.popen('find_chandra_obsid '+str(ObsID)+' verbose=3').read()
     #print("Query_Str:\n", Query_Str)
     print("ObsID: "+str(ObsID))
+    ObsID_Int=int(ObsID)
+    if(ObsID_Int<Threshold):
+        print("Observed_Status_Str_Reduced: ", "archived")
+        return [ObsID, True, "archived"]
     Observed_Status_Str=os.popen("find_chandra_obsid "+str(ObsID)+" verbose=2 | grep 'status'").read()
     #print("Observed_Status_Str: ", Observed_Status_Str)
     Observed_Status_Str_Reduced=re.split(r"\s+", Observed_Status_Str)[2].split("=")[1]
@@ -78,9 +83,12 @@ def Read_ObsIDs(Fpath,Remove_Dups=True,Raw=False):
 #print(Observation_Status_Query_Big_Input([22481, 253]))
 
 def Main():
+    pass
     #"/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv"
-    ObsID_L=Read_ObsIDs("/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv",Remove_Dups=False,Raw=True)
+    #ObsID_L=Read_ObsIDs("/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv",Remove_Dups=False,Raw=True)
+    #ObsID_L=Read_ObsIDs("/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv",Remove_Dups=False,Raw=False)
+    #print("ObsID_L: ", ObsID_L)
     #print(Observation_Status_Query_Big_Input(ObsID_L,Outfile_Bool=True))
     #print(Observation_Status_Query_Big_Input(ObsID_L,Outfile_Bool=False))
 
-Main()
+#Main()
