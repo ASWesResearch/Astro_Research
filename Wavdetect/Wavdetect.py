@@ -113,11 +113,11 @@ def Wavdetect(ObsID_L,ObsID_Path='/Volumes/expansion/ObsIDs/', key="broad_thresh
         #os.system("wavdetect "+str(Input_Filepath)+" outfile="+str(Outfile)+" scellfile="+str(Scellfile)+" imagefile="+str(Imagefile)+" defnbkgfile="+str(Defnbkgfile)+" regfile="+str(Regfile)+" scales='2 4 8 16'"+"psffile=default  verbose=1 clobber=yes")
         ##os.system("wavdetect "+str(Input_Filepath)+" outfile="+str(Outfile)+" scellfile="+str(Scellfile)+" imagefile="+str(Imagefile)+" defnbkgfile="+str(Defnbkgfile)+" regfile="+str(Regfile)+" scales='2 4 8 16'"+"psffile="+str(PSF_Map_Path)+" clobber=yes")
         #os.system("wavdetect "+str(Input_Filepath)+" outfile="+str(Outfile)+" scellfile="+str(Scellfile)+" imagefile="+str(Imagefile)+" defnbkgfile="+str(Defnbkgfile)+" regfile="+str(Regfile)+" scales='1 2 4 8 16'"+" expfile="+str(Exposure_Map_Path)+" psffile="+str(PSF_Map_Path)+" clobber=yes")
-def Main():
+def Source_Detection_Big_Input(ObsID_L, Clobber_Bool=False):
     Fluximage_Fail_L=[]
     Wavdetect_Fail_L=[]
     #ObsID_L=Read_ObsIDs(Raw=True) #Full List
-    ObsID_L=ObsID_From_CSV_Query.Read_ObsIDs(Remove_Unarchived=True)
+    #ObsID_L=ObsID_From_CSV_Query.Read_ObsIDs(Remove_Unarchived=True)
     #Wav_not_in_Flux_L:[316, 361, 378, 380, 388, 389, 392, 393, 394, 395, 400, 407, 409, 414, 784, 790, 792, 864, 870, 871, 963, 969, 1302, 1578, 12155, 12156, 3965, 20353, 16260, 16261, 16262, 20356, 10125, 16276, 16277, 8086, 14230, 14231, 8091, 8098, 18340, 18341, 18342, 18343, 4010, 4016, 4017, 18352, 4019, 8125, 8126, 12238, 12239, 6096, 6097, 22478, 22479, 22480, 22482, 2014, 6114, 6115, 6118, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2039, 2040, 14332, 8190]
     #Fluximage_Fail_L:[349, 353, 24979, 24980, 25179, 25186, 25191, 25220, 23599, 23638, 25689, 25777, 25778, 25779, 25780, 25781, 25782, 23479, 23480, 23481, 25989, 25990, 23489, 23490, 23491, 26038, 26039, 23494, 23495, 23496, 23497, 23498, 23499, 23500, 23501, 24392, 24393, 24438, 24439, 24440, 24441, 24442, 22481]
     ##ObsID_L=[316, 361, 378, 380, 388, 389, 392, 393, 394, 395, 400, 407, 409, 414, 784, 790, 792, 864, 870, 871, 963, 969, 1302, 1578, 12155, 12156, 3965, 20353, 16260, 16261, 16262, 20356, 10125, 16276, 16277, 8086, 14230, 14231, 8091, 8098, 18340, 18341, 18342, 18343, 4010, 4016, 4017, 18352, 4019, 8125, 8126, 12238, 12239, 6096, 6097, 22478, 22479, 22480, 22482, 2014, 6114, 6115, 6118, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2039, 2040, 14332, 8190, 349, 353, 24979, 24980, 25179, 25186, 25191, 25220, 23599, 23638, 25689, 25777, 25778, 25779, 25780, 25781, 25782, 23479, 23480, 23481, 25989, 25990, 23489, 23490, 23491, 26038, 26039, 23494, 23495, 23496, 23497, 23498, 23499, 23500, 23501, 24392, 24393, 24438, 24439, 24440, 24441, 24442, 22481] #Error List = Wav_not_in_Flux_L + Fluximage_Fail_L
@@ -131,19 +131,20 @@ def Main():
     for ObsID in ObsID_L:
         with rt.new_pfiles_environment(ardlib=True):
             try:
-                Fluximage([ObsID],ObsID_Path="/Volumes/expansion/ObsIDs/", Clobber_Bool=True)
-                #Fluximage([ObsID],ObsID_Path="/Volumes/expansion/ObsIDs/", Clobber_Bool=False)
+                #Fluximage([ObsID],ObsID_Path="/Volumes/expansion/ObsIDs/", Clobber_Bool=True)
+                Fluximage([ObsID],ObsID_Path="/Volumes/expansion/ObsIDs/", Clobber_Bool=Clobber_Bool)
             except Exception as Argument:
                 Fluximage_Fail_L.append(ObsID)
                 Error_Log_File.write(str(ObsID)+" "+"Fluximage Error:\n"+str(Argument)+"\n")
                 Fluximage_Error_Log_File.write(str(ObsID)+":\n"+str(Argument)+"\n")
             try:
-                Wavdetect([ObsID],ObsID_Path="/Volumes/expansion/ObsIDs/", Clobber_Bool=True)
-                #Wavdetect([ObsID],ObsID_Path="/Volumes/expansion/ObsIDs/", Clobber_Bool=False)
+                #Wavdetect([ObsID],ObsID_Path="/Volumes/expansion/ObsIDs/", Clobber_Bool=True)
+                Wavdetect([ObsID],ObsID_Path="/Volumes/expansion/ObsIDs/", Clobber_Bool=Clobber_Bool)
             except Exception as Argument:
                 Wavdetect_Fail_L.append(ObsID)
                 Error_Log_File.write(str(ObsID)+" "+"Wavdetect Error:\n"+str(Argument)+"\n")
                 Wavdetect_Error_Log_File.write(str(ObsID)+":\n"+str(Argument)+"\n")
+        os.system("rm /var/folders/z3/zr9d743j7458sf8x2k6y2y9h0002z6/T/*broad_thresh*") #Note: This is required since the temp files (which are broad_thresh files) are not being automatically deleted and causing the directory to fill up and then the code to crash.
     print("Fluximage_Fail_L:\n", Fluximage_Fail_L)
     print("Wavdetect_Fail_L:\n", Wavdetect_Fail_L)
     f=open("/Volumes/expansion/Fail_List.txt","w")
@@ -153,21 +154,24 @@ def Main():
     Error_Log_File.close()
     Fluximage_Error_Log_File.close()
     Wavdetect_Error_Log_File.close()
+##Main()
+def Main():
+    #print(Split_FPath("/Volumes/expansion/ObsIDs/10125/primary/acisf10125N003_evt2.fits.gz"))
+    ##Fluximage([10125],ObsID_Path="/Volumes/expansion/ObsID_Test/")
+    ##Wavdetect([10125],ObsID_Path="/Volumes/expansion/ObsID_Test/")
+    #13813
+    #Fluximage([13813],ObsID_Path="/Volumes/expansion/ObsID_Test/")
+    #Wavdetect([13813],ObsID_Path="/Volumes/expansion/ObsID_Test/")
+    ##Test_Main([10125])
+    #8197
+    #Fluximage([8197],ObsID_Path="/Volumes/expansion/ObsID_Test/")
+    #Wavdetect([8197],ObsID_Path="/Volumes/expansion/ObsID_Test/")
+    #Fail_L=[380,400,963,25689,23481,23491,23496,23497,1578,22481]
+    #Fail_L=[380,400,963,1578]
+    #Fluximage(Fail_L)
+    #Wavdetect(Fail_L)
+    #ObsID_L=ObsID_From_CSV_Query.Read_ObsIDs(Remove_Unarchived=True)
+    #print("ObsID_L: ", ObsID_L)
+    #Fail_L:  [349, 353, 380, 400, 963, 1578, 3786, 16005, 23498, 23499, 25179]
+    #Source_Detection_Big_Input([3786, 16005, 23498], Clobber_Bool=True)
 #Main()
-
-#print(Split_FPath("/Volumes/expansion/ObsIDs/10125/primary/acisf10125N003_evt2.fits.gz"))
-##Fluximage([10125],ObsID_Path="/Volumes/expansion/ObsID_Test/")
-##Wavdetect([10125],ObsID_Path="/Volumes/expansion/ObsID_Test/")
-#13813
-#Fluximage([13813],ObsID_Path="/Volumes/expansion/ObsID_Test/")
-#Wavdetect([13813],ObsID_Path="/Volumes/expansion/ObsID_Test/")
-##Test_Main([10125])
-#8197
-#Fluximage([8197],ObsID_Path="/Volumes/expansion/ObsID_Test/")
-#Wavdetect([8197],ObsID_Path="/Volumes/expansion/ObsID_Test/")
-#Fail_L=[380,400,963,25689,23481,23491,23496,23497,1578,22481]
-#Fail_L=[380,400,963,1578]
-#Fluximage(Fail_L)
-#Wavdetect(Fail_L)
-#ObsID_L=ObsID_From_CSV_Query.Read_ObsIDs(Remove_Unarchived=True)
-#print("ObsID_L: ", ObsID_L)
