@@ -6,7 +6,8 @@ path=os.path.realpath('../')
 #system('pwd')
 sys.path.append(os.path.abspath(path))
 from Observation_Status_Query import Observation_Status_Query
-def Read_ObsIDs(Fpath="/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv",Remove_Dups=True,Raw=False, Remove_Unarchived=False):
+from ObsID_Tester import ObsID_Tester
+def Read_ObsIDs(Fpath="/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResult_Modified.csv",Remove_Dups=True,Raw=False, Remove_Unarchived=False, ObsID_Tester_Bool=False):
     if(Raw):
         #pass
         File = open(Fpath, "r")
@@ -30,6 +31,7 @@ def Read_ObsIDs(Fpath="/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResu
     if(Remove_Dups):
         ObsID_L_With_Dups=ObsID_L
         ObsID_L=list(set(ObsID_L))
+        ObsID_L.sort()
         print("Number of Duplicates: ",len(ObsID_L_With_Dups)-len(ObsID_L))
     if(Remove_Unarchived==True):
         ObsID_L_Archived=[]
@@ -41,9 +43,25 @@ def Read_ObsIDs(Fpath="/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResu
             Cur_ObsID=Cur_ObsID_Status[0]
             if(Data_Availability_Bool==True):
                 ObsID_L_Archived.append(int(Cur_ObsID))
-        return ObsID_L_Archived
+        #return ObsID_L_Archived
+        print("len(ObsID_L) Before: ", len(ObsID_L))
+        ObsID_L=ObsID_L_Archived
+        print("len(ObsID_L) After: ", len(ObsID_L))
+    if(ObsID_Tester_Bool):
+        ObsID_L_Cleaned=[]
+        ObsID_Validation_Output=ObsID_Tester.ObsID_Tester(ObsID_L)
+        Invalid_ObsID_L=ObsID_Validation_Output[0]
+        for ObsID_Test in ObsID_L:
+            if ObsID_Test not in Invalid_ObsID_L:
+                ObsID_Test_Int=int(ObsID_Test)
+                ObsID_L_Cleaned.append(ObsID_Test_Int)
+        ObsID_L=ObsID_L_Cleaned
     return ObsID_L
 
 #ObsID_L=Read_ObsIDs(Remove_Unarchived=True)
-#print(ObsID_L)
-#print("len(ObsID_L): ", len(ObsID_L))
+#ObsID_L=Read_ObsIDs()
+#ObsID_L=Read_ObsIDs(Remove_Dups=False)
+#ObsID_L=Read_ObsIDs(ObsID_Tester_Bool=True)
+ObsID_L=Read_ObsIDs(Remove_Unarchived=True, ObsID_Tester_Bool=True)
+print(ObsID_L)
+print("len(ObsID_L): ", len(ObsID_L))
