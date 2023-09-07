@@ -19,6 +19,8 @@ from ObsID_From_CSV_Query import ObsID_From_CSV_Query
 #Constants:
 #Root_Path="/Volumes/"
 Root_Path="/opt/"
+#Outpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"
+Outpath="/Volumes/expansion/Hybrid_Regions/"
 def Reg_Org(Reg_Str):
     Reg_L=re.split("[(),]",Reg_Str)
     #print "Cur_Raytrace_Reg_L: ", Cur_Raytrace_Reg_L
@@ -87,7 +89,7 @@ def Nearest_Raytraced_Neighbor_Calc(ObsID):
     #print "Untraced_Reg_L After Pop: ", Untraced_Reg_L
     #for Untraced_Reg in Untraced_Reg_L:
     #Nearest_Neighbor_Hybrid_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
-    Nearest_Neighbor_Hybrid_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+    Nearest_Neighbor_Hybrid_Reg_Fpath=Outpath+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
     directory_Obs=os.path.dirname(Nearest_Neighbor_Hybrid_Reg_Fpath)
     if not os.path.exists(directory_Obs):
         os.makedirs(directory_Obs)
@@ -149,7 +151,7 @@ def Nearest_Raytraced_Neighbor_Calc(ObsID):
         #print "Cur_Hybrid_Reg: ", Cur_Hybrid_Reg
         #print "type(Cur_Hybrid_Reg): ", type(Cur_Hybrid_Reg)
         Nearest_Neighbor_Hybrid_Reg_File.write(Cur_Hybrid_Reg) # I don't know if I need to use the X and Y as sky coordinates or detector coordinates if detector coordinates then this must be changed to "Nearest_Neighbor_Hybrid_Reg_File.write(Cur_Hybrid_Reg_Det)", I don't think the shapes of the regions transfered are vaild in detector coodinates so I'm going with sky coordinates now. Also I'm pretty sure calcuationg flux requires sky coords not detector coords
-        Cur_Source_Nearest_Neighbor_Hybrid_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/Individual_Source_Regions/"+"Source_"+str(Source_Num)+"_ObsID_"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+        Cur_Source_Nearest_Neighbor_Hybrid_Reg_Fpath=Outpath+str(ObsID)+"/Individual_Source_Regions/"+"Source_"+str(Source_Num)+"_ObsID_"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
         directory_Obs=os.path.dirname(Cur_Source_Nearest_Neighbor_Hybrid_Reg_Fpath)
         if not os.path.exists(directory_Obs):
             os.makedirs(directory_Obs)
@@ -167,7 +169,7 @@ def Nearest_Raytraced_Neighbor_Calc(ObsID):
     """
     Source_C_L=Coords_Calc.Coords_Calc(Evt2_Filepath,Nearest_Neighbor_Hybrid_Reg_Fpath)
     #print "Source_C_L:\n", Source_C_L
-    Nearest_Neighbor_Hybrid_Coord_Outpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/Nearest_Neighbor_Hybrid_Sources_ObsID_"+str(ObsID)+"_Coords.csv"
+    Nearest_Neighbor_Hybrid_Coord_Outpath=Outpath+str(ObsID)+"/Nearest_Neighbor_Hybrid_Sources_ObsID_"+str(ObsID)+"_Coords.csv"
     #print "Nearest_Neighbor_Hybrid_Coord_Outpath: ", Nearest_Neighbor_Hybrid_Coord_Outpath
     file2=open(Nearest_Neighbor_Hybrid_Coord_Outpath,"w")
     #[Cur_X,Cur_Y,Cur_Chip_X,Cur_Chip_Y,Cur_Chip_ID,Cur_RA,Cur_DEC,Cur_Theta]
@@ -215,7 +217,7 @@ def Nearest_Raytraced_Neighbor_Calc(ObsID):
 #Nearest_Raytraced_Neighbor_Calc(10125)
 def Background_Reg_Generator(ObsID):
     Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
-    Nearest_Neighbor_Hybrid_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+    Nearest_Neighbor_Hybrid_Reg_Fpath=Outpath+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
     Nearest_Neighbor_Reg_File=open(Nearest_Neighbor_Hybrid_Reg_Fpath)
     Nearest_Neighbor_Reg_Str=Nearest_Neighbor_Reg_File.read()
     #print "Nearest_Neighbor_Reg_Str:\n", Nearest_Neighbor_Reg_Str
@@ -227,7 +229,7 @@ def Background_Reg_Generator(ObsID):
     #print "Nearest_Neighbor_Reg_Str_Reduced_L: ", Nearest_Neighbor_Reg_Str_Reduced_L
     #print "len(Nearest_Neighbor_Reg_Str_Reduced_L) Before Pop: ", len(Nearest_Neighbor_Reg_Str_Reduced_L)
     Nearest_Neighbor_Reg_Str_Reduced_L.pop(len(Nearest_Neighbor_Reg_Str_Reduced_L)-1)
-    Nearest_Neighbor_Hybrid_BG_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid_Background.reg"
+    Nearest_Neighbor_Hybrid_BG_Reg_Fpath=Outpath+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid_Background.reg"
     Nearest_Neighbor_Hybrid_BG_Reg_File=open(Nearest_Neighbor_Hybrid_BG_Reg_Fpath,"w")
     Nearest_Neighbor_Hybrid_BG_Reg_File.write(Header_String)
     Source_Num=1
@@ -258,7 +260,7 @@ def Background_Reg_Generator(ObsID):
         #print "Cur_Reg: ", Cur_Reg
         Nearest_Neighbor_Hybrid_BG_Reg_File.write(Cur_BG_Reg)
         Nearest_Neighbor_Hybrid_BG_Reg_File.write(Cur_Reg)
-        Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/Individual_Source_Regions/"+"Source_"+str(Source_Num)+"_ObsID_"+str(ObsID)+"_Nearest_Neighbor_Hybrid_Background.reg"
+        Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_Fpath=Outpath+str(ObsID)+"/Individual_Source_Regions/"+"Source_"+str(Source_Num)+"_ObsID_"+str(ObsID)+"_Nearest_Neighbor_Hybrid_Background.reg"
         directory_Obs=os.path.dirname(Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_Fpath)
         if not os.path.exists(directory_Obs):
             os.makedirs(directory_Obs)
@@ -354,7 +356,7 @@ def Source_Overlap_Calc(x1,x2,y1,y2,a1,a2,b1,b2,rot1,rot2,M=2.0):
 
 def Background_Overlap_Corrected_Reg_Generator(ObsID):
     Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
-    Nearest_Neighbor_Hybrid_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+    Nearest_Neighbor_Hybrid_Reg_Fpath=Outpath+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
     Nearest_Neighbor_Reg_File=open(Nearest_Neighbor_Hybrid_Reg_Fpath)
     Nearest_Neighbor_Reg_Str=Nearest_Neighbor_Reg_File.read()
     #print "Nearest_Neighbor_Reg_Str:\n", Nearest_Neighbor_Reg_Str
@@ -366,15 +368,15 @@ def Background_Overlap_Corrected_Reg_Generator(ObsID):
     #print "Nearest_Neighbor_Reg_Str_Reduced_L: ", Nearest_Neighbor_Reg_Str_Reduced_L
     #print "len(Nearest_Neighbor_Reg_Str_Reduced_L) Before Pop: ", len(Nearest_Neighbor_Reg_Str_Reduced_L)
     Nearest_Neighbor_Reg_Str_Reduced_L.pop(len(Nearest_Neighbor_Reg_Str_Reduced_L)-1)
-    Nearest_Neighbor_Hybrid_BG_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid_Overlap_Corrected_Background.reg"
+    Nearest_Neighbor_Hybrid_BG_Reg_Fpath=Outpath+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid_Overlap_Corrected_Background.reg"
     Nearest_Neighbor_Hybrid_BG_Reg_File=open(Nearest_Neighbor_Hybrid_BG_Reg_Fpath,"w")
     Nearest_Neighbor_Hybrid_BG_Reg_File.write(Header_String)
-    Overlapping_Sources_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Overlapping_Sources.csv"
+    Overlapping_Sources_Fpath=Outpath+str(ObsID)+"/"+str(ObsID)+"_Overlapping_Sources.csv"
     Overlapping_Sources_File=open(Overlapping_Sources_Fpath,"w")
     Overlapping_Sources_File.write("Source_Num;Background_Overlap;Source_Overlap\n")
     Source_Num=1
     for Nearest_Neighbor_Reg_Str_Reduced in Nearest_Neighbor_Reg_Str_Reduced_L:
-        Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/Individual_Source_Regions/"+"Source_"+str(Source_Num)+"_ObsID_"+str(ObsID)+"_Nearest_Neighbor_Hybrid_Overlap_Corrected_Background.reg"
+        Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_Fpath=Outpath+str(ObsID)+"/Individual_Source_Regions/"+"Source_"+str(Source_Num)+"_ObsID_"+str(ObsID)+"_Nearest_Neighbor_Hybrid_Overlap_Corrected_Background.reg"
         directory_Obs=os.path.dirname(Cur_Source_Nearest_Neighbor_Hybrid_BG_Reg_Fpath)
         if not os.path.exists(directory_Obs):
             os.makedirs(directory_Obs)
@@ -557,7 +559,7 @@ def Duplicate_Source_Remover(ObsID):
     print(ObsID)
     Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
     evtfpath=Evt2_File_Query(ObsID)
-    Nearest_Neighbor_Hybrid_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+    Nearest_Neighbor_Hybrid_Reg_Fpath=Outpath+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
     Nearest_Neighbor_Reg_File=open(Nearest_Neighbor_Hybrid_Reg_Fpath)
     Nearest_Neighbor_Reg_Str=Nearest_Neighbor_Reg_File.read()
     #print "Nearest_Neighbor_Reg_Str:\n", Nearest_Neighbor_Reg_Str
@@ -651,7 +653,7 @@ def Duplicate_Source_Remover(ObsID):
     Nearest_Neighbor_Reg_File.close()
     print("Duplicate_Source_Index_L: ", Duplicate_Source_Index_L)
     print("Duplicate_Source_Index_HL: ", Duplicate_Source_Index_HL)
-    Duplicate_Source_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Duplicate_Sources.csv"
+    Duplicate_Source_Fpath=Outpath+str(ObsID)+"/"+str(ObsID)+"_Duplicate_Sources.csv"
     Duplicate_Source_File=open(Duplicate_Source_Fpath,"w")
     Duplicate_Source_Header_Str="Source_Num;Duplicate_Sources\n"
     Duplicate_Source_File.write(Duplicate_Source_Header_Str)
@@ -685,7 +687,7 @@ def Source_Number_Comparer(ObsID):
     #print "len(Raytrace_ObsID_Reg_Str_Reduced_L) Before Pop: ", len(Raytrace_ObsID_Reg_Str_Reduced_L)
     Raytrace_ObsID_Reg_Str_Reduced_L.pop(len(Raytrace_ObsID_Reg_Str_Reduced_L)-1)
     #Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
-    Nearest_Neighbor_Hybrid_Reg_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+    Nearest_Neighbor_Hybrid_Reg_Fpath=Outpath+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
     Nearest_Neighbor_Reg_File=open(Nearest_Neighbor_Hybrid_Reg_Fpath)
     Nearest_Neighbor_Reg_Str=Nearest_Neighbor_Reg_File.read()
     #print "Nearest_Neighbor_Reg_Str:\n", Nearest_Neighbor_Reg_Str
@@ -697,7 +699,7 @@ def Source_Number_Comparer(ObsID):
     #print "Nearest_Neighbor_Reg_Str_Reduced_L: ", Nearest_Neighbor_Reg_Str_Reduced_L
     #print "len(Nearest_Neighbor_Reg_Str_Reduced_L) Before Pop: ", len(Nearest_Neighbor_Reg_Str_Reduced_L)
     Nearest_Neighbor_Reg_Str_Reduced_L.pop(len(Nearest_Neighbor_Reg_Str_Reduced_L)-1)
-    Matching_Source_Num_Fpath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Matching_Source_Number.csv"
+    Matching_Source_Num_Fpath=Outpath+str(ObsID)+"/"+str(ObsID)+"_Matching_Source_Number.csv"
     Matching_Source_Num_File=open(Matching_Source_Num_Fpath,"w")
     Source_Number_CSV_Header_String="Raytrace_Source_Num,Nearest_Neighbor_Num\n"
     Matching_Source_Num_File.write(Source_Number_CSV_Header_String)
@@ -743,7 +745,7 @@ def Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=False):
     Header_String='# Region file format: DS9 version 3.0\nglobal color=blue font="helvetica 10 normal" select=1 edit=1 move=1 delete=1 include=1 fixed=0\n'
     Raytrace_Files_Path=Root_Path+"xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"
     #Nearest_Neighbor_Hybrid_All_Soruces_File=open(Raytrace_Files_Path+"Nearest_Neighbor_Hybrid_All_Soruces.reg","w")
-    Nearest_Raytraced_Neighbor_FPath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"
+    Nearest_Raytraced_Neighbor_FPath=Outpath
     Nearest_Neighbor_Hybrid_All_Soruces_File=open(Nearest_Raytraced_Neighbor_FPath+"Nearest_Neighbor_Hybrid_All_Soruces.reg","w")
     Nearest_Neighbor_Hybrid_All_Soruces_File.write(Header_String)
     Nearest_Neighbor_Hybrid_All_Soruces_L=[]
@@ -759,7 +761,7 @@ def Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=False):
                 Duplicate_Source_Remover(ObsID)
                 Source_Number_Comparer(ObsID)
             #Nearest_Raytraced_Neighbor_Reg_FPath=Root_Path+"xray/anthony/Research_Git/Raytrace_Region_File_Generator/Raytrace_Region_Files/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
-            Nearest_Raytraced_Neighbor_Reg_FPath=Root_Path+"xray/anthony/Research_Git/Nearest_Raytraced_Neighbor_Calc/Hybrid_Regions/"+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
+            Nearest_Raytraced_Neighbor_Reg_FPath=Outpath+str(ObsID)+"/"+str(ObsID)+"_Nearest_Neighbor_Hybrid.reg"
             Nearest_Raytraced_Neighbor_Reg_File=open(Nearest_Raytraced_Neighbor_Reg_FPath)
             Nearest_Raytraced_Neighbor_Reg_Str=Nearest_Raytraced_Neighbor_Reg_File.read()
             Nearest_Raytraced_Neighbor_Reg_Str_L=Nearest_Raytraced_Neighbor_Reg_Str.split("fixed=0\n")
@@ -805,4 +807,10 @@ def Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=False):
 #Raytrace_All_Soucres_Region_File_Generator(ObsID_L, Generate_Bool=True)
 #Nearest_Raytraced_Neighbor_Calc_Big_Input([8197, 8198, 14341, 6152, 2057, 2058, 2059, 14342, 12301, 14349, 14350, 2064, 2065, 14351, 20495, 18454, 18455, 6169, 6170, 2075, 2076, 18461, 18462, 6175, 10274, 10275, 10276, 10277, 10278, 10279, 6184, 6185, 10280, 10281, 14376, 14378, 14383, 14384, 10289, 10290, 10291, 10292, 10293, 14412, 4176, 14419, 2148, 14437, 16484, 16485, 20585, 14442, 24707, 14471, 2197, 2198, 12437, 16556, 12473, 22714, 22715, 16580, 2255, 2260, 6361, 8458, 8464, 8465, 12562, 20752, 20753, 2340, 8489, 8490, 10542, 10543, 10544, 10545, 20794, 316, 318, 10559, 10560, 18760, 14675, 14676, 349, 350, 353, 354, 361, 16745, 378, 379, 380, 12668, 383, 384, 388, 389, 390, 391, 392, 393, 394, 395, 400, 402, 404, 405, 407, 12696, 409, 410, 411, 24981, 413, 414, 24986, 18875, 4555, 4556, 4557, 4558, 12748, 14795, 14801, 10722, 10723, 10724, 10725, 10726, 20965, 20966, 20992, 20993, 4613, 20997, 20998, 20999, 21000, 21001, 21003, 4627, 4628, 4629, 4630, 23075, 23076, 21036, 14896, 14902, 14912, 6727, 16969, 4688, 4689, 4690, 16978, 4692, 4693, 4694, 16983, 4696, 4697, 21077, 21082, 16991, 16994, 16995, 16996, 16997, 23140, 23141, 17000, 18440, 17003, 17007, 10868, 4725, 4726, 4727, 4728, 4729, 4730, 4731, 4732, 4733, 2686, 4734, 4735, 4736, 4737, 6781, 6782, 4743, 4744, 4745, 4746, 4747, 4748, 4749, 4750, 4751, 4752, 4753, 4754, 10925, 23216, 23217, 12978, 23218, 23219, 12981, 23220, 23223, 12992, 12993, 12994, 12995, 12996, 13018, 735, 23266, 21230, 17155, 782, 784, 790, 792, 793, 794, 795, 11032, 797, 11033, 11034, 17180, 808, 15149, 2879, 2885, 11080, 11081, 11082, 11083, 11084, 11085, 11086, 15190, 864, 11104, 15200, 19297, 2916, 2917, 870, 871, 872, 2918, 2919, 19304, 21350, 2925, 21351, 21352, 882, 2933, 2934, 2949, 2950, 21384, 19339, 19344, 19345, 13202, 19346, 7060, 19348, 19350, 19351, 19354, 7069, 19357, 2976, 7073, 9122, 2978, 7074, 7075, 7076, 934, 9120, 9121, 7082, 7083, 7084, 942, 7086, 7087, 19374, 7090, 7091, 23472, 7093, 23473, 7095, 7096, 13241, 7098, 19386, 19387, 7101, 15294, 7103, 7104, 7105, 962, 963, 3012, 7106, 13248, 7111, 15295, 969, 7113, 7115, 7116, 19397, 7118, 19403, 7120, 7121, 19407, 7123, 7124, 19411, 19414, 7127, 19416, 19417, 7132, 19421, 7134, 19422, 21471, 21472, 21473, 21474, 19428, 15333, 21479, 7146, 7147, 19437, 7150, 7152, 7153, 7154, 13303, 13304, 11260, 11268, 23559, 11272, 11273, 23561, 23564, 15382, 15384, 11289, 15386, 15387, 11295, 19497, 21545, 11309, 11311, 11317, 17461, 17462, 9278, 17471, 17472, 19521, 19522, 19524, 5197, 7252, 25689, 13439, 21639, 15496, 21640, 17547, 19363, 21647, 21648, 21649, 17569, 17570, 5283, 17571, 17578, 5296, 5297, 5300, 5301, 5302, 5309, 15553, 21698, 21699, 7369, 5322, 5323, 15572, 15574, 5337, 5338, 5339, 5340, 15579, 15582, 15587, 15588, 15589, 15594, 15603, 3325, 15616, 17678, 1302, 15646, 19392, 19747, 19393, 19748, 19394, 9532, 9533, 9534, 9535, 9536, 9537, 9538, 9539, 9540, 9541, 9542, 9543, 9545, 9546, 9547, 9548, 9549, 9550, 9551, 9552, 9553, 23474, 21853, 23475, 9570, 23476, 23477, 23478, 23479, 13686, 23480, 23481, 23482, 23483, 23484, 15756, 23485, 15760, 23486, 23487, 15771, 23488, 13728, 23489, 23490, 23491, 23492, 23493, 10875, 15803, 23494, 23495, 13765, 23496, 23497, 3550, 3551, 13791, 17890, 17891, 13796, 11761, 5619, 13812, 13813, 13814, 13815, 13816, 13817, 13819, 13820, 13821, 13822, 13829, 11782, 13830, 13831, 13832, 11786, 5644, 19981, 19982, 11800, 1564, 1578, 1579, 1586, 1587, 11846, 11847, 9805, 1618, 1621, 1622, 1624, 1633, 1634, 1635, 1636, 1637, 1638, 1640, 7797, 7798, 7799, 7800, 14984, 18047, 16000, 16001, 14985, 16002, 16003, 16005, 18048, 18053, 18054, 18062, 18063, 18064, 18065, 18066, 18067, 18068, 9877, 18069, 16023, 16024, 18070, 18071, 9883, 16028, 16029, 18072, 18073, 16032, 16033, 7850, 22189, 7858, 22194, 7863, 17032, 14017, 14018, 16068, 16069, 3786, 3787, 3788, 7885, 16121, 16122, 5905, 5911, 5929, 5930, 5931, 10025, 10026, 10027, 5935, 5936, 5937, 5938, 5939, 5940, 5941, 5942, 5943, 5944, 5945, 5946, 5947, 5948, 5949, 12095, 3925, 3930, 3931, 3932, 3933, 3934, 3935, 3936, 3937, 3938, 3939, 3940, 3941, 3942, 3943, 22372, 22375, 16234, 3949, 3950, 20333, 3953, 3954, 8050, 8052, 8053, 20343, 8058, 12155, 12156, 3965, 20353, 16260, 16261, 16262, 20356, 10125, 16276, 16277, 8086, 14230, 14231, 8091, 8098, 18340, 18341, 18342, 18343, 4010, 4016, 4017, 18352, 4019, 8125, 8126, 12238, 12239, 6096, 6097, 22478, 22479, 22480, 22481, 22482, 2014, 6114, 6115, 6118, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2039, 2040, 14332, 8190], Generate_Bool=True)
 #Nearest_Raytraced_Neighbor_Calc_Big_Input([14676, 349, 350, 353, 354, 361, 16745, 378, 379, 380, 12668, 383, 384, 388, 389, 390, 391, 392, 393, 394, 395, 400, 402, 404, 405, 407, 12696, 409, 410, 411, 24981, 413, 414, 24986, 18875, 4555, 4556, 4557, 4558, 12748, 14795, 14801, 10722, 10723, 10724, 10725, 10726, 20965, 20966, 20992, 20993, 4613, 20997, 20998, 20999, 21000, 21001, 21003, 4627, 4628, 4629, 4630, 23075, 23076, 21036, 14896, 14902, 14912, 6727, 16969, 4688, 4689, 4690, 16978, 4692, 4693, 4694, 16983, 4696, 4697, 21077, 21082, 16991, 16994, 16995, 16996, 16997, 23140, 23141, 17000, 18440, 17003, 17007, 10868, 4725, 4726, 4727, 4728, 4729, 4730, 4731, 4732, 4733, 2686, 4734, 4735, 4736, 4737, 6781, 6782, 4743, 4744, 4745, 4746, 4747, 4748, 4749, 4750, 4751, 4752, 4753, 4754, 10925, 23216, 23217, 12978, 23218, 23219, 12981, 23220, 23223, 12992, 12993, 12994, 12995, 12996, 13018, 735, 23266, 21230, 17155, 782, 784, 790, 792, 793, 794, 795, 11032, 797, 11033, 11034, 17180, 808, 15149, 2879, 2885, 11080, 11081, 11082, 11083, 11084, 11085, 11086, 15190, 864, 11104, 15200, 19297, 2916, 2917, 870, 871, 872, 2918, 2919, 19304, 21350, 2925, 21351, 21352, 882, 2933, 2934, 2949, 2950, 21384, 19339, 19344, 19345, 13202, 19346, 7060, 19348, 19350, 19351, 19354, 7069, 19357, 2976, 7073, 9122, 2978, 7074, 7075, 7076, 934, 9120, 9121, 7082, 7083, 7084, 942, 7086, 7087, 19374, 7090, 7091, 23472, 7093, 23473, 7095, 7096, 13241, 7098, 19386, 19387, 7101, 15294, 7103, 7104, 7105, 962, 963, 3012, 7106, 13248, 7111, 15295, 969, 7113, 7115, 7116, 19397, 7118, 19403, 7120, 7121, 19407, 7123, 7124, 19411, 19414, 7127, 19416, 19417, 7132, 19421, 7134, 19422, 21471, 21472, 21473, 21474, 19428, 15333, 21479, 7146, 7147, 19437, 7150, 7152, 7153, 7154, 13303, 13304, 11260, 11268, 23559, 11272, 11273, 23561, 23564, 15382, 15384, 11289, 15386, 15387, 11295, 19497, 21545, 11309, 11311, 11317, 17461, 17462, 9278, 17471, 17472, 19521, 19522, 19524, 5197, 7252, 25689, 13439, 21639, 15496, 21640, 17547, 19363, 21647, 21648, 21649, 17569, 17570, 5283, 17571, 17578, 5296, 5297, 5300, 5301, 5302, 5309, 15553, 21698, 21699, 7369, 5322, 5323, 15572, 15574, 5337, 5338, 5339, 5340, 15579, 15582, 15587, 15588, 15589, 15594, 15603, 3325, 15616, 17678, 1302, 15646, 19392, 19747, 19393, 19748, 19394, 9532, 9533, 9534, 9535, 9536, 9537, 9538, 9539, 9540, 9541, 9542, 9543, 9545, 9546, 9547, 9548, 9549, 9550, 9551, 9552, 9553, 23474, 21853, 23475, 9570, 23476, 23477, 23478, 23479, 13686, 23480, 23481, 23482, 23483, 23484, 15756, 23485, 15760, 23486, 23487, 15771, 23488, 13728, 23489, 23490, 23491, 23492, 23493, 10875, 15803, 23494, 23495, 13765, 23496, 23497, 3550, 3551, 13791, 17890, 17891, 13796, 11761, 5619, 13812, 13813, 13814, 13815, 13816, 13817, 13819, 13820, 13821, 13822, 13829, 11782, 13830, 13831, 13832, 11786, 5644, 19981, 19982, 11800, 1564, 1578, 1579, 1586, 1587, 11846, 11847, 9805, 1618, 1621, 1622, 1624, 1633, 1634, 1635, 1636, 1637, 1638, 1640, 7797, 7798, 7799, 7800, 14984, 18047, 16000, 16001, 14985, 16002, 16003, 16005, 18048, 18053, 18054, 18062, 18063, 18064, 18065, 18066, 18067, 18068, 9877, 18069, 16023, 16024, 18070, 18071, 9883, 16028, 16029, 18072, 18073, 16032, 16033, 7850, 22189, 7858, 22194, 7863, 17032, 14017, 14018, 16068, 16069, 3786, 3787, 3788, 7885, 16121, 16122, 5905, 5911, 5929, 5930, 5931, 10025, 10026, 10027, 5935, 5936, 5937, 5938, 5939, 5940, 5941, 5942, 5943, 5944, 5945, 5946, 5947, 5948, 5949, 12095, 3925, 3930, 3931, 3932, 3933, 3934, 3935, 3936, 3937, 3938, 3939, 3940, 3941, 3942, 3943, 22372, 22375, 16234, 3949, 3950, 20333, 3953, 3954, 8050, 8052, 8053, 20343, 8058, 12155, 12156, 3965, 20353, 16260, 16261, 16262, 20356, 10125, 16276, 16277, 8086, 14230, 14231, 8091, 8098, 18340, 18341, 18342, 18343, 4010, 4016, 4017, 18352, 4019, 8125, 8126, 12238, 12239, 6096, 6097, 22478, 22479, 22480, 22481, 22482, 2014, 6114, 6115, 6118, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2039, 2040, 14332, 8190], Generate_Bool=True)
-Nearest_Raytraced_Neighbor_Calc_Big_Input([349, 353, 380, 400, 963, 25689, 23481, 23491, 23496, 23497, 1578, 22481], Generate_Bool=True)
+#Nearest_Raytraced_Neighbor_Calc_Big_Input([349, 353, 380, 400, 963, 25689, 23481, 23491, 23496, 23497, 1578, 22481], Generate_Bool=True)
+ObsID_L=ObsID_From_CSV_Query.Read_ObsIDs(Remove_Unarchived=True)
+#print(ObsID_L)
+#print("len(ObsID_L): ", len(ObsID_L))
+##Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=True)
+#Nearest_Raytraced_Neighbor_Calc_Big_Input([3786, 16005, 23498],Generate_Bool=True)
+Nearest_Raytraced_Neighbor_Calc_Big_Input(ObsID_L,Generate_Bool=False)
