@@ -10,11 +10,13 @@ from astropy.io import fits
 #Constants:
 #Root_Path="/Volumes/"
 Root_Path="/opt/"
+Expansion_Path=Root_Path+"xray/anthony/expansion_backup/"
+#Expansion_Path="/Volumes/expansion/"
 #path_Modules=os.path.realpath('../')
 path_Modules=Root_Path+"xray/anthony/Research_Git"
 sys.path.append(os.path.abspath(path_Modules))
 from Galaxy_Name_Reducer import Galaxy_Name_Reducer
-def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=False): #Still bugs, Bug:(UnboundLocalError: local variable 'File_Path_With_Filename_Str' referenced before assignment), Update(I fixed this bug, but I need to bug check more)
+def File_Query(Gname,File_Type_Str="evt2",Extension=".fits",Obs_Check_B=True,Exp_Max_B=False): #Still bugs, Bug:(UnboundLocalError: local variable 'File_Path_With_Filename_Str' referenced before assignment), Update(I fixed this bug, but I need to bug check more)
     Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
     #print "Gname_Modifed : ", Gname_Modifed
     #Code_Path=os.path.realpath('.')
@@ -184,7 +186,18 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=
         #print "Filename_String ", Filename_String
         """
     for Cur_Obs_ID in Matching_Obs_ID_L: #Cur_Obs_ID:-numpy.int64, Current_Observation_Idenification, The current Observation ID in the list of all obsevation IDs for the current Galaxy Name (Matching_Obs_ID_L)
-        Filepath_L=glob.glob("/Volumes/expansion/ObsIDs/"+str(Cur_Obs_ID)+"/new/*evt2*")
+        #Filepath_L=glob.glob("/Volumes/expansion/ObsIDs/"+str(Cur_Obs_ID)+"/new/*evt2*")
+        Glob_Str=Expansion_Path+"ObsIDs/"+str(Cur_Obs_ID)+"/new/*"+str(File_Type_Str)+"*"
+        print("Glob_Str: ", Glob_Str)
+        Filepath_L=glob.glob(Glob_Str)
+        if(len(Filepath_L)==0):
+            Glob_Str=Expansion_Path+"ObsIDs/"+str(Cur_Obs_ID)+"/primary/*"+str(File_Type_Str)+"*"
+            print("Glob_Str: ", Glob_Str)
+            Filepath_L=glob.glob(Glob_Str)
+        if(File_Type_Str=="reg"):
+            #/Volumes/expansion/Hybrid_Regions/10125/10125_Nearest_Neighbor_Hybrid.reg
+            Glob_Str=Expansion_Path+"Hybrid_Regions/"+str(Cur_Obs_ID)+"/"+str(Cur_Obs_ID)+"_Nearest_Neighbor_Hybrid.reg"
+            Filepath_L=glob.glob(Glob_Str)
         File_Path_With_Filename_Str=Filepath_L[0]
         fname_L=[Cur_Obs_ID,File_Path_With_Filename_Str]
         #print "fname_L ", fname_L
@@ -367,4 +380,4 @@ def File_Query(Gname,File_Type_Str,Extension=".fits",Obs_Check_B=True,Exp_Max_B=
 #print File_Query("MESSIER 063","evt2")
 #print File_Query("MESSIER 084","evt2")
 #print File_Query("NGC 5018","evt2")
-#print File_Query("MESSIER 049","evt2")
+#print(File_Query("MESSIER 049","evt2"))
