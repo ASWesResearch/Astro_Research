@@ -189,7 +189,7 @@ def Area_GC_R_N_F_2(Gname):
         raGC=float(G_Data['RA(deg)'])
         decGC=float(G_Data['DEC(deg)'])
         #area_A=[((((((decGC-dec)**2)+((raGC-ra)**2)))*(math.pi))/area_T) for dec,ra in zip(decA,raA)]
-        area_A=[((((((decGC-dec)**2)+((raGC-ra)**2)))*(math.pi))/area_T) for dec,ra in zip(Dec_Match_L,RA_Match_L)] #REAL ONE
+        area_A=[((((((decGC-dec)**2)+((raGC-ra)**2)))*(math.pi))/area_T) for dec,ra in zip(Dec_Match_L,RA_Match_L)] #REAL ONE #MAJOR BUG HERE!!! This should be calculated with the Haversine_Distance NOT the Pythagorean Theorem!
         #disA=[math.sqrt(((decGC-dec)**2)+((raGC-ra)**2)) for dec,ra in zip(decA,raA)] #REAL ONE
         #print area_A
         #area_max=max(area_A)
@@ -440,7 +440,7 @@ def Area_GC_R_N(Gname):
         #area_A=[((((((decGC-dec)**2)+((raGC-ra)**2)))*(math.pi))/area_T) for dec,ra in zip(Dec_Match_L,RA_Match_L)] #REAL ONE
         #disA=[math.sqrt(((decGC-dec)**2)+((raGC-ra)**2)) for dec,ra in zip(dec_A,raA)] #REAL ONE?
         #disA=[math.sqrt(((decGC-dec)**2)+((raGC-ra)**2)) for dec,ra in zip(Dec_Match_L,RA_Match_L)] #REAL ONE
-        disA=[math.sqrt(((decGC_Arcmin-dec)**2)+((raGC_Arcmin-ra)**2)) for dec,ra in zip(Dec_Match_L,RA_Match_L)] #REAL ONE in units of arcmins
+        disA=[math.sqrt(((decGC_Arcmin-dec)**2)+((raGC_Arcmin-ra)**2)) for dec,ra in zip(Dec_Match_L,RA_Match_L)] #REAL ONE in units of arcmins #MAJOR BUG HERE!!! This should be calculated with the Haversine_Distance NOT the Pythagorean Theorem!
         #print area_A
         #area_max=max(area_A)
         #print area_max
