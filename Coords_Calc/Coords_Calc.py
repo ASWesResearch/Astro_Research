@@ -85,4 +85,6 @@ def Coords_Calc(evtfpath,regfpath,header=""):
         Source_Data_L.append(Cur_Source_Coords)
     Region_File.close()
     return Source_Data_L
-#print Coords_Calc("/Volumes/xray/simon/chandra_from_csc/1043/primary/acisf01043N003_evt2.fits","/Volumes/xray/simon/chandra_from_csc/1043/primary/1043_reg.reg")
+#print(Coords_Calc("/Volumes/xray/simon/chandra_from_csc/1043/primary/acisf01043N003_evt2.fits","/Volumes/xray/simon/chandra_from_csc/1043/primary/1043_reg.reg"))
+#print(Coords_Calc("/opt/xray/anthony/expansion_backup/ObsIDs/735/new/acisf00735_repro_evt2.fits","/opt/xray/anthony/expansion_backup/Hybrid_Regions/735/735_Nearest_Neighbor_Hybrid.reg"))
+print(Coords_Calc("/opt/xray/anthony/expansion_backup/ObsIDs/735/primary/acisf00735N005_evt2.fits.gz","/opt/xray/anthony/expansion_backup/Hybrid_Regions/735/735_Nearest_Neighbor_Hybrid.reg"))
