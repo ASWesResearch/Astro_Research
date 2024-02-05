@@ -34,7 +34,7 @@ def Distance_Galatic_Center_to_Aimpoint_Calc(Gname,Exp_Max_Bool=True):
         Pointing_Dec=hdulist[1].header['DEC_PNT']
         Pointing_Diff_RA=Pointing_RA-raGC
         Pointing_Diff_Dec=Pointing_Dec-decGC
-        Dist=np.sqrt((Pointing_Diff_RA**2.0)+(Pointing_Diff_Dec**2.0))
+        Dist=np.sqrt((Pointing_Diff_RA**2.0)+(Pointing_Diff_Dec**2.0)) #MAJOR BUG HERE!!! This should be calculated with the Haversine_Distance NOT the Pythagorean Theorem!
         Dist_Arcmin=Dist*60.0
         Dist_L=[Cur_Evt2_ObsID,Dist_Arcmin]
         Dist_H_L.append(Dist_L)
