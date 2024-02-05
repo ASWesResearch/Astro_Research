@@ -169,7 +169,7 @@ def Histogram_Organizer(Gname_L,D25_Threshold=0.5):
         #area_A=[((((((decGC-dec)**2)+((raGC-ra)**2)))*(math.pi))/area_T) for dec,ra in zip(decA,raA)]
         #area_A=[((((((decGC-dec)**2)+((raGC-ra)**2)))*(math.pi))/area_T) for dec,ra in zip(Dec_Match_L,RA_Match_L)] #REAL ONE
         #disA=[math.sqrt(((decGC-dec)**2)+((raGC-ra)**2)) for dec,ra in zip(dec_A,raA)] #REAL ONE?
-        disA=[math.sqrt(((decGC-dec)**2)+((raGC-ra)**2)) for dec,ra in zip(Dec_Match_L,RA_Match_L)] #REAL ONE
+        disA=[math.sqrt(((decGC-dec)**2)+((raGC-ra)**2)) for dec,ra in zip(Dec_Match_L,RA_Match_L)] #REAL ONE #MAJOR BUG HERE!!! This should be calculated with the Haversine_Distance NOT the Pythagorean Theorem!
         #print "disA : ", disA
         #disA.sort()
         print "D25_S_Maj_Deg : ", D25_S_Maj_Deg
