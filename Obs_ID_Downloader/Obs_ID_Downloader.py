@@ -73,7 +73,7 @@ def Obs_ID_Downloader_2(Obs_ID_L,Outpath,Repo_Bool=False, Clobber_Bool=False):
                         continue
                 ##download_chandra_obsid(obsid=Obs_ID_N)
                 print("Downloading ObsID "+str(Obs_ID_N))
-                ###os.system("download_chandra_obsid "+str(Obs_ID_N))
+                os.system("download_chandra_obsid "+str(Obs_ID_N))
                 if(Repo_Bool):
                     #chandra_repro(indir= "/Volumes/xray/anthony/Research_Git/Obs_ID_Downloader/" + str(Obs_Id_N), outdir="/Volumes/xray/anthony/Research_Git/Obs_ID_Downloader/" + str(Obs_Id_N) + "/new", cleanup=no)
                     #chandra_repro(indir=cwd + str(Obs_ID_N), outdir=cwd + str(Obs_ID_N) + "/new", cleanup='no')
@@ -82,7 +82,7 @@ def Obs_ID_Downloader_2(Obs_ID_L,Outpath,Repo_Bool=False, Clobber_Bool=False):
                     print("Repo_Command: ", Repo_Command)
                     #os.system("chandra_repro "+str(cwd)+str(Obs_ID_N)+" outdir="+str(cwd)+ str(Obs_ID_N)+" /new cleanup=no")
                     print("Reprocessing ObsID "+str(Obs_ID_N))
-                    ###os.system(Repo_Command)
+                    os.system(Repo_Command)
 
 def Obs_ID_Downloader_2_Big_Input(Data_Path,Outpath,Remove_Dups_Bool=True,Raw_Bool=False,Repo_Bool_Var=False):
     #ObsID_List=Read_ObsIDs(Data_Path,Remove_Dups=Remove_Dups_Bool,Raw=Raw_Bool)
