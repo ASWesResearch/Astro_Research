@@ -15,10 +15,6 @@ path=os.path.realpath('../')
 sys.path.append(os.path.abspath(path))
 from ObsID_From_CSV_Query import ObsID_From_CSV_Query
 def File_Query(ObsID,ObsID_Path='/Volumes/expansion/ObsIDs/',key="evt2"):
-    #Query_Path='/Volumes/xray/simon/all_chandra_observations/'+str(ObsID)+'/primary/*evt2*'
-    #Query_Path=ObsID_Path+str(ObsID)+'/primary/*evt2*'
-    ##Query_Path=ObsID_Path+str(ObsID)+'/*/*'+str(key)+'*'
-    #files = glob.glob('/home/geeks/Desktop/gfg/**/*.txt', recursive = True)
     Query_Path=ObsID_Path+str(ObsID)+'/**/*'+str(key)+'*'
     fpath_L=glob.glob(Query_Path, recursive = True)
     print("fpath_L: ", fpath_L)
@@ -113,7 +109,7 @@ def Wavdetect(ObsID_L,ObsID_Path='/Volumes/expansion/ObsIDs/', key="broad_thresh
         #os.system("wavdetect "+str(Input_Filepath)+" outfile="+str(Outfile)+" scellfile="+str(Scellfile)+" imagefile="+str(Imagefile)+" defnbkgfile="+str(Defnbkgfile)+" regfile="+str(Regfile)+" scales='2 4 8 16'"+"psffile=default  verbose=1 clobber=yes")
         ##os.system("wavdetect "+str(Input_Filepath)+" outfile="+str(Outfile)+" scellfile="+str(Scellfile)+" imagefile="+str(Imagefile)+" defnbkgfile="+str(Defnbkgfile)+" regfile="+str(Regfile)+" scales='2 4 8 16'"+"psffile="+str(PSF_Map_Path)+" clobber=yes")
         #os.system("wavdetect "+str(Input_Filepath)+" outfile="+str(Outfile)+" scellfile="+str(Scellfile)+" imagefile="+str(Imagefile)+" defnbkgfile="+str(Defnbkgfile)+" regfile="+str(Regfile)+" scales='1 2 4 8 16'"+" expfile="+str(Exposure_Map_Path)+" psffile="+str(PSF_Map_Path)+" clobber=yes")
-def Source_Detection_Big_Input(ObsID_L, Clobber_Bool=False):
+def Source_Detection_Big_Input(ObsID_L, Clobber_Bool=False, Full_Clobber_Bool=False):
     Fluximage_Fail_L=[]
     Wavdetect_Fail_L=[]
     #ObsID_L=Read_ObsIDs(Raw=True) #Full List
@@ -129,6 +125,11 @@ def Source_Detection_Big_Input(ObsID_L, Clobber_Bool=False):
     Fluximage_Error_Log_File=open("/Volumes/expansion/Fluximage_Error_Log.txt","w")
     Wavdetect_Error_Log_File=open("/Volumes/expansion/Wavdetect_Error_Log.txt","w")
     for ObsID in ObsID_L:
+        if(Full_Clobber_Bool==False):
+            Glob_L=glob.glob("/Volumes/expansion/ObsIDs/"+str(ObsID)+"/*/exposure_correction")
+            print("Glob_L: ", Glob_L)
+            if(len(Glob_L)>0):
+                continue
         with rt.new_pfiles_environment(ardlib=True):
             try:
                 #Fluximage([ObsID],ObsID_Path="/Volumes/expansion/ObsIDs/", Clobber_Bool=True)
@@ -170,8 +171,9 @@ def Main():
     #Fail_L=[380,400,963,1578]
     #Fluximage(Fail_L)
     #Wavdetect(Fail_L)
-    #ObsID_L=ObsID_From_CSV_Query.Read_ObsIDs(Remove_Unarchived=True)
-    #print("ObsID_L: ", ObsID_L)
+    ObsID_L=ObsID_From_CSV_Query.Read_ObsIDs(Remove_Unarchived=True)
+    print("ObsID_L: ", ObsID_L)
+    Source_Detection_Big_Input(ObsID_L, Clobber_Bool=False, Full_Clobber_Bool=False)
     #Fail_L:  [349, 353, 380, 400, 963, 1578, 3786, 16005, 23498, 23499, 25179]
     #Source_Detection_Big_Input([3786, 16005, 23498], Clobber_Bool=True)
-#Main()
+Main()
