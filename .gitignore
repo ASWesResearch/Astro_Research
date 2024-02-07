@@ -48,3 +48,5 @@ Obs_ID_Downloader/testdir/
 Observation_Status_Query/Observation_Status.csv
 */__pycache__/
 @eaDir/
+Flux_Plotting/Count_Cut_Colors.csv
+Flux_Plotting/Duplicate_Colors.csv
