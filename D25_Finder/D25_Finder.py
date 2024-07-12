@@ -4,8 +4,9 @@ from astroquery.ned import Ned
 import astropy.units as u
 import sys
 from astropy.io import ascii
-#path=os.path.realpath('../') #Reltive Path
-path=os.path.realpath('/Volumes/xray/anthony/Research_Git/') #Absolute Path
+import pandas as pd
+path=os.path.realpath('../') #Reltive Path
+#path=os.path.realpath('/Volumes/xray/anthony/Research_Git/') #Absolute Path
 sys.path.append(os.path.abspath(path))
 from File_Query_Code import File_Query_Code_5
 def D25_Finder(Gname):
@@ -94,21 +95,25 @@ def D25_Finder(Gname):
         #return D25_S_Maj_Deg
         """
     Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2")
-    print "Evt2_File_H_L : ", Evt2_File_H_L
+    print("Evt2_File_H_L : ", Evt2_File_H_L)
     Evt2_File_L=Evt2_File_H_L[0]
     Obs_ID=Evt2_File_L[0]
     #print "Obs_ID : ", Obs_ID
-    #path_Source_Flux_Table=os.path.realpath('../SQL_Standard_File/Source_Flux_Table.csv') #Reltive Path
-    path_Source_Flux_Table=os.path.realpath('/Volumes/xray/anthony/Research_Git/SQL_Standard_File/Source_Flux_Table.csv') #Absolute Path
-    #print "path_Source_Flux_Table : ", path_Source_Flux_Table
-    Source_Flux_Table=ascii.read(path_Source_Flux_Table)
-    #print "Source_Flux_Table : \n", Source_Flux_Table
-    Obs_ID_A=Source_Flux_Table["OBSID"]
+    ##path_Source_Flux_Table=os.path.realpath('../SQL_Standard_File/Source_Flux_Table.csv') #Reltive Path
+    #path_Source_Flux_Table=os.path.realpath('/Volumes/xray/anthony/Research_Git/SQL_Standard_File/Source_Flux_Table.csv') #Absolute Path
+    path_Source_Flux_Table=os.path.realpath('../SQL_Standard_File/ocatResult_Modified.csv') #Reltive Path
+    print("path_Source_Flux_Table : ", path_Source_Flux_Table)
+    #Source_Flux_Table=ascii.read(path_Source_Flux_Table)
+    Source_Flux_Table=pd.read_csv(path_Source_Flux_Table)
+    print("Source_Flux_Table : \n", Source_Flux_Table)
+    #Obs_ID_A=Source_Flux_Table["OBSID"]
+    Obs_ID_A=Source_Flux_Table["Obs ID"]
     Obs_ID_L=list(Obs_ID_A)
     #print "Obs_ID_L : ", Obs_ID_L
     Obs_ID_Inx=Obs_ID_L.index(Obs_ID)
     #print "Obs_ID_Inx : ", Obs_ID_Inx
-    Resolved_Name_A=Source_Flux_Table["resolvedObject"]
+    #Resolved_Name_A=Source_Flux_Table["resolvedObject"]
+    Resolved_Name_A=Source_Flux_Table["Gname"]
     #print "Resolved_Name_A : ", Resolved_Name_A
     Resolved_Name_L=list(Resolved_Name_A)
     #print "Resolved_Name_L : ", Resolved_Name_L
@@ -175,10 +180,10 @@ def D25_List_Run(Gname_L):
     for Gname in Gname_L:
         try:
             Cur_D25=D25_Finder(Gname)
-            print Cur_D25
+            print(Cur_D25)
         except:
             Fail_L.append(Gname)
-    print "Fail_L : \n", Fail_L
+    print("Fail_L : \n", Fail_L)
 
 
 
@@ -200,7 +205,7 @@ def D25_List_Run(Gname_L):
 #print D25_Finder("NGC 891")
 #print D25_Finder("NGC 7507")
 #print D25_Finder("NGC 3631")
-print D25_Finder("NGC 7507")
+#print(D25_Finder("NGC 7507"))
 """
 D25_List_Run(['SN 2004am', 'SN 1996aq', 'PGC135659', 'M51', 'SN2011ja', 'N119',
 'SN 2011ja', 'NGC 346', 'SNR 1987A', 'SN 1998S', 'NGC 604', 'NGC5471B', 'NGC 5204 X-1', 'NGC 1818', 'FORNAX CLUSTER', 'SN 2002HH', 'SN 1986J', 'SN 2004dj', 'SN 2004et', 'NGC 1313 X-1', 'NGC 1313 X-2', 'VIRGO CLUSTER', 'ngc 1672', 'SN 1993J',
