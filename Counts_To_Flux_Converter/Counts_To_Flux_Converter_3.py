@@ -36,8 +36,8 @@ def Counts_To_Flux_Converter(evtfpath,C_L_H,F_K_L,CR_K=0.01):
     hdulist = fits.open(evtfpath)
     #Obs_Date_Str=hdulist[1].header['DATE-OBS']
     Exposure_Time=hdulist[1].header['EXPOSURE']
-    print "Exposure_Time: ", Exposure_Time
-    print "type(Exposure_Time): ", type(Exposure_Time)
+    print("Exposure_Time: ", Exposure_Time)
+    print("type(Exposure_Time): ", type(Exposure_Time))
     #Exposure_Time=float(Exposure_Time_Str) #Not sure if this string is able to be conveted to a float without first parsing it, I have not checked yet
     F_U_L_H=[] # high list,Flux Unknown List High, A high list if the clacluated fluxes, grouped by the plots they came from
     #for i in range(0,n): # n, is the total number of plots? #Note: It is actually the total number of backgrounds but it does not matter because that is allways equal to len(C_L_H)
