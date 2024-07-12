@@ -42,9 +42,9 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfpath,rchange=121.95121955,B=1,D
     evtfname=evtfpath_L[len(evtfpath_L)-1]
     #print "evtfname: ", evtfname
     polyfpath_L=polyfpath.rsplit("/",1)
-    print "polyfpath_L : ", polyfpath_L
+    print("polyfpath_L : ", polyfpath_L)
     polyfpath_no_fname=polyfpath_L[0]
-    print "polyfpath_no_fname : ", polyfpath_no_fname
+    print("polyfpath_no_fname : ", polyfpath_no_fname)
     Evtfname_Reduced=evtfname.split(".")[0] #Evtfname_Reduced:-str, Event_Filename_Reduced, The filename of the event 2 file of the observation without the extention ".fits" at the end, for example "acisf02076_repro_evt2"
     Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(gname)
     if(Fnamekey==""):
@@ -232,7 +232,7 @@ def Area_Calc_Frac_B_2_Alt_2(gname,evtfpath,polyfpath,rchange=121.95121955,B=1,D
         cur_r=(n*rchange) + inner_r #Increases the current radius by n times the change in radius
         cur_inner_r=((n-1)*rchange) + inner_r #Calculates the inner radius of the annulus
     Remainder_FOV=cur_r-outer_r
-    print "Remainder_FOV : ", Remainder_FOV
+    print("Remainder_FOV : ", Remainder_FOV)
     for Current_Ratio in a_L: #Current_Ratio:-float, Current_Ratio, The Current_Ratio of the total intersecting area on the total area of the current area circle in a_L
         #print type(Current_Ratio)
         Current_Ratio_Str=str(Current_Ratio) #Current_Ratio_Str:-Str, Current_Ratio_String, The Current_Ratio as a string value
