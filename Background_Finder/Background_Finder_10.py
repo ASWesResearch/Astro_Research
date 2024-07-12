@@ -173,7 +173,7 @@ def Background_Finder_3(gname,evtfpath,objLfpath,R): #Need to apply energy filte
     #Chip_ID_String=pget("dmkeypar","value") #Chip_ID_String:-str, Chip_Idenifcation_String, Runs the pget tool to get the string containing what CCDs are used in the FOV1.fits file from the parameter file asscoiated with the dmkeypar tool and sets it equal to the Chip_ID_String (This) variable
     Chip_ID_String=Header_String_Reduced_3 #Chip_ID_String:-str, Chip_Idenifcation_String, Runs the pget tool to get the string containing what CCDs are used in the FOV1.fits file from the parameter file asscoiated with the dmkeypar tool and sets it equal to the Chip_ID_String (This) variable
     #Chip_ID_String=pget(toolname="dmkeypar", p_value="value")
-    print "Chip_ID_String ", Chip_ID_String
+    print("Chip_ID_String ", Chip_ID_String)
     Chip_ID_String_L=Chip_ID_String.split('-') #Chip_ID_String_L:-List, Chip_Idenifcation_String_List, The resulting list from spliting the Chip_ID_String on "_", This list contains 2 elements, the first element is the string "ACIS" and the second element is the string segment in the form (Example) "356789" where each number in the list is its own CCD ID
     #print "Chip_ID_String_L ", Chip_ID_String_L
     Chip_ID_String_Reduced=Chip_ID_String_L[1] #Chip_ID_String_Reduced:-str, Chip_Idenifcation_String_Reduced, the string segment in the form (Example) "356789" where each number in the list is its own CCD ID
@@ -182,15 +182,15 @@ def Background_Finder_3(gname,evtfpath,objLfpath,R): #Need to apply energy filte
     for Cur_Chip_ID_Str in Chip_ID_String_Reduced: #Cur_Chip_ID_Str:-str, Current_Chip_Idenifcation_Str, The string vaule of the current string CCD ID in the Chip_ID_String_Reduced string, for example "3"
         Cur_Chip_ID=int(Cur_Chip_ID_Str) #Cur_Chip_ID:-int, Current_Chip_Idenifcation, The current chip ID number as an int, for example 3
         Chip_ID_L.append(Cur_Chip_ID) #Appends The current chip ID number as an int to Chip_Idenifcation_List
-    print "Chip_ID_L ", Chip_ID_L
+    print("Chip_ID_L ", Chip_ID_L)
     #Step_L=[500,250,100,50,25,10,5,1]
     Step_L=[500,250,100]
     Background_L=[]
     BG_Circle_Info_L=[]
     dmcoords(infile=str(evtfpath),ra=str(4096.5), dec=str(4096.5), option='sky', verbose=0) # Runs the dmcoords CIAO tool, which converts coordinates like CHIP_ID to SKY
     Chip_ID_Aimpoint=dmcoords.chip_id #Chip_ID:-int, Chip_ID, The Chip ID number the Aimpoint is on
-    print "Chip_ID_Aimpoint: ", Chip_ID_Aimpoint
-    print "type(Chip_ID_Aimpoint): ", type(Chip_ID_Aimpoint)
+    print("Chip_ID_Aimpoint: ", Chip_ID_Aimpoint)
+    print("type(Chip_ID_Aimpoint): ", type(Chip_ID_Aimpoint))
     #BG_Circle_Overlap_Bool=False
     if(Chip_ID_Aimpoint==5):
         Chip_ID_Test_L=[5,7]
@@ -201,7 +201,7 @@ def Background_Finder_3(gname,evtfpath,objLfpath,R): #Need to apply energy filte
         if(5 not in Chip_ID_L):
             Chip_ID_Test_L=[7]
     if((Chip_ID_Aimpoint!=7) and (Chip_ID_Aimpoint!=5)):
-        print "Front Illuminated"
+        print("Front Illuminated")
         Chip_ID_Test_L=Chip_ID_L
         if(5 in Chip_ID_L):
             Chip_ID_Test_L.remove(5)
@@ -214,7 +214,7 @@ def Background_Finder_3(gname,evtfpath,objLfpath,R): #Need to apply energy filte
             if(Chip_ID_Test_Reordered_Template in Chip_ID_Test_L):
                 Chip_ID_Test_Reordered_L.append(Chip_ID_Test_Reordered_Template)
         Chip_ID_Test_L=Chip_ID_Test_Reordered_L
-    print "Chip_ID_Test_L: ", Chip_ID_Test_L
+    print("Chip_ID_Test_L: ", Chip_ID_Test_L)
     if(len(Background_L)<=3):
         for Step in Step_L:
             #print "Step ", Step
@@ -295,9 +295,9 @@ def Background_Finder_3(gname,evtfpath,objLfpath,R): #Need to apply energy filte
                             #print "BG_Circle_Info_L Final", BG_Circle_Info_L
                             if(List_Done_Bool==True):
                                 BG_Chip_ID=Chip_ID_Test
-                                print "BG_Chip_ID: ", BG_Chip_ID
+                                print("BG_Chip_ID: ", BG_Chip_ID)
                                 BG_Ratio_Avg=np.average(Background_L)
-                                print "BG_Ratio_Avg: ", BG_Ratio_Avg
+                                print("BG_Ratio_Avg: ", BG_Ratio_Avg)
                                 return BG_Ratio_Avg
     #print "List_Done_Bool ", List_Done_Bool
     #print "List_Done_Bool==False ", str(List_Done_Bool==False)
