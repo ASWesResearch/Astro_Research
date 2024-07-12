@@ -157,7 +157,7 @@ def D_P_C_Big_Input(Backgrounds,counts,Off_Angs):
     """
     for Background in Backgrounds: # Background:-float, Background, The current background (of one of multiple observations?)
         Prob_L=[] # Prob_L:-list, Probablity List, A list of the probablity of detecting an object given the background, counts and offaxis angle
-        print '\n'+str(Background)+'\n' # Prints the current background
+        print('\n'+str(Background)+'\n') # Prints the current background)
         for count in counts: #count:-float, Count, The current count value, Selects the current count value from the count list
             Prob_L=[] # Prob_L:-list, Probablity List, A list of the probablity of detecting an object given the background, counts and offaxis angle
             #print "count", count #Debug
@@ -170,8 +170,8 @@ def D_P_C_Big_Input(Backgrounds,counts,Off_Angs):
                 Prob_L.append(Cur_P_N)
                 #if(len(Cur_P_Str)==3): # For debugging, when not debugging Prob_L.append(Cur_P_N) allways
                     #Prob_L.append(Cur_P_N) # Appends the current probablity to the probablity list
-            print count # prints the current counts value
-            print Prob_L # Prints the current probablity list
+            print(count) # prints the current counts value
+            print(Prob_L) # Prints the current probablity list
 
 #D_P_C_Big_Input([0.0411256372949457,0.135727335468768,0.13725522292245054,0.153680013049534],[10,20],[0,2,5,10])
 
@@ -256,18 +256,18 @@ def Count_Range_Generator(C_Min,C_Max,Step):
 
 def Contour_Map(x,y,f,V_min,V_max,Step,Colorbar_Label,*args):
     X, Y = np.meshgrid(x, y)
-    print "x:\n", x
-    print "y:\n", y
-    print "X:\n", X
-    print "Y:\n", Y
-    print "args: ", args
+    print("x:\n", x)
+    print("y:\n", y)
+    print("X:\n", X)
+    print("Y:\n", Y)
+    print("args: ", args)
     #Z = f(X, Y, args[0])
     Z=np.zeros((len(X),len(X)))
     for i in range(0,len(X)):
         for j in range(0,len(X)):
             Z[i][j]=f(X[i][j],Y[i][j],args[0])
     #Z = f(X, Y)
-    print "Z:\n", Z
+    print("Z:\n", Z)
     #plt.contourf(X, Y, Z, 20, cmap='viridis')
     plt.xscale('log')
     plt.contourf(X, Y, Z, np.arange(V_min,V_max+Step,Step), cmap='viridis',vmin=V_min,vmax=V_max)
@@ -314,7 +314,7 @@ def Detection_Probability_Plot(F):
         if(Off in Off_A):
             Graph_Num=Offaxis_to_Graph_Num(Off)
             Graph_Data_Fpath_L=glob.glob("/Volumes/xray/anthony/Research_Git/Background_Graph_Data_2/"+"Graph "+str(Graph_Num)+"*")
-            print "Graph_Data_Fpath_L: ", Graph_Data_Fpath_L
+            print("Graph_Data_Fpath_L: ", Graph_Data_Fpath_L)
             for Graph_Data_Fpath in Graph_Data_Fpath_L:
                 data = ascii.read(Graph_Data_Fpath) #data:-astropy.table.table.Table, data, The graph data for the current offaxis angle and number of counts.
                 B_A=data['col1'] # B_A:-array, Background Array, The array contianing the background data from the current data file, in order of increasing background
@@ -332,7 +332,7 @@ def Detection_Probability_Plot(F):
         Outpath="/Volumes/xray/anthony/Research_Git/Detection_Probablity_Calc/Detection_Probability_Plots/"
         ##Fname=F.__name__+"_"+str(Off)+"_Arcmin_Plot.pdf"
         Fname=F.__name__+"_"+str(Off)+"_Arcmin_Test_Plot.pdf"
-        print "Fname: ", Fname
+        print("Fname: ", Fname)
         plt.savefig(Outpath+Fname)
         #plt.show()
         plt.close()
