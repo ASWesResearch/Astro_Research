@@ -58,10 +58,10 @@ def Read_ObsIDs(Fpath="/opt/xray/anthony/Research_Git/SQL_Standard_File/ocatResu
         ObsID_L=ObsID_L_Cleaned
     return ObsID_L
 
-#ObsID_L=Read_ObsIDs(Remove_Unarchived=True)
+ObsID_L=Read_ObsIDs(Remove_Unarchived=True)
 #ObsID_L=Read_ObsIDs()
 #ObsID_L=Read_ObsIDs(Remove_Dups=False)
 #ObsID_L=Read_ObsIDs(ObsID_Tester_Bool=True)
 #ObsID_L=Read_ObsIDs(Remove_Unarchived=True, ObsID_Tester_Bool=True)
-#print(ObsID_L)
-#print("len(ObsID_L): ", len(ObsID_L))
+print(ObsID_L)
+print("len(ObsID_L): ", len(ObsID_L))
