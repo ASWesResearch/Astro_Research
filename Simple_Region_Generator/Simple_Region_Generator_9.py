@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import pyregion
 import decimal
 import numpy as np
-def Simple_Region_Generator (fname,evtfpath,outpath):
+def Simple_Region_Generator (fname,evtfpath,outpath, Simple_Poly_Bool=False):
     """
     fname:-str, Filename, The string filename of the CCD Region File from the XPA-DS9 Region Generator (Does Not Exist Yet) that take the FOV1.fits files from an observation as an input
     evtfpath:-str, Event 2 Filepath, The string filepath of the Event 2 file of the obseravation that the current FOV1.fits file and therefore the CCD Region File are from
@@ -47,7 +47,7 @@ def Simple_Region_Generator (fname,evtfpath,outpath):
             Cur_Point.append(Coords_L[i]) # Adds the current X to the Current Point
             Cur_Point.append(Coords_L[i+1]) # Adds the current Y to the Current Point after the X
             Point_L.append(Cur_Point) # Appends the current point to the Point_List
-        #print "Point_L ", Point_L
+        print("Point_L: ", Point_L)
         """
         # Note: This Part of the Code might not be necessary, Note 2: Yep, its definitely not necessary
         for P in Point_L:
@@ -88,45 +88,49 @@ def Simple_Region_Generator (fname,evtfpath,outpath):
                         if Cur_Dup_Point_Index_Group_Rev not in Dup_Point_Idx_Group_L: #Makes sure that the current group is not already included as it's reverse in the Dup_Point_Idx_Group_L
                             Dup_Point_Idx_Group_L.append(Cur_Dup_Point_Index_Group) #Appends the Cur_Dup_Point_Index_Group to the Dup_Point_Idx_Group_L
                             #print Dup_Point_Idx_Group_L
-        #print Dup_Point_Idx_Group_L
+        print("Dup_Point_Idx_Group_L: ", Dup_Point_Idx_Group_L)
         """
         This part of the code gets rid of duplicate points by replacing them with a single points directly inbetween the duplicates
         """
-        Point_L_Cor=[] #Point_L_Cor:-List, Point_List_Corrected, The list of points that make up the current polygon which as the duplicate points replaced by one new point at the center of the segment that the two duplicate points makes up
-        for k in range(0,len(Point_L)): # k:-int, k, k is an index refering to the Point_L
-            #print k
-            #print "Point_L[k], ", Point_L[k]
-            Unique_Test=1 #Unique_Test:-int, Unique_Test, Unique_Test repersents the 3 states of uniqueness that the current k index (ref. Point_L) can have, Unique_Test=1 means k is unique, Unique_Test=-1 means k=i and thus is not unique, Unique_Test=0 means k=j and thus is not unique
-            for Dup_P_Inx in Dup_Point_Idx_Group_L: #Dup_P_Inx:-int, Duplicate_Point_Index, The group of duplicate point indexs (ref. Point_L) of the form [i,j], for example: [6, 7]
-                Cur_i=Dup_P_Inx[0] #Cur_i:-int, Current_i, the Current i index (ref. Point_L)
-                Cur_j=Dup_P_Inx[1] #Cur_j:-int, Current_j, the Current j index (ref. Point_L)
-                if(k==Cur_i): #Selects only the first point index i (ref. Point_L) in the current Dup_P_Inx
-                    Unique_Test=-1 #Sets Unique_Test equal to 1
-                if(k==Cur_j): # Throws out the second point index j (ref. Point_L) in the current Dup_P_Inx
-                    Unique_Test=0 #Sets Unique_Test equal to 0
-            if(Unique_Test==1):
-                Point_L_Cor.append(Point_L[k]) #Appends the current point with the "Kth" index (ref. Point_L) if the current point is unique
-            if(Unique_Test==-1): #This only selects the first of the 2 duplicate point indexs (ref. Point_L)
-                for Dup_P_I in Dup_Point_Idx_Group_L: #Dup_P_I:-List, The group of duplicate point indexs (ref. Point_L) of the form [i,j], just like Dup_P_I
-                    C_i=Dup_P_I[0] #C_i:-int, Current_i, the Current i index (ref. Point_L)
-                    C_j=Dup_P_I[1] #C_j:-int, Current_j, the Current j index (ref. Point_L)
-                    if (k==C_i): # Makes sure that the current point from the Point_L is the first point index i (ref. Point_L) in the current Dup_P_Inx
-                        Point_i=Point_L[C_i] #Point_i:-List, Point_i, the first point in a group of duplicate points #Here is the mistake(I don't think there is a mistake anymore)
-                        #print Point_i
-                        Point_j=Point_L[C_j] #Point_j:-List, Point_j,the secound point in a group of duplicate points #Here is the mistake(I don't think there is a mistake anymore)
-                        X_i=Point_i[0] #X_i:-float, X_i, The first X value of the group of duplicate points in pixels
-                        #print "X_i", X_i
-                        Y_i=Point_i[1] #Y_i:-float, Y_i, The first Y value of the group of duplicate points in pixels
-                        #print "Y_i", Y_i
-                        X_j=Point_j[0] #X_j:-float, X_j, The second X value of the group of duplicate points in pixels
-                        #print "X_j", X_j
-                        Y_j=Point_j[1] #Y_j:-float, Y_j, The second Y value of the group of duplicate points in pixels
-                        #print "Y_j", Y_j
-                        X_New=(X_i+X_j)/2.0 #X_New:-float, X_New, The New X value for the new point that will be in the center of the 2 duplicate points of the cur duplicate point group
-                        Y_New=(Y_i+Y_j)/2.0 #Y_New:-float, Y_New, The New Y value for the new point that will be in the center of the 2 duplicate points of the cur duplicate point group
-                        Point_New=[X_New,Y_New] #Point_New:-List, Point_New, The new point that is in the center of the 2 duplicate points, that will be replacing the 2 duplicate points
-                        #print "Point_New, ", Point_New
-                        Point_L_Cor.append(Point_New) #Appens the new point onto the Point_List_Corrected in place of the 2 duplicate points
+        if(Simple_Poly_Bool):
+            Point_L_Cor=[] #Point_L_Cor:-List, Point_List_Corrected, The list of points that make up the current polygon which as the duplicate points replaced by one new point at the center of the segment that the two duplicate points makes up
+            for k in range(0,len(Point_L)): # k:-int, k, k is an index refering to the Point_L
+                #print k
+                #print "Point_L[k], ", Point_L[k]
+                Unique_Test=1 #Unique_Test:-int, Unique_Test, Unique_Test repersents the 3 states of uniqueness that the current k index (ref. Point_L) can have, Unique_Test=1 means k is unique, Unique_Test=-1 means k=i and thus is not unique, Unique_Test=0 means k=j and thus is not unique
+                for Dup_P_Inx in Dup_Point_Idx_Group_L: #Dup_P_Inx:-int, Duplicate_Point_Index, The group of duplicate point indexs (ref. Point_L) of the form [i,j], for example: [6, 7]
+                    Cur_i=Dup_P_Inx[0] #Cur_i:-int, Current_i, the Current i index (ref. Point_L)
+                    Cur_j=Dup_P_Inx[1] #Cur_j:-int, Current_j, the Current j index (ref. Point_L)
+                    if(k==Cur_i): #Selects only the first point index i (ref. Point_L) in the current Dup_P_Inx
+                        Unique_Test=-1 #Sets Unique_Test equal to 1
+                    if(k==Cur_j): # Throws out the second point index j (ref. Point_L) in the current Dup_P_Inx
+                        Unique_Test=0 #Sets Unique_Test equal to 0
+                if(Unique_Test==1):
+                    Point_L_Cor.append(Point_L[k]) #Appends the current point with the "Kth" index (ref. Point_L) if the current point is unique
+                if(Unique_Test==-1): #This only selects the first of the 2 duplicate point indexs (ref. Point_L)
+                    for Dup_P_I in Dup_Point_Idx_Group_L: #Dup_P_I:-List, The group of duplicate point indexs (ref. Point_L) of the form [i,j], just like Dup_P_I
+                        C_i=Dup_P_I[0] #C_i:-int, Current_i, the Current i index (ref. Point_L)
+                        C_j=Dup_P_I[1] #C_j:-int, Current_j, the Current j index (ref. Point_L)
+                        if (k==C_i): # Makes sure that the current point from the Point_L is the first point index i (ref. Point_L) in the current Dup_P_Inx
+                            Point_i=Point_L[C_i] #Point_i:-List, Point_i, the first point in a group of duplicate points #Here is the mistake(I don't think there is a mistake anymore)
+                            #print Point_i
+                            Point_j=Point_L[C_j] #Point_j:-List, Point_j,the secound point in a group of duplicate points #Here is the mistake(I don't think there is a mistake anymore)
+                            X_i=Point_i[0] #X_i:-float, X_i, The first X value of the group of duplicate points in pixels
+                            #print "X_i", X_i
+                            Y_i=Point_i[1] #Y_i:-float, Y_i, The first Y value of the group of duplicate points in pixels
+                            #print "Y_i", Y_i
+                            X_j=Point_j[0] #X_j:-float, X_j, The second X value of the group of duplicate points in pixels
+                            #print "X_j", X_j
+                            Y_j=Point_j[1] #Y_j:-float, Y_j, The second Y value of the group of duplicate points in pixels
+                            #print "Y_j", Y_j
+                            X_New=(X_i+X_j)/2.0 #X_New:-float, X_New, The New X value for the new point that will be in the center of the 2 duplicate points of the cur duplicate point group
+                            Y_New=(Y_i+Y_j)/2.0 #Y_New:-float, Y_New, The New Y value for the new point that will be in the center of the 2 duplicate points of the cur duplicate point group
+                            Point_New=[X_New,Y_New] #Point_New:-List, Point_New, The new point that is in the center of the 2 duplicate points, that will be replacing the 2 duplicate points
+                            #print "Point_New, ", Point_New
+                            Point_L_Cor.append(Point_New) #Appens the new point onto the Point_List_Corrected in place of the 2 duplicate points
+        else:
+            Point_L_Cor=Point_L
+        print("Point_L_Cor: ", Point_L_Cor)
         """
         This Part of the Code finds the Corner Groups in index form (ref. Point_L_Cor) that are the corners of the polygon and uses each indivdual group to create a single midpoint in the center of each Corner Group that will be used to find the distances between Corner Groups
         """
@@ -155,55 +159,145 @@ def Simple_Region_Generator (fname,evtfpath,outpath):
                     #print Cur_Dist_With_P
                     Dist_L_With_P.append(Cur_Dist_With_P) #Appends the Current_Distance_With_Point to the Distance_List_With_Points
                     #print Dist_L_With_P
-        #print Dist_L
+        print("Dist_L: ", Dist_L)
+        print("Dist_L_With_P: ", Dist_L_With_P)
         Dist_Min=min(Dist_L) #Dist_Min:-numpy.float64, Distance_Minimum, The minimum distance between any 2 differnt points in the current polygon
+        print("Dist_Min: ", Dist_Min)
         #print type(Dist_Min)
         #print Dist_Min
         #for Dist in Dist_L:
             #if (Dist<(3.0*Dist_Min)):
                 #Min_Dist_L.append(Dist_Min)
-        for Dist_W_P in Dist_L_With_P: #Dist_W_P:-List, Distance_With_Points, The current distance with point indexs (indexs ref. Point_L_Cor) in Distance_List_With_Points
-            Dist=Dist_W_P[2] #Dist:-numpy.float64, Distance, The current distance in the current Distance_With_Points
-            #print type(Dist)
-            if (Dist<(3.0*Dist_Min)): #Checks to see the the current two points selected in the Distance_List_With_Points are close enough that they have to be a "Corner" in the Octagonal polygon, ie. the 2 points can be replaced by the corner of the simple region box
-                Cur_Min_i=Dist_W_P[0] #Cur_Min_i:-int, Current_Minimum_i, The current i index refering to the Point_L_Cor that is the index of the first point making up the current Corner Group
-                Cur_Min_j=Dist_W_P[1] #Cur_Min_j:-int, Current_Minimum_j, The current j index refering to the Point_L_Cor that is the index of the second point making up the current Corner Group
-                Cur_Min_Group=[Cur_Min_i,Cur_Min_j] #Cur_Min_Group:-List, Currnet_Minimum_Group, The list of indexs (ref. Point_L_Cor) that make up a Corner in the Octagonal polygon, The name of this list is a "Corner Group"
-                Min_Dist_L.append(Dist) #Appends the current distance associated with the current Corner Group
-                Min_P_L.append(Cur_Min_Group) #Appends the current points indexs (ref. Point_L_Cor) of the Curent Corner Group to the Cur_Min_Group
-
-
-        #print Min_Dist_L
-        #print Min_P_L #Need to eliminate duplicate groups  Ex. [1, 2], [2, 1]
-        Min_P_L_Cor=Min_P_L #Min_P_L_Cor:-List, Minimum_Points_List_Corrected, The list of Corner Groups in index form that have (or will at this line 173) all reversed duplicates removed
-        for Min_G in Min_P_L: #Min_G:-List, Minimum_Group, The current "Minimum_Group" aka. the current Corner Group in index form (ref. Point_L_Cor)
-            Min_G_Rev=Min_G[::-1] #Min_G_Rev:-List, Minimum_Group_Reversed, The reverse duplicate of the current Corner Group in index form (ref. Point_L_Cor)
-            Min_P_L_Cor.remove(Min_G_Rev) #Removes the current reverse duplicate Corner Group from Min_P_L_Cor
-        #print Min_P_L_Cor
-        Midpoint_L=[] #Midpoint_L:-List, Midpoint_List, The list of all Corner Group Midpoints
-        Midpoint_L_With_Groups=[] #Midpoint_L_With_Groups:-List, Midpoint_List_With_Groups, The list of all Corner Group Midpoints with the Corner Group in index (ref. Point_L_Cor) form attached onto each midpoint
-        for Cur_Group in Min_P_L_Cor: #Cur_Group:-list, Current_Group, The current Corner Group
-            Point_One_Inx=Cur_Group[0] #Point_One_Inx:-int, Point_One_Index, The index (ref. Point_L_Cor) that is the index for the first point in the Current Corner Group
-            Point_Two_Inx=Cur_Group[1] #Point_Two_Inx:-int, Point_Two_Index, The index (ref. Point_L_Cor) that is the index for the second point in the Current Corner Group
-            Point_One=Point_L_Cor[Point_One_Inx] #Point_One:-List, Point_One, The first point in the current Corner Group
-            Point_Two=Point_L_Cor[Point_Two_Inx] #Point_Two:-List, Point_Two, The second point in the current Corner Group
-            #print Point_One
-            #print Point_Two
-            X_One=Point_One[0] #X_One:-float, X_One, The X value in pixels of the first point in the current Corner Group
-            Y_One=Point_One[1] #Y_One:-float, Y_One, The Y value in pixels of the first point in the current Corner Group
-            X_Two=Point_Two[0] #X_Two:-float, X_Two, The X value in pixels of the second point in the current Corner Group
-            Y_Two=Point_Two[1] #Y_Two:-float, Y_Two, The Y value in pixels of the second point in the current Corner Group
-            X_Mid=(X_One+X_Two)/2.0 #X_Mid:-float, X_Middle, The X point of the new point that will be directly inbetween the two points making up the current Corner Group
-            Y_Mid=(Y_One+Y_Two)/2.0 #Y_Mid:-float, Y_Middle, The Y point of the new point that will be directly inbetween the two points making up the current Corner Group
-            Point_Mid=[X_Mid,Y_Mid] #Point_Mid:-List, Point_Middle, The midpoint of the current Corner Group
-            Point_Mid_With_Groups=[X_Mid,Y_Mid,Cur_Group] #Point_Mid_With_Groups:-List, Point_Middle_With_Groups, The Midpoint of the current Corner Group with the Current Corner Group in index form (ref. Point_L_Cor) attached to the list making the current midpoint
-            Midpoint_L.append(Point_Mid) #Appends the Midpoint of the current Corner Group to the Midpoint List #Need to attach Groups
-            Midpoint_L_With_Groups.append(Point_Mid_With_Groups) #Appends the current Corner Group with the Current Corner Group in index form (ref. Point_L_Cor) attached, to the Midpoint_L_With_Groups
-        #print Midpoint_L
+        ###Start Modifying Code Here!
+        if(Simple_Poly_Bool):
+            for Dist_W_P in Dist_L_With_P: #Dist_W_P:-List, Distance_With_Points, The current distance with point indexs (indexs ref. Point_L_Cor) in Distance_List_With_Points
+                Dist=Dist_W_P[2] #Dist:-numpy.float64, Distance, The current distance in the current Distance_With_Points
+                #print type(Dist)
+                if (Dist<(3.0*Dist_Min)): #Checks to see the the current two points selected in the Distance_List_With_Points are close enough that they have to be a "Corner" in the Octagonal polygon, ie. the 2 points can be replaced by the corner of the simple region box
+                    Cur_Min_i=Dist_W_P[0] #Cur_Min_i:-int, Current_Minimum_i, The current i index refering to the Point_L_Cor that is the index of the first point making up the current Corner Group
+                    Cur_Min_j=Dist_W_P[1] #Cur_Min_j:-int, Current_Minimum_j, The current j index refering to the Point_L_Cor that is the index of the second point making up the current Corner Group
+                    Cur_Min_Group=[Cur_Min_i,Cur_Min_j] #Cur_Min_Group:-List, Currnet_Minimum_Group, The list of indexs (ref. Point_L_Cor) that make up a Corner in the Octagonal polygon, The name of this list is a "Corner Group"
+                    Min_Dist_L.append(Dist) #Appends the current distance associated with the current Corner Group
+                    Min_P_L.append(Cur_Min_Group) #Appends the current points indexs (ref. Point_L_Cor) of the Curent Corner Group to the Cur_Min_Group
+            #print Min_Dist_L
+            print("Min_P_L: ", Min_P_L) #Need to eliminate duplicate groups  Ex. [1, 2], [2, 1]
+            Min_P_L_Cor=Min_P_L #Min_P_L_Cor:-List, Minimum_Points_List_Corrected, The list of Corner Groups in index form that have (or will at this line 173) all reversed duplicates removed
+            for Min_G in Min_P_L: #Min_G:-List, Minimum_Group, The current "Minimum_Group" aka. the current Corner Group in index form (ref. Point_L_Cor)
+                Min_G_Rev=Min_G[::-1] #Min_G_Rev:-List, Minimum_Group_Reversed, The reverse duplicate of the current Corner Group in index form (ref. Point_L_Cor)
+                Min_P_L_Cor.remove(Min_G_Rev) #Removes the current reverse duplicate Corner Group from Min_P_L_Cor
+            print("Min_P_L_Cor: ", Min_P_L_Cor)
+            Midpoint_L=[] #Midpoint_L:-List, Midpoint_List, The list of all Corner Group Midpoints
+            Midpoint_L_With_Groups=[] #Midpoint_L_With_Groups:-List, Midpoint_List_With_Groups, The list of all Corner Group Midpoints with the Corner Group in index (ref. Point_L_Cor) form attached onto each midpoint
+            for Cur_Group in Min_P_L_Cor: #Cur_Group:-list, Current_Group, The current Corner Group
+                Point_One_Inx=Cur_Group[0] #Point_One_Inx:-int, Point_One_Index, The index (ref. Point_L_Cor) that is the index for the first point in the Current Corner Group
+                Point_Two_Inx=Cur_Group[1] #Point_Two_Inx:-int, Point_Two_Index, The index (ref. Point_L_Cor) that is the index for the second point in the Current Corner Group
+                Point_One=Point_L_Cor[Point_One_Inx] #Point_One:-List, Point_One, The first point in the current Corner Group
+                Point_Two=Point_L_Cor[Point_Two_Inx] #Point_Two:-List, Point_Two, The second point in the current Corner Group
+                #print Point_One
+                #print Point_Two
+                X_One=Point_One[0] #X_One:-float, X_One, The X value in pixels of the first point in the current Corner Group
+                Y_One=Point_One[1] #Y_One:-float, Y_One, The Y value in pixels of the first point in the current Corner Group
+                X_Two=Point_Two[0] #X_Two:-float, X_Two, The X value in pixels of the second point in the current Corner Group
+                Y_Two=Point_Two[1] #Y_Two:-float, Y_Two, The Y value in pixels of the second point in the current Corner Group
+                X_Mid=(X_One+X_Two)/2.0 #X_Mid:-float, X_Middle, The X point of the new point that will be directly inbetween the two points making up the current Corner Group
+                Y_Mid=(Y_One+Y_Two)/2.0 #Y_Mid:-float, Y_Middle, The Y point of the new point that will be directly inbetween the two points making up the current Corner Group
+                Point_Mid=[X_Mid,Y_Mid] #Point_Mid:-List, Point_Middle, The midpoint of the current Corner Group
+                Point_Mid_With_Groups=[X_Mid,Y_Mid,Cur_Group] #Point_Mid_With_Groups:-List, Point_Middle_With_Groups, The Midpoint of the current Corner Group with the Current Corner Group in index form (ref. Point_L_Cor) attached to the list making the current midpoint
+                Midpoint_L.append(Point_Mid) #Appends the Midpoint of the current Corner Group to the Midpoint List #Need to attach Groups
+                Midpoint_L_With_Groups.append(Point_Mid_With_Groups) #Appends the current Corner Group with the Current Corner Group in index form (ref. Point_L_Cor) attached, to the Midpoint_L_With_Groups
+        else:
+            Index_L=[]
+            for Dist_W_P in Dist_L_With_P: #Dist_W_P:-List, Distance_With_Points, The current distance with point indexs (indexs ref. Point_L_Cor) in Distance_List_With_Points
+                Cur_Index=Dist_W_P[0]
+                if(Cur_Index not in Index_L):
+                    Index_L.append(Cur_Index)
+            print("Index_L: ", Index_L)
+            """
+            Corner_P_L=[]
+            for Index in Index_L:
+                Cur_Corner_L=[]
+                for Dist_W_P in Dist_L_With_P: #Dist_W_P:-List, Distance_With_Points, The current distance with point indexs (indexs ref. Point_L_Cor) in Distance_List_With_Points
+                    Cur_Index=Dist_W_P[0]
+                    if(Cur_Index==Index):
+                        Dist=Dist_W_P[2] #Dist:-numpy.float64, Distance, The current distance in the current Distance_With_Points
+                        #print type(Dist)
+                        if(Dist<50.0): #Checks to see the the current two points selected in the Distance_List_With_Points are close enough that they have to be a "Corner" in the arbitary square-like polygon, ie. the arbitary amount of points within 50 pixes of each other that can be replaced by the corner of the simple region box
+                            Cur_Min_i=Dist_W_P[0] #Cur_Min_i:-int, Current_Minimum_i, The current i index refering to the Point_L_Cor that is the index of the first point making up the current Corner Group
+                            Cur_Min_j=Dist_W_P[1] #Cur_Min_j:-int, Current_Minimum_j, The current j index refering to the Point_L_Cor that is the index of the second point making up the current Corner Group
+                            Cur_Min_Group=[Cur_Min_i,Cur_Min_j] #Cur_Min_Group:-List, Currnet_Minimum_Group, The list of indexs (ref. Point_L_Cor) that make up a Corner in the Octagonal polygon, The name of this list is a "Corner Group"
+                            #Cur_Corner_L.append(Cur_Min_Group)
+                            #Min_Dist_L.append(Dist) #Appends the current distance associated with the current Corner Group
+                            Cur_Corner_L.append(Cur_Min_Group) #Appends the current points indexs (ref. Point_L_Cor) of the Curent Corner Group to the Cur_Min_Group
+            """
+            Dist_W_P_Reduced=[]
+            for Dist_W_P in Dist_L_With_P: #Dist_W_P:-List, Distance_With_Points, The current distance with point indexs (indexs ref. Point_L_Cor) in Distance_List_With_Points
+                Cur_Index=Dist_W_P[0]
+                Dist=Dist_W_P[2] #Dist:-numpy.float64, Distance, The current distance in the current Distance_With_Points
+                #print type(Dist)
+                if(Dist<50.0): #Checks to see the the current two points selected in the Distance_List_With_Points are close enough that they have to be a "Corner" in the arbitary square-like polygon, ie. the arbitary amount of points within 50 pixes of each other that can be replaced by the corner of the simple region box
+                    Dist_W_P_Reduced.append(Dist_W_P)
+            print("Dist_W_P_Reduced: ", Dist_W_P_Reduced)
+            Used_Index_L=[]
+            Corner_Points_L=[]
+            for Dist_W_P in Dist_W_P_Reduced:
+                Cur_Index=Dist_W_P[0]
+                if(Cur_Index not in Used_Index_L):
+                    Cur_Corner_Points_L=[]
+                    Used_Index_L.append(Cur_Index)
+                    for Dist_W_P_Test in Dist_W_P_Reduced:
+                        Cur_Index_Test=Dist_W_P_Test[0]
+                        if(Cur_Index==Cur_Index_Test):
+                            Cur_Min_i=Dist_W_P[0] #Cur_Min_i:-int, Current_Minimum_i, The current i index refering to the Point_L_Cor that is the index of the first point making up the current Corner Group
+                            Cur_Min_j=Dist_W_P_Test[1] #Cur_Min_j:-int, Current_Minimum_j, The current j index refering to the Point_L_Cor that is the index of the second point making up the current Corner Group
+                            Cur_Min_Group=[Cur_Min_i,Cur_Min_j] #Cur_Min_Group:-List, Currnet_Minimum_Group, The list of indexs (ref. Point_L_Cor) that make up a Corner in the Octagonal polygon, The name of this list is a "Corner Group"
+                            if((Cur_Min_j not in Used_Index_L)):
+                                Cur_Corner_Points_L.append(Cur_Min_Group)
+                                Used_Index_L.append(Cur_Min_j)
+                    Corner_Points_L.append(Cur_Corner_Points_L)
+            print("Corner_Points_L: ", Corner_Points_L)
+            Midpoint_L=[] #Midpoint_L:-List, Midpoint_List, The list of all Corner Group Midpoints
+            Midpoint_L_With_Groups=[] #Midpoint_L_With_Groups:-List, Midpoint_List_With_Groups, The list of all Corner Group Midpoints with the Corner Group in index (ref. Point_L_Cor) form attached onto each midpoint
+            #Corner_Index=0
+            for Corner_Points in Corner_Points_L:
+                Cur_Corner=[]
+                Cur_X_L=[]
+                Cur_Y_L=[]
+                for Corner_Point in Corner_Points:
+                    #Point_One_Inx=Corner_Point[0] #Point_One_Inx:-int, Point_One_Index, The index (ref. Point_L_Cor) that is the index for the first point in the Current Corner Group
+                    Point_Two_Inx=Corner_Point[1] #Point_Two_Inx:-int, Point_Two_Index, The index (ref. Point_L_Cor) that is the index for the second point in the Current Corner Group
+                    #Point_One=Point_L_Cor[Point_One_Inx] #Point_One:-List, Point_One, The first point in the current Corner Group
+                    Point_Two=Point_L_Cor[Point_Two_Inx] #Point_Two:-List, Point_Two, The second point in the current Corner Group
+                    #X_One=Point_One[0] #X_One:-float, X_One, The X value in pixels of the first point in the current Corner Group
+                    #Y_One=Point_One[1] #Y_One:-float, Y_One, The Y value in pixels of the first point in the current Corner Group
+                    X_Two=Point_Two[0] #X_Two:-float, X_Two, The X value in pixels of the second point in the current Corner Group
+                    Y_Two=Point_Two[1] #Y_Two:-float, Y_Two, The Y value in pixels of the second point in the current Corner Group
+                    Cur_X_L.append(X_Two)
+                    Cur_Y_L.append(Y_Two)
+                Cur_X_A=np.array(Cur_X_L)
+                Cur_Y_A=np.array(Cur_Y_L)
+                X_Mid=np.mean(Cur_X_A)
+                Y_Mid=np.mean(Cur_Y_A)
+                Point_Mid=[X_Mid,Y_Mid] #Point_Mid:-List, Point_Middle, The midpoint of the current Corner Group
+                Cur_Group="Filler Value"
+                Point_Mid_With_Groups=[X_Mid,Y_Mid,Cur_Group] #Point_Mid_With_Groups:-List, Point_Middle_With_Groups, The Midpoint of the current Corner Group with the Current Corner Group in index form (ref. Point_L_Cor) attached to the list making the current midpoint
+                Midpoint_L.append(Point_Mid) #Appends the Midpoint of the current Corner Group to the Midpoint List #Need to attach Groups
+                Midpoint_L_With_Groups.append(Point_Mid_With_Groups) #Appends the current Corner Group with the Current Corner Group in index form (ref. Point_L_Cor) attached, to the Midpoint_L_With_Groups
+                #Corner_Index=Corner_Index+1
+            """
+            print("Corner_P_L: ", Corner_P_L)
+            Corner_P_L_Cor=Corner_P_L #Corner_P_L_Cor:-List, Minimum_Points_List_Corrected, The list of Corner Groups in index form that have (or will at this line 230) all reversed duplicates removed
+            for Corner_G in Corner_P_L: #Corner_G:-List, Minimum_Group, The current "Minimum_Group" aka. the current Corner Group in index form (ref. Point_L_Cor)
+                Corner_G_Rev=Corner_G[::-1] #Corner_G_Rev:-List, Minimum_Group_Reversed, The reverse duplicate of the current Corner Group in index form (ref. Point_L_Cor)
+                Corner_P_L_Cor.remove(Corner_G_Rev) #Removes the current reverse duplicate Corner Group from Corner_P_L_Cor
+            print("Corner_P_L_Cor: ", Corner_P_L_Cor)
+            """
+        ###Must Output equlivlent Midpoint List (Midpoint_L)###
+        print("Midpoint_L: ", Midpoint_L)
         Midpoint=np.mean(Midpoint_L, axis=0) #Midpoint:-numpy.ndarray, Midpoint, The midpoint of the current polygon
-        #print "Midpoint ", Midpoint
+        print("Midpoint: ", Midpoint)
         #print type(Midpoint)
-        #print Midpoint_L_With_Groups
+        print("Midpoint_L_With_Groups: ", Midpoint_L_With_Groups)
+        #raise
         """
         This part of the code uses the Midpoint_L_With_Groups to create "Big Groups" which are groups of corner groups and maybe only one of 2 types of Big Group, Short Big Groups and Huge Big Groups, Addtionally the code finds the distance between the Corner Groups for each Big Group
         """
@@ -249,7 +343,7 @@ def Simple_Region_Generator (fname,evtfpath,outpath):
             #print type(Cur_M_D)
             if(Cur_M_D<1.2*Dist_Mid_Min): #Checks to see if the current distance is small enough to have to be "Short Big Group", Since the polygon shape is symetric there are really only 2 posssible distances that any 2 Corner Groups can be from one another, The short one of these is called the "Short Big Group Distance" and the associated "Short Big Group" where the Short Big Group Distance comes from is one of the sides of the Octagonal Regtangle polygon (Where the Corner Groups are the corners of the rectange), The other distance the "Huge Big Group Distance" (I am running out of words to discribe size here) reperesnets the distance across the Octagonal Regtangle polygon from one corner group to another and is not used in the code
                 Min_Dist_L_With_P_Mid.append(Cur_D_W_Group) #Appends the Current_Distance_With_Group that must be a Short Big Group Distance to the Minimum_Distance_List_With_Points_Midpoint
-        #print Min_Dist_L_With_P_Mid #Need to eliminate duplicates
+        print("Min_Dist_L_With_P_Mid: ", Min_Dist_L_With_P_Mid) #Need to eliminate duplicates
         #print len(Min_Dist_L_With_P_Mid)
         Min_P_Mid_L=[] #Min_P_Mid_L:-List, Minimum_Points_Midpoint_List, The list of all Short Big Groups in index form (ref. Midpoint_L_With_Groups) in the current polygon
         for M_D_W_P_M in Min_Dist_L_With_P_Mid: #M_D_W_P_M:-List, Minimum_Distance_With_Points_Midpoint, The current Short Big Group Distance with the associated Short Big Group in index form (ref. Midpoint_L_With_Groups) attached in the form [i,j,Short Big Group Distance]
@@ -264,10 +358,12 @@ def Simple_Region_Generator (fname,evtfpath,outpath):
             Min_P_Mid_L.append(Min_Group) #Appends the current Short Big Group in index form (ref. Midpoint_L_With_Groups) to the Min_P_Mid_L
         #print Min_P_Mid_L
         Min_P_Mid_L_Cor=Min_P_Mid_L #Min_P_Mid_L_Cor:-List, Minimum_Points_Midpoint_List_Corrected, The list of all Short Big Groups in index form (ref. Midpoint_L_With_Groups) in the current polygon with (or for this line will have) all reverse duplicates removed
+        print("Min_P_Mid_L_Cor: ", Min_P_Mid_L_Cor)
         for Min_Gr in Min_P_Mid_L: #Min_Gr:-List, Minimum_Group, The current Short Big Group in index form (ref. Midpoint_L_With_Groups)
             Min_Gr_Rev=Min_Gr[::-1] #Min_Gr_Rev:-List, Minimum_Group_Reversed, The reverse of the current Short Big Group in index form (ref. Midpoint_L_With_Groups)
+            print("Min_Gr_Rev: ", Min_Gr_Rev)
             Min_P_Mid_L_Cor.remove(Min_Gr_Rev) #Removes the reverse of the current Short Big Group in index form (ref. Midpoint_L_With_Groups) from Min_P_Mid_L_Cor
-        #print Min_P_Mid_L_Cor
+        print("Min_P_Mid_L_Cor After: ", Min_P_Mid_L_Cor)
         """
         The list of all Short Big Groups in the current polygon with the Corner Groups in the Short Big Groups in index form (ref. Point_L_Cor)
         """
@@ -385,7 +481,7 @@ def Simple_Region_Generator (fname,evtfpath,outpath):
         Each element refers to a single CCD polygon, These CCD polygons are overlaping and the ultimate end product simple regions are the result of combining the simple CCD regions into larger simple region boxes that cover multible CCDs
         The Shape_Data_L is referenced consistanly after this point in the code
         """
-        #print Angle
+        print("Angle: ", Angle)
         Midpoint_X=Midpoint[0] #Midpoint_X:-numpy.float64, Midpoint_X, The X value of the midpoint of the current simple region CCD box
         Midpoint_Y=Midpoint[1] #Midpoint_X:-numpy.float64, Midpoint_Y, The Y value of the midpoint of the current simple region CCD box
         Cur_Shape='box('+str(Midpoint_X)+','+str(Midpoint_Y)+','+ str(D) +','+str(D)+','+str(Angle)+')' + '\n' #Cur_Shape:-str, Current_Shape, The shape string of the current CCD polygon
@@ -396,7 +492,7 @@ def Simple_Region_Generator (fname,evtfpath,outpath):
         #print type(Tele_Rot_Ang)
         Angle_Tele=-Tele_Rot_Ang #Angle_Tele:-float, Angle_Telescope, The angle at which the simple region box will be rotated in degrees, this is the negitive of Tele_Rot_Ang
         Cur_Shape_Tele='box('+str(Midpoint_X)+','+str(Midpoint_Y)+','+ str(D) +','+str(D)+','+str(Angle_Tele)+')' + '\n' #Cur_Shape_Tele:-str, Current_Shape_Telescope, The shape string of the current CCD polygon with the Angle_Tele used instead of Angle
-        #print Angle_Tele
+        print("Angle_Tele: ", Angle_Tele)
         Angle_Tele_Rad=np.radians(Angle_Tele) #Angle_Tele_Rad:-numpy.float64, Angle_Telescope_Radians, The angle at which the simple region box will be rotated in radians
         #print Angle_Tele_Rad
         #print type(Angle_Tele_Rad)
@@ -1141,3 +1237,5 @@ def Simple_Region_Generator (fname,evtfpath,outpath):
 #Simple_Region_Generator('The_Ultimate_Torture_Test_2.txt','acisf03931_repro_evt2.fits')
 #Simple_Region_Generator('acisf03931_repro_CCD_Regions','acisf03931_repro_evt2.fits')
 #Simple_Region_Generator('acisf13830_repro_CCD_Regions','acisf13830_repro_evt2.fits')
+#Simple_Region_Generator('The_Ultimate_Torture_Test.txt','/opt/xray/anthony/expansion_backup/ObsIDs/10125/new/acisf10125_repro_evt2.fits','/opt/xray/anthony/Research_Git/Simple_Region_Generator/')
+#Simple_Region_Generator('The_Ultimate_Torture_Test.txt','/opt/xray/anthony/expansion_backup/ObsIDs/10125/primary/acisf10125N003_evt2.fits.gz','/opt/xray/anthony/Research_Git/Simple_Region_Generator/')
