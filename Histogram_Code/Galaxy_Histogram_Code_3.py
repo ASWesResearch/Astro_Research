@@ -8,6 +8,7 @@ from os import system
 from astropy.io import fits
 from astroquery.ned import Ned
 import sys
+import pandas as pd
 path_GR=os.path.realpath('../')
 #print "path_GR=",path_GR
 sys.path.append(os.path.abspath(path_GR))
@@ -55,7 +56,7 @@ def Area_GC_R_N_F_2(Gname):
     #data = ascii.read(filepath) #data:-astropy.table.table.Table, data, The data from the SQL_Standard_File
     Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2")
     if(Evt2_File_H_L==False):
-        print "Invalid Galaxy"
+        print("Invalid Galaxy")
         return
     Galaxy_Obs_ID_L=[]
     for Evt2_File_L in Evt2_File_H_L:
@@ -236,7 +237,7 @@ def Area_GC_R_N_F_2(Gname):
         directory_Hist=os.path.dirname(path_Hist)
         if not os.path.exists(directory_Hist):
             os.makedirs(directory_Hist)
-        print "path_Hist=",path_Hist
+        print("path_Hist=",path_Hist)
         #os.chdir(path_Hist)
         path_Obs_ID=path_Hist+str(Obs_ID)+'/'
         directory_Obs_ID=os.path.dirname(path_Obs_ID)
@@ -291,7 +292,7 @@ def Area_GC_R_N(Gname):
     #data = ascii.read(filepath) #data:-astropy.table.table.Table, data, The data from the SQL_Standard_File
     Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2")
     if(Evt2_File_H_L==False):
-        print "Invalid Galaxy"
+        print("Invalid Galaxy")
         return
     Galaxy_Obs_ID_L=[]
     for Evt2_File_L in Evt2_File_H_L:
@@ -316,7 +317,7 @@ def Area_GC_R_N(Gname):
     #print type(Obs_ID_A)
     #Obs_ID_L=list(Obs_ID_A) #Obs_ID_L:-List, Observation_Idenification_List, The list containing all Observation IDs in the SQL_Standard_File (So it is indexable)
     Obs_ID_A=data["OBSID"] #Obs_ID_A:-astropy.table.column.Column, Observation_Idenification_Array, The array containing all Observation IDs in the SQL_Standard_File (not indexable)
-    print type(Obs_ID_A)
+    print(type(Obs_ID_A))
     Obs_ID_L=list(Obs_ID_A) #Obs_ID_L:-List, Observation_Idenification_List, The list containing all Observation IDs in the SQL_Standard_File (So it is indexable)
     #print "Obs_ID_L ", Obs_ID_L
     for Obs_ID in Galaxy_Obs_ID_L:
@@ -491,7 +492,7 @@ def Area_GC_R_N(Gname):
         #print "path_Hist=",path_Hist
         #os.chdir(path_Hist)
         path_Obs_ID=path_Hist+str(Obs_ID)+'/'
-        print "path_Obs_ID : ",path_Obs_ID
+        print("path_Obs_ID : ",path_Obs_ID)
         directory_Obs_ID=os.path.dirname(path_Obs_ID)
         if not os.path.exists(directory_Obs_ID):
             os.makedirs(directory_Obs_ID)
@@ -505,9 +506,54 @@ def Area_GC_R_N(Gname):
 
 #Area_GC_R_N('NGC4258')
 #plt.savefig(Gname_Modifed+'_Ang.png') #Saves angluar histogram figure
+def Fiter_By_ObsID(Data,ObsID):
+    #Data=pd.read_csv(Standard_File_Fpath)
+    Data_Matched=Data[(Data["ObsID"]==ObsID)]
+    return Data_Matched
+def Galaxy_Histogram_Generator(Gname,Filepath="../SQL_Standard_File/Source_Flux_All_Modified_3.csv",Key="Source_Distance_From_GC"):
+    dir = os.path.dirname(__file__)
+    path=os.path.realpath(Filepath)
+    Data=pd.read_csv(path)
+    Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2")
+    if(Evt2_File_H_L==False):
+        print("Invalid Galaxy")
+        return
+    Galaxy_ObsID_L=[]
+    for Evt2_File_L in Evt2_File_H_L:
+        Cur_Galaxy_ObsID=Evt2_File_L[0]
+        Galaxy_ObsID_L.append(Cur_Galaxy_ObsID)
+    print("Galaxy_ObsID_L: ", Galaxy_ObsID_L)
+    for ObsID in Galaxy_ObsID_L:
+        Data_Reduced=Fiter_By_ObsID(Data,ObsID)
+        Distance_A=Data_Reduced[Key]
+        Hist_A=plt.hist(Distance_A)
+        Bin_Hight_A=Hist_A[0]
+        Bin_Hight_Max=max(Bin_Hight_A)
+        D25_S_Maj_Deg=D25_Finder.D25_Finder(Gname)
+        D25_S_Maj_Arcmin=D25_S_Maj_Deg*60.0
+        plt.vlines(D25_S_Maj_Arcmin,0,Bin_Hight_Max,color='red') #Plots red line at D25
+        ##plt.plot()
+        path_2=os.path.realpath('../Master_Code/Master_Output/') #Goes to Master_Output folder, which will hold all the data calculated for the galaxies including the histogram pictures
+        Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
+        path_3=path_2+'/'+Gname_Modifed+'/'
+        directory = os.path.dirname(path_3)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        path_Hist=path_3+'Histograms/'
+        directory_Hist=os.path.dirname(path_Hist)
+        if not os.path.exists(directory_Hist):
+            os.makedirs(directory_Hist)
+        path_ObsID=path_Hist+str(ObsID)+'/'
+        print("path_ObsID : ",path_ObsID)
+        directory_ObsID=os.path.dirname(path_ObsID)
+        if not os.path.exists(directory_ObsID):
+            os.makedirs(directory_ObsID)
+        plt.savefig(path_ObsID + Gname_Modifed+'_'+str(ObsID)+'_Ang.png') #Saves angluar histogram figure
+        plt.close()
 def Driver_Code(Gname):
-    Area_GC_R_N_F_2(Gname)
-    Area_GC_R_N(Gname)
+    ##Area_GC_R_N_F_2(Gname)
+    ##Area_GC_R_N(Gname)
+    Galaxy_Histogram_Generator(Gname)
 
 #Driver_Code('NGC4258')
 #Driver_Code('NGC 4649')
