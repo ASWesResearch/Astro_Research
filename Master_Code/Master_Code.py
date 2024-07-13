@@ -56,10 +56,10 @@ def Pipeline_A(Gname_L):
     Galaxy_No_Obs_B_L=[]
     for Gname in Gname_L:
         #Pipeline_A Code
-        print "Gname A: ", Gname
+        print("Gname A: ", Gname)
         Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2")
         if(Evt2_File_H_L==False):
-            print "Invalid Galaxy"
+            print("Invalid Galaxy")
             Galaxy_No_Obs_B_L.append(Gname)
             continue
         """
@@ -94,200 +94,207 @@ def Pipeline_B(Gname_L):
     Galaxy_No_Obs_B_L=[]
     for Gname in Gname_L:
         #Pipeline_B Code
-        try:
-            print "Gname B: ", Gname
-            """
-            Gname_List=Gname.split(" ")
-            print "Gname_List: ", Gname_List
-            if(len(Gname_List)>1):
-                Gname_Modifed=Gname_List[0]+"_"+Gname_List[1] #Adds underscore to remove space from "NGC #" to change to "NGC_#" if there is a space in the name
-            else:
-                Gname_Modifed=Gname # Does nothing if the galaxy name has no space, ie. NGC#, For example NGC253 instead of NGC 253 or NGC_253
-            """
-            Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2")
-            if(Evt2_File_H_L==False):
-                print "Invalid Galaxy"
-                Galaxy_No_Obs_B_L.append(Gname)
-                continue
-            Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
-            #print "Gname_Modifed ", Gname_Modifed
-            path_2=os.path.realpath('../Master_Code/Master_Output/')
-            path_3=path_2+'/'+Gname_Modifed+'/'
-            directory = os.path.dirname(path_3)
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-            #os.chdir(path_3) #Goes to Current Galaxies Folder
-            path_Area=path_3+'Area_Lists/'
-            directory_Area=os.path.dirname(path_Area)
-            if not os.path.exists(directory_Area):
-                os.makedirs(directory_Area)
-            #print "path_Area=",path_Area
-            #os.chdir(path_Area)
-            """
-            Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2")
-            Reg_File_H_L=File_Query_Code_5.File_Query(Gname,"reg",".reg")
-            print "Evt2_File_H_L ", Evt2_File_H_L
-            print "Reg_File_H_L ", Reg_File_H_L
-            for Evt2_File_L in Evt2_File_H_L:
-                Cur_Evt2_ObsID=Evt2_File_L[0]
-                Cur_Evt2_Filepath=Evt2_File_L[1]
-                for Reg_File_L in Reg_File_H_L:
-                    Cur_Reg_ObsID=Reg_File_L[0]
-                    Cur_Reg_Filepath=Reg_File_L[1]
-                    if(Cur_Evt2_ObsID==Cur_Reg_ObsID):
-                        #print "Test"
-                        path_Obs=path_Area+'/'+str(Cur_Evt2_ObsID)+'/'
-                        directory_Obs=os.path.dirname(path_Obs)
-                        if not os.path.exists(directory_Obs):
-                            os.makedirs(directory_Obs)
-                        os.chdir(path_Obs)
-                        print "THE PWD AT END IS :"
-                        system('pwd')
-                        XPA_DS9_Region_Generator_3.XPA_DS9_Region_Generator(Cur_Evt2_Filepath,Cur_Reg_Filepath)
-                        #Simple_Region_Generator_8.Simple_Region_Generator('foo2','acisf03931_repro_evt2.fits')
-            path_5=os.path.realpath('../../../../')
-            os.chdir(path_5)
-            #print "THE PWD AT END IS :"
-            #system('pwd')
-            #Need to add the rest of Pipeline B after XPA_DS9_Region_Generator
-            """
-            Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2")
-            #Reg_File_H_L=File_Query_Code_5.File_Query(Gname,"reg",".reg")
-            Fov_File_H_L=File_Query_Code_5.File_Query(Gname,"fov1")
-            #print "Evt2_File_H_L ", Evt2_File_H_L
-            #print "Fov_File_H_L ", Fov_File_H_L
-            for Evt2_File_L in Evt2_File_H_L:
-                Cur_Evt2_ObsID=Evt2_File_L[0]
-                Cur_Evt2_Filepath=Evt2_File_L[1]
-                for Fov_File_L in Fov_File_H_L:
-                    Cur_Fov_ObsID=Fov_File_L[0]
-                    Cur_Fov_Filepath=Fov_File_L[1]
-                    if(Cur_Evt2_ObsID==Cur_Fov_ObsID):
-                        print "Cur_Evt2_ObsID : ", Cur_Evt2_ObsID
-                        #print "Test"
-                        #path_Obs=path_Area+'/'+str(Cur_Evt2_ObsID)+'/'
-                        path_Obs=path_Area+str(Cur_Evt2_ObsID)+'/'
-                        directory_Obs=os.path.dirname(path_Obs)
-                        if not os.path.exists(directory_Obs):
-                            os.makedirs(directory_Obs)
-                        #os.chdir(path_Obs) #This os.chdir actullay effects the outcome of the code
-                        #print "path_Obs : ", path_Obs
-                        #print "THE PWD AT END IS :"
+        ##try:
+        print("Gname B: ", Gname)
+        """
+        Gname_List=Gname.split(" ")
+        print "Gname_List: ", Gname_List
+        if(len(Gname_List)>1):
+            Gname_Modifed=Gname_List[0]+"_"+Gname_List[1] #Adds underscore to remove space from "NGC #" to change to "NGC_#" if there is a space in the name
+        else:
+            Gname_Modifed=Gname # Does nothing if the galaxy name has no space, ie. NGC#, For example NGC253 instead of NGC 253 or NGC_253
+        """
+        Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2")
+        if(Evt2_File_H_L==False):
+            print("Invalid Galaxy")
+            Galaxy_No_Obs_B_L.append(Gname)
+            continue
+        Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
+        #print "Gname_Modifed ", Gname_Modifed
+        path_2=os.path.realpath('../Master_Code/Master_Output/')
+        path_3=path_2+'/'+Gname_Modifed+'/'
+        directory = os.path.dirname(path_3)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        #os.chdir(path_3) #Goes to Current Galaxies Folder
+        path_Area=path_3+'Area_Lists/'
+        directory_Area=os.path.dirname(path_Area)
+        if not os.path.exists(directory_Area):
+            os.makedirs(directory_Area)
+        #print "path_Area=",path_Area
+        #os.chdir(path_Area)
+        """
+        Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2")
+        Reg_File_H_L=File_Query_Code_5.File_Query(Gname,"reg",".reg")
+        print "Evt2_File_H_L ", Evt2_File_H_L
+        print "Reg_File_H_L ", Reg_File_H_L
+        for Evt2_File_L in Evt2_File_H_L:
+            Cur_Evt2_ObsID=Evt2_File_L[0]
+            Cur_Evt2_Filepath=Evt2_File_L[1]
+            for Reg_File_L in Reg_File_H_L:
+                Cur_Reg_ObsID=Reg_File_L[0]
+                Cur_Reg_Filepath=Reg_File_L[1]
+                if(Cur_Evt2_ObsID==Cur_Reg_ObsID):
+                    #print "Test"
+                    path_Obs=path_Area+'/'+str(Cur_Evt2_ObsID)+'/'
+                    directory_Obs=os.path.dirname(path_Obs)
+                    if not os.path.exists(directory_Obs):
+                        os.makedirs(directory_Obs)
+                    os.chdir(path_Obs)
+                    print "THE PWD AT END IS :"
+                    system('pwd')
+                    XPA_DS9_Region_Generator_3.XPA_DS9_Region_Generator(Cur_Evt2_Filepath,Cur_Reg_Filepath)
+                    #Simple_Region_Generator_8.Simple_Region_Generator('foo2','acisf03931_repro_evt2.fits')
+        path_5=os.path.realpath('../../../../')
+        os.chdir(path_5)
+        #print "THE PWD AT END IS :"
+        #system('pwd')
+        #Need to add the rest of Pipeline B after XPA_DS9_Region_Generator
+        """
+        Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2")
+        #Reg_File_H_L=File_Query_Code_5.File_Query(Gname,"reg",".reg")
+        ##Fov_File_H_L=File_Query_Code_5.File_Query(Gname,"fov1")
+        #Fov_File_H_L=File_Query_Code_5.File_Query(Gname,"fov1",Primary_Bool=True)
+        Fov_File_H_L=File_Query_Code_5.File_Query(Gname,"fov1",Simon_Dir_Bool=True)
+        #print "Evt2_File_H_L ", Evt2_File_H_L
+        print("Fov_File_H_L: ", Fov_File_H_L)
+        for Evt2_File_L in Evt2_File_H_L:
+            Cur_Evt2_ObsID=Evt2_File_L[0]
+            Cur_Evt2_Filepath=Evt2_File_L[1]
+            for Fov_File_L in Fov_File_H_L:
+                Cur_Fov_ObsID=Fov_File_L[0]
+                Cur_Fov_Filepath=Fov_File_L[1]
+                if(Cur_Evt2_ObsID==Cur_Fov_ObsID):
+                    print("Cur_Evt2_ObsID : ", Cur_Evt2_ObsID)
+                    #print "Test"
+                    #path_Obs=path_Area+'/'+str(Cur_Evt2_ObsID)+'/'
+                    path_Obs=path_Area+str(Cur_Evt2_ObsID)+'/'
+                    directory_Obs=os.path.dirname(path_Obs)
+                    if not os.path.exists(directory_Obs):
+                        os.makedirs(directory_Obs)
+                    #os.chdir(path_Obs) #This os.chdir actullay effects the outcome of the code
+                    #print "path_Obs : ", path_Obs
+                    #print "THE PWD AT END IS :"
+                    #system('pwd')
+                    #print "CURRENT FOV FILEPATH IS :", Cur_Fov_Filepath
+                    Cur_Fov_Filename_L=Cur_Fov_Filepath.split("/")
+                    #print "Cur_FOV_Filename_L : ",Cur_Fov_Filename_L
+                    Cur_Fov_Filepath_No_Fname_L=Cur_Fov_Filepath.rsplit("/",1)
+                    #print "Cur_Fov_Filepath_No_Fname_L : ",Cur_Fov_Filepath_No_Fname_L
+                    Cur_Fov_Filepath_No_Fname=Cur_Fov_Filepath_No_Fname_L[0]
+                    #print "Cur_Fov_Filepath_No_Fname : ",Cur_Fov_Filepath_No_Fname
+                    Cur_Fov_Filename=Cur_Fov_Filename_L[len(Cur_Fov_Filename_L)-1]
+                    #print "Cur_Fov_Filename : ",Cur_Fov_Filename
+                    Cur_Fov_Filename_Ext_L=Cur_Fov_Filename.split(".")
+                    #print "Cur_Fov_Filename_Ext_L : ",Cur_Fov_Filename_Ext_L
+                    Cur_Fov_Filename_Ext=Cur_Fov_Filename_Ext_L[len(Cur_Fov_Filename_Ext_L)-1]
+                    #print "Cur_Fov_Filename_Ext : ", Cur_Fov_Filename_Ext
+                    if(Cur_Fov_Filename_Ext=="gz"): #Need to test this later with a compressed fits file
+                        Output_Fov_Filename=Cur_Fov_Filename_Ext_L[0]+"."+Cur_Fov_Filename_Ext_L[1]
+                        #os.chdir(path_Obs)
+                        #Cur_Fov_Filepath
+                        #os.chdir(Cur_Fov_Filepath_No_Fname)
                         #system('pwd')
-                        #print "CURRENT FOV FILEPATH IS :", Cur_Fov_Filepath
-                        Cur_Fov_Filename_L=Cur_Fov_Filepath.split("/")
-                        #print "Cur_FOV_Filename_L : ",Cur_Fov_Filename_L
-                        Cur_Fov_Filepath_No_Fname_L=Cur_Fov_Filepath.rsplit("/",1)
-                        #print "Cur_Fov_Filepath_No_Fname_L : ",Cur_Fov_Filepath_No_Fname_L
-                        Cur_Fov_Filepath_No_Fname=Cur_Fov_Filepath_No_Fname_L[0]
-                        #print "Cur_Fov_Filepath_No_Fname : ",Cur_Fov_Filepath_No_Fname
-                        Cur_Fov_Filename=Cur_Fov_Filename_L[len(Cur_Fov_Filename_L)-1]
-                        #print "Cur_Fov_Filename : ",Cur_Fov_Filename
-                        Cur_Fov_Filename_Ext_L=Cur_Fov_Filename.split(".")
-                        #print "Cur_Fov_Filename_Ext_L : ",Cur_Fov_Filename_Ext_L
-                        Cur_Fov_Filename_Ext=Cur_Fov_Filename_Ext_L[len(Cur_Fov_Filename_Ext_L)-1]
-                        #print "Cur_Fov_Filename_Ext : ", Cur_Fov_Filename_Ext
-                        if(Cur_Fov_Filename_Ext=="gz"): #Need to test this later with a compressed fits file
-                            Output_Fov_Filename=Cur_Fov_Filename_Ext_L[0]+"."+Cur_Fov_Filename_Ext_L[1]
-                            #os.chdir(path_Obs)
-                            #Cur_Fov_Filepath
-                            #os.chdir(Cur_Fov_Filepath_No_Fname)
-                            #system('pwd')
-                            Output_Fov_Filepath=Cur_Fov_Filepath_No_Fname+"/"+Output_Fov_Filename
-                            #print "Output_Fov_Filepath : ",Output_Fov_Filepath
-                            #inF = gzip.open(Cur_Fov_Filename, 'rb')
-                            #outF = open(Output_Fov_Filename, 'wb')
-                            inF = gzip.open(Cur_Fov_Filepath, 'rb')
-                            outF = open(Output_Fov_Filepath, 'wb')
-                            outF.write( inF.read() )
-                            inF.close()
-                            outF.close()
-                            #os.chdir(path_Obs)
-                            Cur_Fov_Filepath=Output_Fov_Filepath
-                        #print "Cur_Evt2_Filepath : ", Cur_Evt2_Filepath
-                        #print "Cur_Fov_Filepath : ", Cur_Fov_Filepath
-                        XPA_DS9_Region_Generator_3.XPA_DS9_Region_Generator(Cur_Evt2_Filepath,Cur_Fov_Filepath,path_Obs) #Need to update file output location
-                        #print "The Filepath Before End is : "
-                        #system('pwd')
-                        #time.sleep(10.0)
-                        Region_File_LS= os.popen("ls "+path_Obs).read()
-                        #print "Region_File_LS : ", Region_File_LS
-                        Region_File_LS_L=Region_File_LS.split("\n")
-                        #print "Region_File_LS_L : ",Region_File_LS_L
-                        for Region_Filename_Test in Region_File_LS_L:
-                            Region_Filename_Test_L=Region_Filename_Test.split("_")
-                            #print "Region_Filename_Test_L : ",Region_Filename_Test_L
-                            #if(len(Region_Filename_Test_L)==4):
-                                #Region_Filename=Region_Filename_Test
-                            if(("modifed" not in Region_Filename_Test) and ("CCD" in Region_Filename_Test)):
-                                Region_Filename=Region_Filename_Test
-                        #print "Region_Filename : ",Region_Filename
-                        #This_is_Ment_To_Break_The_Code
-                        Simple_Region_Generator_9.Simple_Region_Generator(Region_Filename,Cur_Evt2_Filepath,path_Obs) #Need to update file output location
-                        #print "Cur_Evt2_Filepath: ", Cur_Evt2_Filepath
-                        #Area_Calc_Frac_B_2_Alt_2("NGC 253","/Network/Servers/vimes.astro.wesleyan.edu/Volumes/vvodata/home/asantini/Desktop/CCD_Incompleteness_Correction/Area_Calc/acisf13830_repro_evt2.fits","acisf13830_repro_CCD_Regions_simple_region_modifed_Code.txt")
-                        #print "The Filepath Before LS Delay"
-                        #system('pwd')
-                        #time.sleep(10.0)
-                        Simple_Region_File_LS= os.popen("ls "+path_Obs).read()
-                        #print "Simple_Region_File_LS : ", Simple_Region_File_LS
-                        #print "The Filepath Before LS Delay"
-                        #system('pwd')
-                        Simple_Region_File_LS_L=Simple_Region_File_LS.split("\n")
-                        #print "Simple_Region_File_LS_L : ",Simple_Region_File_LS_L
-                        for Simple_Region_Filename_Test in Simple_Region_File_LS_L:
-                            Simple_Region_Filename_Test_L=Simple_Region_Filename_Test.split("_")
-                            #print "Simple_Region_Filename_Test_L : ",Simple_Region_Filename_Test_L
-                            #if(len(Simple_Region_Filename_Test_L)==8):
-                                #Simple_Region_Filename=Simple_Region_Filename_Test
-                            if(("modifed" in Simple_Region_Filename_Test_L) and ("no" not in Simple_Region_Filename_Test_L)):
-                                Simple_Region_Filename=Simple_Region_Filename_Test
-                        #print "Simple_Region_Filename : ",Simple_Region_Filename
-                        Simple_Region_Filepath=path_Obs+Simple_Region_Filename
-                        #print "Simple_Region_Filepath : ", Simple_Region_Filepath
-                        #Area_Calc_Frac_B_2_Alt_8.Area_Calc_Frac_B_2_Alt_2(Gname,Simple_Region_Filename,Cur_Evt2_Filepath)
-                        #Cur_Area_L=Area_Calc_Frac_B_2_Alt_8.Area_Calc_Frac_B_2_Alt_2(Gname,Cur_Evt2_Filepath,Simple_Region_Filename)
-                        Cur_Area_L=Area_Calc_Frac_B_2_Alt_8.Area_Calc_Frac_B_2_Alt_2(Gname,Cur_Evt2_Filepath,Simple_Region_Filepath)
-                        Cur_Area_L_D25=Area_Calc_Frac_B_2_Alt_8.Area_Calc_Frac_B_2_Alt_2(Gname,Cur_Evt2_Filepath,Simple_Region_Filepath,D25_Steps_Bool=True,Fnamekey="D25")
-                        #print Cur_Area_L
-                        #system('pwd')
-                        #Simple_Region_Filename_L=Simple_Region_Filename.split("CCD")
-                        #print "Simple_Region_Filename_L : ",Simple_Region_Filename_L
-                        #Simple_Region_Filename_Reduced=Simple_Region_Filename_L[0]
-                        #print "Simple_Region_Filename_Reduced : ",Simple_Region_Filename_Reduced
-                        #Area_List_Filename=Simple_Region_Filename_Reduced+"Area_List.txt"
-                        #print "Area_List_Filename : ",Area_List_Filename
-                        #print "fovfname_reduced : ",fovfname_reduced
-                        #print "Cur_Evt2_Filepath : ",Cur_Evt2_Filepath
-                        #Cur_Evt2_Filepath_L=Cur_Evt2_Filepath.split("/")
-                        #print "Cur_Evt2_Filepath_L : ",Cur_Evt2_Filepath_L
-                        #Cur_Evt2_Filename=Cur_Evt2_Filepath_L[len(Cur_Evt2_Filepath_L)-1]
-                        #print "Cur_Evt2_Filename : ",Cur_Evt2_Filename
-                        """
-                        Area_Calc_File=open(Area_List_Filename,"w")
-                        for Cur_Area in Cur_Area_L:
-                            if (Cur_Area==False):
-                                #Area_Calc_File.write("Invalid_Observation:GC_Outside_Chandra_FOV")
-                                for i in range (0,10):
-                                    print "Area Circle Outside Chandra FOV"
-                                break
-                            Cur_Area_Str=str(Cur_Area)
-                            Area_Calc_File.write(Cur_Area_Str +"\n")
-                        #This_is_Ment_To_Break_The_Code
-                        """
-                        #print "PWD before Path_5 : "
-                        #system('pwd')
-            #path_5=os.path.realpath('../../../../')
-            #print "path_5 : ",path_5
-            #os.chdir(path_5)
-            #print "THE PWD AT VERY END IS :"
-            #system('pwd')
-            #Need to add the rest of Pipeline B after XPA_DS9_Region_Generator
-        except:
-            Galaxy_Fail_B_L.append(Gname)
+                        Output_Fov_Filepath=Cur_Fov_Filepath_No_Fname+"/"+Output_Fov_Filename
+                        #print "Output_Fov_Filepath : ",Output_Fov_Filepath
+                        #inF = gzip.open(Cur_Fov_Filename, 'rb')
+                        #outF = open(Output_Fov_Filename, 'wb')
+                        inF = gzip.open(Cur_Fov_Filepath, 'rb')
+                        outF = open(Output_Fov_Filepath, 'wb')
+                        outF.write( inF.read() )
+                        inF.close()
+                        outF.close()
+                        #os.chdir(path_Obs)
+                        Cur_Fov_Filepath=Output_Fov_Filepath
+                    print("Cur_Evt2_Filepath: ", Cur_Evt2_Filepath)
+                    print("Cur_Fov_Filepath: ", Cur_Fov_Filepath)
+                    XPA_DS9_Region_Generator_3.XPA_DS9_Region_Generator(Cur_Evt2_Filepath,Cur_Fov_Filepath,path_Obs) #Need to update file output location
+                    #print "The Filepath Before End is : "
+                    #system('pwd')
+                    #time.sleep(10.0)
+                    Region_File_LS= os.popen("ls "+path_Obs).read()
+                    #print "Region_File_LS : ", Region_File_LS
+                    Region_File_LS_L=Region_File_LS.split("\n")
+                    #print "Region_File_LS_L : ",Region_File_LS_L
+                    for Region_Filename_Test in Region_File_LS_L:
+                        print("Region_Filename_Test: ", Region_Filename_Test)
+                        Region_Filename_Test_L=Region_Filename_Test.split("_")
+                        #print "Region_Filename_Test_L : ",Region_Filename_Test_L
+                        #if(len(Region_Filename_Test_L)==4):
+                            #Region_Filename=Region_Filename_Test
+                        ##if(("modifed" not in Region_Filename_Test) and ("CCD" in Region_Filename_Test)):
+                        if(("modifed" not in Region_Filename_Test) and ("CCD" in Region_Filename_Test) and ("000N004" not in Region_Filename_Test)): #For testing simple region calc on older 000N004 files
+                            Region_Filename=Region_Filename_Test
+                    print("Region_Filename : ",Region_Filename)
+                    #This_is_Ment_To_Break_The_Code
+                    #print("Cur_Evt2_Filepath: ", Cur_Evt2_Filepath)
+                    Simple_Region_Generator_9.Simple_Region_Generator(Region_Filename,Cur_Evt2_Filepath,path_Obs) #Need to update file output location
+                    #Simple_Region_Generator_9.Simple_Region_Generator(Region_Filename,Cur_Evt2_Filepath,path_Obs,Simple_Poly_Bool=True) #Need to update file output location
+                    #Simple_Poly_Bool
+                    #print "Cur_Evt2_Filepath: ", Cur_Evt2_Filepath
+                    #Area_Calc_Frac_B_2_Alt_2("NGC 253","/Network/Servers/vimes.astro.wesleyan.edu/Volumes/vvodata/home/asantini/Desktop/CCD_Incompleteness_Correction/Area_Calc/acisf13830_repro_evt2.fits","acisf13830_repro_CCD_Regions_simple_region_modifed_Code.txt")
+                    #print "The Filepath Before LS Delay"
+                    #system('pwd')
+                    #time.sleep(10.0)
+                    Simple_Region_File_LS= os.popen("ls "+path_Obs).read()
+                    #print "Simple_Region_File_LS : ", Simple_Region_File_LS
+                    #print "The Filepath Before LS Delay"
+                    #system('pwd')
+                    Simple_Region_File_LS_L=Simple_Region_File_LS.split("\n")
+                    #print "Simple_Region_File_LS_L : ",Simple_Region_File_LS_L
+                    for Simple_Region_Filename_Test in Simple_Region_File_LS_L:
+                        Simple_Region_Filename_Test_L=Simple_Region_Filename_Test.split("_")
+                        #print "Simple_Region_Filename_Test_L : ",Simple_Region_Filename_Test_L
+                        #if(len(Simple_Region_Filename_Test_L)==8):
+                            #Simple_Region_Filename=Simple_Region_Filename_Test
+                        if(("modifed" in Simple_Region_Filename_Test_L) and ("no" not in Simple_Region_Filename_Test_L)):
+                            Simple_Region_Filename=Simple_Region_Filename_Test
+                    #print "Simple_Region_Filename : ",Simple_Region_Filename
+                    Simple_Region_Filepath=path_Obs+Simple_Region_Filename
+                    #print "Simple_Region_Filepath : ", Simple_Region_Filepath
+                    #Area_Calc_Frac_B_2_Alt_8.Area_Calc_Frac_B_2_Alt_2(Gname,Simple_Region_Filename,Cur_Evt2_Filepath)
+                    #Cur_Area_L=Area_Calc_Frac_B_2_Alt_8.Area_Calc_Frac_B_2_Alt_2(Gname,Cur_Evt2_Filepath,Simple_Region_Filename)
+                    Cur_Area_L=Area_Calc_Frac_B_2_Alt_8.Area_Calc_Frac_B_2_Alt_2(Gname,Cur_Evt2_Filepath,Simple_Region_Filepath)
+                    Cur_Area_L_D25=Area_Calc_Frac_B_2_Alt_8.Area_Calc_Frac_B_2_Alt_2(Gname,Cur_Evt2_Filepath,Simple_Region_Filepath,D25_Steps_Bool=True,Fnamekey="D25")
+                    #print Cur_Area_L
+                    #system('pwd')
+                    #Simple_Region_Filename_L=Simple_Region_Filename.split("CCD")
+                    #print "Simple_Region_Filename_L : ",Simple_Region_Filename_L
+                    #Simple_Region_Filename_Reduced=Simple_Region_Filename_L[0]
+                    #print "Simple_Region_Filename_Reduced : ",Simple_Region_Filename_Reduced
+                    #Area_List_Filename=Simple_Region_Filename_Reduced+"Area_List.txt"
+                    #print "Area_List_Filename : ",Area_List_Filename
+                    #print "fovfname_reduced : ",fovfname_reduced
+                    #print "Cur_Evt2_Filepath : ",Cur_Evt2_Filepath
+                    #Cur_Evt2_Filepath_L=Cur_Evt2_Filepath.split("/")
+                    #print "Cur_Evt2_Filepath_L : ",Cur_Evt2_Filepath_L
+                    #Cur_Evt2_Filename=Cur_Evt2_Filepath_L[len(Cur_Evt2_Filepath_L)-1]
+                    #print "Cur_Evt2_Filename : ",Cur_Evt2_Filename
+                    """
+                    Area_Calc_File=open(Area_List_Filename,"w")
+                    for Cur_Area in Cur_Area_L:
+                        if (Cur_Area==False):
+                            #Area_Calc_File.write("Invalid_Observation:GC_Outside_Chandra_FOV")
+                            for i in range (0,10):
+                                print "Area Circle Outside Chandra FOV"
+                            break
+                        Cur_Area_Str=str(Cur_Area)
+                        Area_Calc_File.write(Cur_Area_Str +"\n")
+                    #This_is_Ment_To_Break_The_Code
+                    """
+                    #print "PWD before Path_5 : "
+                    #system('pwd')
+        #path_5=os.path.realpath('../../../../')
+        #print "path_5 : ",path_5
+        #os.chdir(path_5)
+        #print "THE PWD AT VERY END IS :"
+        #system('pwd')
+        #Need to add the rest of Pipeline B after XPA_DS9_Region_Generator
+        ##except:
+            ##Galaxy_Fail_B_L.append(Gname)
 
-    print "Galaxy_Fail_B_L : ", Galaxy_Fail_B_L
-    print "Galaxy_No_Obs_B_L : ", Galaxy_No_Obs_B_L
+    print("Galaxy_Fail_B_L : ", Galaxy_Fail_B_L)
+    print("Galaxy_No_Obs_B_L : ", Galaxy_No_Obs_B_L)
 
 def Pipeline_C(Gname_L):
     """
@@ -321,7 +328,7 @@ def Pipeline_C(Gname_L):
     for Gname in Gname_L:
         #Pipeline_C Code
         ##try:
-        print "Gname C: ", Gname
+        print("Gname C: ", Gname)
         """
         Gname_List=Gname.split(" ")
         print "Gname_List: ", Gname_List
@@ -334,7 +341,7 @@ def Pipeline_C(Gname_L):
         #system('pwd')
         Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2")
         if(Evt2_File_H_L==False):
-            print "Invalid Galaxy"
+            print("Invalid Galaxy")
             Galaxy_No_Obs_C_L.append(Gname)
             continue
         Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
@@ -367,7 +374,7 @@ def Pipeline_C(Gname_L):
                 Cur_Reg_ObsID=Reg_File_L[0]
                 Cur_Reg_Filepath=Reg_File_L[1]
                 if(Cur_Evt2_ObsID==Cur_Reg_ObsID):
-                    print "Cur_Evt2_ObsID : ", Cur_Evt2_ObsID
+                    print("Cur_Evt2_ObsID : ", Cur_Evt2_ObsID)
                     #print "Test"
                     #path_Obs=path_Flux_90+'/'+str(Cur_Evt2_ObsID)+'/'
                     #print "Cur_Evt2_ObsID : ",Cur_Evt2_ObsID
@@ -412,7 +419,7 @@ def Pipeline_C(Gname_L):
                         BG_Radius=BG_Radius-10
                     #print "Background_Ratio : ", Background_Ratio
                     Background_Ratio_L=[Background_Ratio]
-                    print "Background_Ratio_L: ", Background_Ratio_L
+                    print("Background_Ratio_L: ", Background_Ratio_L)
                     #[['Graph 1 3.0 counts.csv','Graph 1 8.4 counts.csv','Graph 1 22 counts.csv'],['Graph 2 2.8 counts.csv','Graph 2 8.3 counts.csv','Graph 2 22 counts.csv'],['Graph 3 2.4 counts.csv','Graph 3 7.0 counts.csv','Graph 3 18 counts.csv','Graph 3 23 counts.csv','Graph 3 91 counts.csv'],['Graph 4 3.7 counts.csv','Graph 4 11 counts.csv','Graph 4 29 counts.csv','Graph 4 36 counts.csv','Graph 4 110 counts.csv']]
                     #This part of the code finds the domain of the background for the backgroud graph data
                     """
@@ -448,7 +455,7 @@ def Pipeline_C(Gname_L):
                     ##try: #This "Try-Except" with be replaced with the Obs_ID_Checker module
                     C_90_Per_First_L_H=Detection_Probability_Calc_7.D_P_C_Big_Input_90_Per_Check(Background_Ratio_L)
                     if(C_90_Per_First_L_H==False):
-                        print "ObsID "+str(Cur_Evt2_ObsID)+" background not in range of 4D Graph Data interpolation!"
+                        print("ObsID "+str(Cur_Evt2_ObsID)+" background not in range of 4D Graph Data interpolation!")
                         file=open(path_Obs+Gname_Modifed+"_ObsID_"+str(Cur_Evt2_ObsID)+"_Flux_90.txt","w")
                         file.write("Background_Ratio:"+str(Background_Ratio)+"|"+"\n")
                         file.write("Background not in range of 4D Graph Data interpolation")
@@ -488,9 +495,9 @@ def Pipeline_C(Gname_L):
         ##except:
             ##Galaxy_Fail_C_L.append(Gname)
 
-    print "Galaxy_Fail_C_L : ", Galaxy_Fail_C_L
-    print "Galaxy_No_Obs_C_L : ", Galaxy_No_Obs_C_L
-    print "ObsID_Fail_C_L : ", ObsID_Fail_C_L
+    print("Galaxy_Fail_C_L : ", Galaxy_Fail_C_L)
+    print("Galaxy_No_Obs_C_L : ", Galaxy_No_Obs_C_L)
+    print("ObsID_Fail_C_L : ", ObsID_Fail_C_L)
 
 def Pipeline_D(Gname_L):
     """
@@ -509,10 +516,10 @@ def Pipeline_D(Gname_L):
     for Gname in Gname_L:
         try:
             #Pipeline_D Code
-            print "Gname D: ", Gname
+            print("Gname D: ", Gname)
             Evt2_File_H_L=File_Query_Code_5.File_Query(Gname,"evt2")
             if(Evt2_File_H_L==False):
-                print "Invalid Galaxy"
+                print("Invalid Galaxy")
                 Galaxy_No_Obs_D_L.append(Gname)
                 continue
             Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
@@ -539,7 +546,7 @@ def Pipeline_D(Gname_L):
                     Cur_Reg_ObsID=Reg_File_L[0]
                     Cur_Reg_Filepath=Reg_File_L[1]
                     if(Cur_Evt2_ObsID==Cur_Reg_ObsID):
-                        print "Cur_Evt2_ObsID : ", Cur_Evt2_ObsID
+                        print("Cur_Evt2_ObsID : ", Cur_Evt2_ObsID)
                         #print "Test"
                         #path_Obs=path_Flux_90+'/'+str(Cur_Evt2_ObsID)+'/'
                         #print "Cur_Evt2_ObsID : ",Cur_Evt2_ObsID
@@ -579,8 +586,8 @@ def Pipeline_D(Gname_L):
             #system('pwd')
         except:
             Galaxy_Fail_D_L.append(Gname)
-    print "Galaxy_Fail_D_L : ", Galaxy_Fail_D_L
-    print "Galaxy_No_Obs_D_L : ", Galaxy_No_Obs_D_L
+    print("Galaxy_Fail_D_L : ", Galaxy_Fail_D_L)
+    print("Galaxy_No_Obs_D_L : ", Galaxy_No_Obs_D_L)
 
 def Master(Gname_L):
     webbrowser.open_new("https://www.youtube.com/watch?v=xnKhsTXoKCI") # OBEY YOUR MASTER ! ! !      Not nesseary for the fuctionality of the code, Can be removed without any problem whatsoever but this code would be much less metal if removed
@@ -588,8 +595,8 @@ def Master(Gname_L):
     Thread(target = Pipeline_B(Gname_L)).start()
     ##Thread(target = Pipeline_C(Gname_L)).start()
     ##Thread(target = Pipeline_D(Gname_L)).start()
-    print "Number of Threads : ", str(threading.activeCount())
-    print "Master Complete"
+    print("Number of Threads : ", str(threading.activeCount()))
+    print("Master Complete")
 
 """
 def Master(Gname_L):
@@ -640,4 +647,7 @@ if __name__ == '__main__':
     #Master(['NGC 1365']) #ObsID 12888 has weird bug where the Flux 90 file is not created
     ##Master(['NGC 2841', 'NGC 3877', 'NGC 5054', 'NGC 5813', 'MESSIER 108', 'MESSIER 066', 'MESSIER 061', 'MESSIER 063', 'MESSIER 086', 'MESSIER 084', 'MESSIER 083', 'MESSIER 082', 'NGC 0278', 'MESSIER 088', 'NGC 3585', 'NGC 7507', 'NGC 1637', 'NGC 4473', 'NGC 1365', 'MESSIER 074', 'NGC 4570', 'NGC 4321', 'NGC 5474', 'NGC 7090', 'MESSIER 094', 'MESSIER 095', 'NGC 4494', 'IC 1613', 'NGC 4477', 'NGC 2787', 'IC 5267', 'NGC 3923', 'NGC 891', 'NGC 1300', 'UGC 05340', 'NGC 3631', 'NGC 4314', 'NGC 2681', 'NGC 5018', 'NGC 5253', 'NGC 4742', 'NGC 1672', 'NGC 4725', 'NGC 0891', 'NGC 6946', 'NGC 1291:[LFF2012] 084', 'NGC 3115', 'NGC 1332', 'NGC 1700', 'NGC 5584', 'NGC 7552', 'NGC 2997', 'NGC 4449', 'MESSIER 049', 'NGC 3198', 'NGC 0855', 'NGC 7793', 'NGC 2865', 'MESSIER 059', 'NGC 1427', 'NGC 3628', 'NGC 4457', 'NGC 4214', 'NGC 4459', 'NGC 3521']) #This is the current correct Master Code Input Galaxy Name List, The Master Code is Ready to Run ! ! !
     ###New Sample Galaxy Lists###
-    Master([['NGC 5128', 'MESSIER 086', 'MESSIER 106', 'MESSIER 051', 'MESSIER 082', 'M81', 'NGC 1569', 'NGC 4697', 'NGC 0253', 'IC 2574', 'M83', 'NGC 0891', 'NGC 1291:[LFF2012] 084', 'NGC 4631', 'NGC 4945', 'NGC 0404', 'NGC 6503', 'MESSIER 101', 'NGC 4244', 'NGC 4485', 'MESSIER 104', 'MESSIER 105', 'NGC 2403', 'MESSIER 108', 'NGC 4214', 'NGC 4449', 'NGC 5253', 'NGC 3628', 'NGC 3115', 'MESSIER 074', 'MESSIER 083', 'ESO 495- G 021', 'NGC 3077', 'MESSIER 063', 'NGC 0055', 'M102', 'NGC 6822', 'NGC 3377', 'NGC 5102', 'NGC 1313', 'NGC 4725', 'NGC 1808', 'NGC 4526', 'NGC 1705', 'NGC 1427A', 'NGC 4565', 'NGC 7793', 'FORNAX CLUSTER', 'NGC 891', 'NGC 4473', 'NGC 2787', 'NGC 0045', 'NGC 3384', 'NGC 3412', 'NGC 3521', 'NGC 1023', 'NGC 7457', 'NGC 0625', 'Maffei 1', 'IC 1613', 'MESSIER 090', 'MESSIER 095', 'MESSIER 081', 'NGC 2841', 'M100', 'NGC 7090', 'IC 342 X-1', 'IC 0010', 'NGC 2552', 'NGC 4618', 'Maffei 2', 'SDSS J133422.63+475033.6', 'NGC 2915', 'MESSIER 081 DWARF A', 'UGC 05423', 'UGC 08201', 'UGC 04459', 'Holmberg I', 'Holmberg IX', 'NGC 2976', 'NGC 4236', 'MESSIER 064', 'NGC 5474', 'NGC 0024', 'MESSIER 066', 'NGC 4625', 'NGC 0855', 'NGC 3198', 'MESSIER 094', 'IC 4710', 'XMMU J005510.7-373855', 'M82', 'NGC 2903', 'KUG 1013+381', 'NGC 7814', 'NGC 2683', 'ACO 1560', 'NGC 0300', 'NGC 4861', 'PTF11eon', 'SN2011dh', 'RZ 2109', 'MCG -01-03-085', 'NGC 3351', 'SN2011ja', 'SN2004am', 'PLCKG266.6-27.3', 'PTF11kly', 'NGC 4088', 'NGC 5204', 'SN2013ak', 'M74', 'Sextans A', 'NGC 4417', 'MRK 0750', 'M86', 'A1612', 'NGC 0660', 'NGC 2835', 'NGC 6744', 'NGC 5248', 'NGC 3344', 'NGC 4472', 'SN2014C', 'NGC 4550', 'NGC 4551', 'NGC 1404', 'MESSIER 049', 'SN2013ge', 'SN2014J', 'NGC 1559', 'NGC 5866', 'WISEA J024656.39-003305.0', 'RM J123416.1+151508.4', '1RXS J082814.5+415359', 'MESSIER 099', 'SN2016adj', 'SN1970G', 'NGC 2549', 'NGC 4605', 'NGC 4096', 'NGC 3726', 'NGC 3319', 'NGC 4242', 'NGC 2541', 'NGC 3738', 'NGC 4460', 'NGC 4346', 'NGC 4527', 'NGC 4536', 'NGC 4302', 'NGC 4654', 'NGC 4419', 'NGC 4298', 'NGC 4607', 'NGC 4532', 'NGC 4519', 'NGC 4312', 'NGC 4313', 'NGC 4396', 'IC 3392', 'NGC 4498', 'NGC 4522', 'NGC 4606', 'Mrk 59', 'NGC 1792', 'SN2002ap', 'SDSS J110458.29+290816.5', 'NGC 925', 'SN2008ax', 'SN2013ej', 'SN2012aw', 'CXO J095524.2+690957', 'NGC 4595', 'NGC 4525', 'M49', 'IC 4316', 'NGC 300', 'IC342', 'SN2020oi', 'NGC 6300', 'NGC 4051', 'NGC 3287', 'MESSIER 096', 'NGC 3998', 'SN1986J', 'SN2012cc']]) #This is the New Sample Master Code Input #2/17/24
+    #Master(['NGC 5128', 'MESSIER 086', 'MESSIER 106', 'MESSIER 051', 'MESSIER 082', 'M81', 'NGC 1569', 'NGC 4697', 'NGC 0253', 'IC 2574', 'M83', 'NGC 0891', 'NGC 1291:[LFF2012] 084', 'NGC 4631', 'NGC 4945', 'NGC 0404', 'NGC 6503', 'MESSIER 101', 'NGC 4244', 'NGC 4485', 'MESSIER 104', 'MESSIER 105', 'NGC 2403', 'MESSIER 108', 'NGC 4214', 'NGC 4449', 'NGC 5253', 'NGC 3628', 'NGC 3115', 'MESSIER 074', 'MESSIER 083', 'ESO 495- G 021', 'NGC 3077', 'MESSIER 063', 'NGC 0055', 'M102', 'NGC 6822', 'NGC 3377', 'NGC 5102', 'NGC 1313', 'NGC 4725', 'NGC 1808', 'NGC 4526', 'NGC 1705', 'NGC 1427A', 'NGC 4565', 'NGC 7793', 'FORNAX CLUSTER', 'NGC 891', 'NGC 4473', 'NGC 2787', 'NGC 0045', 'NGC 3384', 'NGC 3412', 'NGC 3521', 'NGC 1023', 'NGC 7457', 'NGC 0625', 'Maffei 1', 'IC 1613', 'MESSIER 090', 'MESSIER 095', 'MESSIER 081', 'NGC 2841', 'M100', 'NGC 7090', 'IC 342 X-1', 'IC 0010', 'NGC 2552', 'NGC 4618', 'Maffei 2', 'SDSS J133422.63+475033.6', 'NGC 2915', 'MESSIER 081 DWARF A', 'UGC 05423', 'UGC 08201', 'UGC 04459', 'Holmberg I', 'Holmberg IX', 'NGC 2976', 'NGC 4236', 'MESSIER 064', 'NGC 5474', 'NGC 0024', 'MESSIER 066', 'NGC 4625', 'NGC 0855', 'NGC 3198', 'MESSIER 094', 'IC 4710', 'XMMU J005510.7-373855', 'M82', 'NGC 2903', 'KUG 1013+381', 'NGC 7814', 'NGC 2683', 'ACO 1560', 'NGC 0300', 'NGC 4861', 'PTF11eon', 'SN2011dh', 'RZ 2109', 'MCG -01-03-085', 'NGC 3351', 'SN2011ja', 'SN2004am', 'PLCKG266.6-27.3', 'PTF11kly', 'NGC 4088', 'NGC 5204', 'SN2013ak', 'M74', 'Sextans A', 'NGC 4417', 'MRK 0750', 'M86', 'A1612', 'NGC 0660', 'NGC 2835', 'NGC 6744', 'NGC 5248', 'NGC 3344', 'NGC 4472', 'SN2014C', 'NGC 4550', 'NGC 4551', 'NGC 1404', 'MESSIER 049', 'SN2013ge', 'SN2014J', 'NGC 1559', 'NGC 5866', 'WISEA J024656.39-003305.0', 'RM J123416.1+151508.4', '1RXS J082814.5+415359', 'MESSIER 099', 'SN2016adj', 'SN1970G', 'NGC 2549', 'NGC 4605', 'NGC 4096', 'NGC 3726', 'NGC 3319', 'NGC 4242', 'NGC 2541', 'NGC 3738', 'NGC 4460', 'NGC 4346', 'NGC 4527', 'NGC 4536', 'NGC 4302', 'NGC 4654', 'NGC 4419', 'NGC 4298', 'NGC 4607', 'NGC 4532', 'NGC 4519', 'NGC 4312', 'NGC 4313', 'NGC 4396', 'IC 3392', 'NGC 4498', 'NGC 4522', 'NGC 4606', 'Mrk 59', 'NGC 1792', 'SN2002ap', 'SDSS J110458.29+290816.5', 'NGC 925', 'SN2008ax', 'SN2013ej', 'SN2012aw', 'CXO J095524.2+690957', 'NGC 4595', 'NGC 4525', 'M49', 'IC 4316', 'NGC 300', 'IC342', 'SN2020oi', 'NGC 6300', 'NGC 4051', 'NGC 3287', 'MESSIER 096', 'NGC 3998', 'SN1986J', 'SN2012cc']) #This is the New Sample Master Code Input #2/17/24
+    #Master(['NGC 5128'])
+    #Master(['MESSIER 082'])
+    Master(['NGC 3115'])
