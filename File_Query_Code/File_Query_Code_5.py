@@ -16,7 +16,8 @@ Expansion_Path=Root_Path+"xray/anthony/expansion_backup/"
 path_Modules=Root_Path+"xray/anthony/Research_Git"
 sys.path.append(os.path.abspath(path_Modules))
 from Galaxy_Name_Reducer import Galaxy_Name_Reducer
-def File_Query(Gname,File_Type_Str="evt2",Extension=".fits",Obs_Check_B=True,Exp_Max_B=False): #Still bugs, Bug:(UnboundLocalError: local variable 'File_Path_With_Filename_Str' referenced before assignment), Update(I fixed this bug, but I need to bug check more)
+from ObsID_Tester import ObsID_Tester
+def File_Query(Gname,File_Type_Str="evt2",Extension=".fits",Obs_Check_B=True,Exp_Max_B=False, Primary_Bool=False, Simon_Dir_Bool=False, Exposure_Time_Cutoff=10000): #Still bugs, Bug:(UnboundLocalError: local variable 'File_Path_With_Filename_Str' referenced before assignment), Update(I fixed this bug, but I need to bug check more)
     Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
     #print "Gname_Modifed : ", Gname_Modifed
     #Code_Path=os.path.realpath('.')
@@ -190,14 +191,21 @@ def File_Query(Gname,File_Type_Str="evt2",Extension=".fits",Obs_Check_B=True,Exp
         Glob_Str=Expansion_Path+"ObsIDs/"+str(Cur_Obs_ID)+"/new/*"+str(File_Type_Str)+"*"
         print("Glob_Str: ", Glob_Str)
         Filepath_L=glob.glob(Glob_Str)
-        if(len(Filepath_L)==0):
+        if(((len(Filepath_L)==0) or Primary_Bool) and (Simon_Dir_Bool==False)):
             Glob_Str=Expansion_Path+"ObsIDs/"+str(Cur_Obs_ID)+"/primary/*"+str(File_Type_Str)+"*"
+            print("Glob_Str: ", Glob_Str)
+            Filepath_L=glob.glob(Glob_Str)
+        if(Simon_Dir_Bool):
+            Glob_Str=Root_Path+"xray/simon/chandra_*_csc/"+str(Cur_Obs_ID)+"/primary/*"+str(File_Type_Str)+"*"
             print("Glob_Str: ", Glob_Str)
             Filepath_L=glob.glob(Glob_Str)
         if(File_Type_Str=="reg"):
             #/Volumes/expansion/Hybrid_Regions/10125/10125_Nearest_Neighbor_Hybrid.reg
             Glob_Str=Expansion_Path+"Hybrid_Regions/"+str(Cur_Obs_ID)+"/"+str(Cur_Obs_ID)+"_Nearest_Neighbor_Hybrid.reg"
             Filepath_L=glob.glob(Glob_Str)
+        if(len(Filepath_L)<1):
+            print(str(Cur_Obs_ID)+" has no existing directory!")
+            continue
         File_Path_With_Filename_Str=Filepath_L[0]
         fname_L=[Cur_Obs_ID,File_Path_With_Filename_Str]
         #print "fname_L ", fname_L
@@ -217,7 +225,7 @@ def File_Query(Gname,File_Type_Str="evt2",Extension=".fits",Obs_Check_B=True,Exp
                 #print "Max_Test_Obs_ID : ", Max_Test_Obs_ID
                 Max_Test_Filepath=Filename_L[1]
                 hdul = fits.open(Max_Test_Filepath)
-                Exposure_Time=hdul[1].header['EXPOSURE'] #Exposure_Time:-float, Exposure Time, The Exposure Time of the observation (I think the longest time of all the chips) in seconds (not kiloseconds), If this is less the 5000s then the observation is invaild and will be removed from the sample
+                Exposure_Time=hdul[1].header['EXPOSURE'] #Exposure_Time:-float, Exposure Time, The Exposure Time of the observation (I think the longest time of all the chips) in seconds (not kiloseconds), If this is less the Exposure_Time_Cutoff then the observation is invaild and will be removed from the sample
                 #print "Max Exposure_Time : ",Exposure_Time
                 if(Exposure_Time>Max_Exposure):
                     Max_Exposure=Exposure_Time
@@ -249,12 +257,15 @@ def File_Query(Gname,File_Type_Str="evt2",Extension=".fits",Obs_Check_B=True,Exp
         Invalid_Index_L=[]
         for i in range(0,len(fname_L_H)):
             Filename_L=fname_L_H[i]
+            print("Filename_L: ", Filename_L)
             #Count=Count+1
             #print Count
             #print i
             #print "fname_L_H Top Loop: ", fname_L_H
+            ObsID=Filename_L[0]
             Filepath=Filename_L[1]
-            #print "Filepath : ", Filepath
+            print("Filepath : ", Filepath)
+            """
             hdul = fits.open(Filepath)
             #print "hdul:\n", hdul
             #hdul_info=hdul.info()
@@ -263,7 +274,7 @@ def File_Query(Gname,File_Type_Str="evt2",Extension=".fits",Obs_Check_B=True,Exp
             Num_Rows_in_Array=hdul[1].header['NROWS'] #Num_Rows_in_Array:-int, Number of Row in the Array, The number of rows in a (sub)array, if less then 1024 then the observation is a subarray and will be removed from the sample
             #print "Num_Rows_in_Array : ", Num_Rows_in_Array
             #print "type(Num_Rows_in_Array) : ", type(Num_Rows_in_Array)
-            Exposure_Time=hdul[1].header['EXPOSURE'] #Exposure_Time:-float, Exposure Time, The Exposure Time of the observation (I think the longest time of all the chips) in seconds (not kiloseconds), If this is less the 5000s then the observation is invaild and will be removed from the sample
+            Exposure_Time=hdul[1].header['EXPOSURE'] #Exposure_Time:-float, Exposure Time, The Exposure Time of the observation (I think the longest time of all the chips) in seconds (not kiloseconds), If this is less the Exposure_Time_Cutoff then the observation is invaild and will be removed from the sample
             #print "Exposure_Time : ", Exposure_Time
             #print "type(Exposure_Time) : ", type(Exposure_Time)
             Grating_Flag=hdul[1].header['GRATING']
@@ -271,7 +282,12 @@ def File_Query(Gname,File_Type_Str="evt2",Extension=".fits",Obs_Check_B=True,Exp
             #print Grating_Flag
             #print "fname_L_H Before : ", fname_L_H
             #print Count
-            if((Num_Rows_in_Array!=1024) or (Exposure_Time<5000) or (Grating_Flag!="NONE")): #Checks to see if the current observation is invaild (invalid if: it is a subarray or has an exposure time less then 5000s)
+            """
+            ObsID_Test_Tuple=ObsID_Tester.ObsID_Tester([ObsID])
+            ObsID_Invalid_L=ObsID_Test_Tuple[0]
+            print("ObsID_Test_Tuple: ", ObsID_Test_Tuple)
+            ##if((Num_Rows_in_Array!=1024) or (Exposure_Time<Exposure_Time_Cutoff) or (Grating_Flag!="NONE")): #Checks to see if the current observation is invaild (invalid if: it is a subarray or has an exposure time less then Exposure_Time_Cutoff)
+            if(len(ObsID_Invalid_L)>0): #Checks to see if the current observation is invaild (invalid if: it is a subarray or has an exposure time less then Exposure_Time_Cutoff)
                 print("Current Observation Invalid! ! !")
                 print("Observation Invalid: "+Filepath)
                 #fname_L_H.remove(Filename_L) #I think I need to change this to return all indexes that corresepond to invaild observations and then remove it from the list AFTER iterating though it
@@ -298,7 +314,7 @@ def File_Query(Gname,File_Type_Str="evt2",Extension=".fits",Obs_Check_B=True,Exp
                 #print "Max_Test_Obs_ID : ", Max_Test_Obs_ID
                 Max_Test_Filepath=Filename_L[1]
                 hdul = fits.open(Max_Test_Filepath)
-                Exposure_Time=hdul[1].header['EXPOSURE'] #Exposure_Time:-float, Exposure Time, The Exposure Time of the observation (I think the longest time of all the chips) in seconds (not kiloseconds), If this is less the 5000s then the observation is invaild and will be removed from the sample
+                Exposure_Time=hdul[1].header['EXPOSURE'] #Exposure_Time:-float, Exposure Time, The Exposure Time of the observation (I think the longest time of all the chips) in seconds (not kiloseconds), If this is less the Exposure_Time_Cutoff then the observation is invaild and will be removed from the sample
                 #print "Max Exposure_Time : ",Exposure_Time
                 if(Exposure_Time>Max_Exposure):
                     Max_Exposure=Exposure_Time
@@ -381,3 +397,4 @@ def File_Query(Gname,File_Type_Str="evt2",Extension=".fits",Obs_Check_B=True,Exp
 #print File_Query("MESSIER 084","evt2")
 #print File_Query("NGC 5018","evt2")
 #print(File_Query("MESSIER 049","evt2"))
+#print(File_Query("NGC 4051","evt2"))
