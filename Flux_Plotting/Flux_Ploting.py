@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
 import re
+from datetime import datetime
 
 def Morph_Check(Morph_Str):
     if(isinstance(Morph_Str,float)):
@@ -196,15 +197,235 @@ def Duplicate_Table_Calc(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL
         file.write(Row_String)
     file.close()
 
+def Exp(X,a,b,c,E):
+    return a*((X-b)**E)+c
 
+#def Thermal_SN_Calc(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standard_File/Source_Flux_All_Modified_4.csv", SN_Fpath="/opt/xray/anthony/Research_Git/SQL_Standard_File/Thermal_SNs.csv",Tolerance=0.0005):
+#def Thermal_SN_Calc(Data, SN_Fpath="/opt/xray/anthony/Research_Git/SQL_Standard_File/Thermal_SNs.csv",Tolerance=0.0005):
 
-def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standard_File/Source_Flux_All_Modified_3.csv"):
+def Haversine_Distance(x1,x2,y1,y2):
+    dx=x2-x1
+    dy=y2-y1
+    B=np.sqrt(((np.sin(dy/2.0))**2.0)+((np.cos(y1)*np.cos(y2))*((np.sin(dx/2.0))**2.0)))
+    if(y1<0): #Note: This might not work for galaxies on the equator! This needs to be tested! #Note: This works on the equator as well!
+        B=-1.0*B
+    Have_Dist=2.0*np.arcsin(B)
+    return Have_Dist
+
+def HMS_to_Decimal_Deg_Convert(H,M,S):
+    H_Decimal=H+(M/60.0)+(S/3600.0)
+    Deg_Decimal=H_Decimal*15.0
+    return Deg_Decimal
+
+def HMS_Str_to_Decimal_Deg_Convert(HMS_Str):
+    #13 36 50.00
+    HMS_Str_L=HMS_Str.split(" ")
+    H=float(HMS_Str_L[0])
+    M=float(HMS_Str_L[1])
+    S=float(HMS_Str_L[2])
+    Deg_Decimal=HMS_to_Decimal_Deg_Convert(H,M,S)
+    return Deg_Decimal
+
+def DMS_to_Decimal_Deg_Convert(D,M,S):
+    Negtive_Bool=False
+    if(D<0):
+        D=-1.0*D
+        Negtive_Bool=True
+    Deg_Decimal=D+(M/60.0)+(S/3600.0)
+    if(Negtive_Bool):
+        Deg_Decimal=-1.0*Deg_Decimal
+    return Deg_Decimal
+
+def DMS_Str_to_Decimal_Deg_Convert(DMS_Str):
+    #-29 52 43.36
+    DMS_Str_L=DMS_Str.split(" ")
+    D=float(DMS_Str_L[0])
+    M=float(DMS_Str_L[1])
+    S=float(DMS_Str_L[2])
+    Deg_Decimal=DMS_to_Decimal_Deg_Convert(D,M,S)
+    return Deg_Decimal
+
+def Thermal_SN_Calc(Data, SN_Fpath="/opt/xray/anthony/Research_Git/SQL_Standard_File/Thermal_SNs_V2_Modified.csv",Tolerance=0.0005):
+    #Data=pd.read_csv(Standard_File_Fpath)
+    SN_Data=pd.read_csv(SN_Fpath)
+    #Lum_A=np.vectorize(Luminosity_Calc)(Flux_A,Dist_A)
+    SN_Data["RA"]=np.vectorize(HMS_Str_to_Decimal_Deg_Convert)(SN_Data["RA_HMS"])
+    SN_Data["Dec"]=np.vectorize(DMS_Str_to_Decimal_Deg_Convert)(SN_Data["Dec_DMS"])
+    RA_A=SN_Data["RA"]
+    RA_L=list(RA_A)
+    Dec_A=SN_Data["Dec"]
+    Dec_L=list(Dec_A)
+    RA_Test_A=Data["RA"]
+    RA_Test_L=list(RA_Test_A)
+    Dec_Test_A=Data["Dec"]
+    Dec_Test_L=list(Dec_Test_A)
+    Matching_Index_L=[]
+    for i in range(0,len(RA_L)):
+        RA=RA_L[i]
+        Dec=Dec_L[i]
+        for j in range(0,len(RA_Test_L)):
+            RA_Test=RA_Test_L[j]
+            Dec_Test=Dec_Test_L[j]
+
+            RA_Diff=np.abs(RA-RA_Test)
+            if(RA_Diff>Tolerance):
+                continue
+            Dec_Diff=np.abs(Dec-Dec_Test)
+            if(Dec_Diff>Tolerance):
+                continue
+
+            """
+            if(Haversine_Distance(RA,RA_Test,Dec,Dec_Test)>Tolerance):
+                continue
+            """
+            #Matching_Index_L.append([i,j])
+            ##if((RA_Diff<Tolerance) and (Dec_Diff<Tolerance)):
+            #print("Diffs: ", str(RA_Diff)+","+str(Dec_Diff))
+            Cur_Index_L=[i,j]
+            #if((Cur_Index_L not in Matching_Index_L) and (Cur_Index_L[:-1] not in Matching_Index_L)):
+            #if(Cur_Index_L not in Matching_Index_L):
+            Matching_Index_L.append([i,j])
+    #return Matching_Index_L
+    k=0
+    for Matching_Index in Matching_Index_L:
+        Row_Index=Matching_Index[1]
+        #df.iloc[[4]]
+        Cur_Row=Data.iloc[[Row_Index]]
+        #print("Cur_Row: ", Cur_Row)
+        if(k<1):
+            Match_Data=Cur_Row
+        else:
+            Match_Data=pd.concat([Match_Data,Cur_Row])
+        k=k+1
+    return Match_Data
+
+def Thermal_SNR_Calc(Data, SN_Fpath="/opt/xray/anthony/Research_Git/SQL_Standard_File/Thermal_SNs_V2_Modified.csv",Tolerance=0.0005):
+    #Data=pd.read_csv(Standard_File_Fpath)
+    SN_Data=pd.read_csv(SN_Fpath)
+    SN_Data=SN_Data[SN_Data["Color_Color_Classification"]=="Thermal_SNR"]
+    #XRB_Data=Thermal_SN_Data[Thermal_SN_Data["Color_Color_Classification"]=="XRB"]
+    #Lum_A=np.vectorize(Luminosity_Calc)(Flux_A,Dist_A)
+    SN_Data["RA"]=np.vectorize(HMS_Str_to_Decimal_Deg_Convert)(SN_Data["RA_HMS"])
+    SN_Data["Dec"]=np.vectorize(DMS_Str_to_Decimal_Deg_Convert)(SN_Data["Dec_DMS"])
+    RA_A=SN_Data["RA"]
+    RA_L=list(RA_A)
+    Dec_A=SN_Data["Dec"]
+    Dec_L=list(Dec_A)
+    RA_Test_A=Data["RA"]
+    RA_Test_L=list(RA_Test_A)
+    Dec_Test_A=Data["Dec"]
+    Dec_Test_L=list(Dec_Test_A)
+    Matching_Index_L=[]
+    for i in range(0,len(RA_L)):
+        RA=RA_L[i]
+        Dec=Dec_L[i]
+        for j in range(0,len(RA_Test_L)):
+            RA_Test=RA_Test_L[j]
+            Dec_Test=Dec_Test_L[j]
+
+            RA_Diff=np.abs(RA-RA_Test)
+            if(RA_Diff>Tolerance):
+                continue
+            Dec_Diff=np.abs(Dec-Dec_Test)
+            if(Dec_Diff>Tolerance):
+                continue
+            """
+            if(Haversine_Distance(RA,RA_Test,Dec,Dec_Test)>Tolerance):
+                continue
+            """
+            #Matching_Index_L.append([i,j])
+            ##if((RA_Diff<Tolerance) and (Dec_Diff<Tolerance)):
+            #print("Diffs: ", str(RA_Diff)+","+str(Dec_Diff))
+            Cur_Index_L=[i,j]
+            #if((Cur_Index_L not in Matching_Index_L) and (Cur_Index_L[:-1] not in Matching_Index_L)):
+            #if(Cur_Index_L not in Matching_Index_L):
+            Matching_Index_L.append([i,j])
+    #return Matching_Index_L
+    k=0
+    for Matching_Index in Matching_Index_L:
+        Row_Index=Matching_Index[1]
+        #df.iloc[[4]]
+        Cur_Row=Data.iloc[[Row_Index]]
+        #print("Cur_Row: ", Cur_Row)
+        if(k<1):
+            Match_Data=Cur_Row
+        else:
+            Match_Data=pd.concat([Match_Data,Cur_Row])
+        k=k+1
+    return Match_Data
+
+def XRB_Calc(Data, SN_Fpath="/opt/xray/anthony/Research_Git/SQL_Standard_File/Thermal_SNs_V2_Modified.csv",Tolerance=0.0005):
+    #Data=pd.read_csv(Standard_File_Fpath)
+    SN_Data=pd.read_csv(SN_Fpath)
+    SN_Data=SN_Data[SN_Data["Color_Color_Classification"]=="XRB"]
+    #Lum_A=np.vectorize(Luminosity_Calc)(Flux_A,Dist_A)
+    SN_Data["RA"]=np.vectorize(HMS_Str_to_Decimal_Deg_Convert)(SN_Data["RA_HMS"])
+    SN_Data["Dec"]=np.vectorize(DMS_Str_to_Decimal_Deg_Convert)(SN_Data["Dec_DMS"])
+    RA_A=SN_Data["RA"]
+    RA_L=list(RA_A)
+    Dec_A=SN_Data["Dec"]
+    Dec_L=list(Dec_A)
+    RA_Test_A=Data["RA"]
+    RA_Test_L=list(RA_Test_A)
+    Dec_Test_A=Data["Dec"]
+    Dec_Test_L=list(Dec_Test_A)
+    Matching_Index_L=[]
+    for i in range(0,len(RA_L)):
+        RA=RA_L[i]
+        Dec=Dec_L[i]
+        for j in range(0,len(RA_Test_L)):
+            RA_Test=RA_Test_L[j]
+            Dec_Test=Dec_Test_L[j]
+
+            RA_Diff=np.abs(RA-RA_Test)
+            if(RA_Diff>Tolerance):
+                continue
+            Dec_Diff=np.abs(Dec-Dec_Test)
+            if(Dec_Diff>Tolerance):
+                continue
+            """
+            if(Haversine_Distance(RA,RA_Test,Dec,Dec_Test)>Tolerance):
+                continue
+            """
+            #Matching_Index_L.append([i,j])
+            ##if((RA_Diff<Tolerance) and (Dec_Diff<Tolerance)):
+            #print("Diffs: ", str(RA_Diff)+","+str(Dec_Diff))
+            Cur_Index_L=[i,j]
+            #if((Cur_Index_L not in Matching_Index_L) and (Cur_Index_L[:-1] not in Matching_Index_L)):
+            #if(Cur_Index_L not in Matching_Index_L):
+            Matching_Index_L.append([i,j])
+    #return Matching_Index_L
+    k=0
+    for Matching_Index in Matching_Index_L:
+        Row_Index=Matching_Index[1]
+        #df.iloc[[4]]
+        Cur_Row=Data.iloc[[Row_Index]]
+        #print("Cur_Row: ", Cur_Row)
+        if(k<1):
+            Match_Data=Cur_Row
+        else:
+            Match_Data=pd.concat([Match_Data,Cur_Row])
+        k=k+1
+    return Match_Data
+
+def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standard_File/Source_Flux_All_Modified_6.csv"):
     Data=pd.read_csv(Standard_File_Fpath)
+    ##Data=Data[Data["NET_COUNTS_0.3-8.0"]> 25.0]
+    Data=Data[Data["Source_Detection_Probability"]> 0.90]
+    ##Data=Data[(Data["Soft_Beta_Color"]<-0.25) & (Data["Soft_Beta_Color"]>-0.90)]
     Data_Outside_D25=Data[Data["Outside_D25_Bool"]]
     Data_Inside_D25=Data[Data["Outside_D25_Bool"]==False]
     Data_Outside_Elliptical_D25=Data[Data["Outside_Elliptical_D25_Bool"]]
     Data_Inside_Elliptical_D25=Data[Data["Outside_Elliptical_D25_Bool"]==False]
     Data_Count_Cut=Data[Data["NET_COUNTS_0.3-8.0"]> 25.0]
+    #Data=Data[Data["NET_COUNTS_0.3-8.0"]> 25.0]
+    Data_Near_Chip_Edge=Data[Data["NEAR_CHIP_EDGE"]]
+    Data_Away_Chip_Edge=Data[Data["NEAR_CHIP_EDGE"]==False]
+    Data_Spiral_Projected=Data[(Data["Galaxy_Morph_Simple"]=="S") & (Data["Circular_D25_Bool"]==False)]
+    #Data_Spiral_Projected=Data[(Data["Galaxy_Morph_Simple"]=="S") & (Data["Circular_D25_Bool"]==False) & ((Data["D25_Min"]/Data["D25_Maj"])<0.5)]
+    #Data_Spiral_Projected=Data[(Data["Galaxy_Morph_Simple"]=="S") & (Data["Circular_D25_Bool"]==False) & ((Data["D25_Min"]/Data["D25_Maj"])<0.2)]
+    Data_Spiral_Projected_Disk=Data_Spiral_Projected[Data_Spiral_Projected["Outside_Elliptical_D25_Bool"]==False]
+    Data_Spiral_Projected_Bulge=Data_Spiral_Projected[(Data_Spiral_Projected["Outside_Elliptical_D25_Bool"]==True) & (Data_Spiral_Projected["Outside_D25_Bool"]==False)]
     print("Data: ", Data)
     ObsID_A=Data["ObsID"]
     ObsID_L_Unique=list(set(list(ObsID_A)))
@@ -221,7 +442,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     #Source_Roll_A=Phi+Roll_Angle_A
     #Source_Roll_Rad_A=Source_Roll_A*(np.pi/180.0)
     Offaxis_Aera=Data["Offaxis_Angle_Annulus_Area"]
-    Gname_A=Data["Gname_Modifed"]
+    #Gname_A=Data["Gname_Modifed"] #Note: There is a typo in this key
+    #Gname_Modified
+    Gname_A=Data["Gname_Modified"]
     Galaxy_Morph_A=Data["Galaxy_Morph"]
     Data["Galaxy_Morph_Simple"]=np.vectorize(Morph_Check)(Galaxy_Morph_A)
     Data_Spiral=Data[Data["Galaxy_Morph_Simple"]=="S"]
@@ -230,6 +453,7 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     Area_A=Data["AREA"]
     Gname_L=list(Gname_A)
     Gname_L_Unique =[]
+    #'''
     #All
     Soft_Counts=Data["NET_COUNTS_0.3-1.0"]
     Medium_Counts=Data["NET_COUNTS_1.0-2.1"]
@@ -343,7 +567,7 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
             Gname_L_Unique.append(Gname)
     print("Gname_L_Unique: ", Gname_L_Unique)
     print("len(Gname_L_Unique): ", len(Gname_L_Unique))
-    """
+    #"""
     plt.plot(Backround_Rate, Count_Rate, ".")
     plt.ylim(-1, 1)
     plt.xlim(0, 0.2)
@@ -360,8 +584,34 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.savefig("Count_Rate_VS_Offaxis_Angle.pdf")
     plt.cla()
     plt.clf()
+    ##X_A=np.linspace(0,15,100)
+    #Y_A=Exp(X_A,53.33,0)
+    #Y_A=Exp(X_A,0.23,0,4)
+    #Y_A=Exp(X_A,0.23,100,4)
+    #Y_A=Exp(X_A,0.23,-1,100,4)
+    #Y_A=Exp(X_A,0.235,-1,100,4)
+    #Y_A=Exp(X_A,0.235,-1.6,100,4)
+    #Y_A=Exp(X_A,0.23,-1.6,100,4)
+    ##Y_A=Exp(X_A,0.23,-1.6,45,4)
+    #Y_A=Exp(X_A,0.225,-1.6,45,4)
+    #Y_A=Exp(X_A,0.225,-1.8,45,4)
+    ##Y_A=Exp(X_A,0.23,-1.6,44,4) #This is a good fit!
+    #plt.plot(X_A,Y_A)
     plt.plot(Offaxis_Angle, Area_A, ".")
+    ##plt.plot(X_A,Y_A)
     plt.savefig("Source_Area_VS_Offaxis_Angle.pdf")
+    #plt.show()
+    #return
+    plt.cla()
+    plt.clf()
+    #Data_Near_Chip_Edge
+    #plt.plot(Data_Near_Chip_Edge["Offaxis_Angle"], Data_Near_Chip_Edge["AREA"], ".")
+    plt.plot(Data_Away_Chip_Edge["Offaxis_Angle"], Data_Away_Chip_Edge["AREA"], ".", label='Away Chip Edge')
+    plt.plot(Data_Near_Chip_Edge["Offaxis_Angle"], Data_Near_Chip_Edge["AREA"], ".", label='Near Chip Edge')
+    plt.legend(loc="upper right")
+    plt.savefig("Source_Area_VS_Offaxis_Angle_Chip_Edge_Info.pdf")
+    #plt.show()
+    #return
     plt.cla()
     plt.clf()
     plt.hist(Offaxis_Angle,bins=20,range=(0,10))
@@ -373,7 +623,7 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.savefig("Source_Polar.pdf")
     plt.cla()
     plt.clf()
-    """
+    #"""
     #plt.polar(Source_Roll_Rad_A,Offaxis_Angle, ".")
     #plt.polar(Source_Roll_Rad_A,Offaxis_Angle, ".", alpha=0.3)
     plt.polar(Psi,Offaxis_Angle, ".", alpha=0.3)
@@ -527,11 +777,1286 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.cla()
     plt.clf()
     #plt.show()
+    #Hist=plt.hist(Data["NET_LUM_APER_0.3-7.5"],  bins=100, range=(10E42,10E44), cumulative=-1)
+    #Hist=plt.hist(Data["NET_LUM_APER_0.3-7.5"],  bins=100, range=(10E37,10E38), cumulative=-1)
+    Hist=plt.hist(Data["NET_LUM_APER_0.3-7.5"],  bins=100, range=(10E37,10E44), cumulative=-1)
+    #plt.savefig("XLF.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+    HC_Ratio_Flux_Spiral_Projected_Disk=Data_Spiral_Projected_Disk["Hard_Flux_Color"]
+    SC_Ratio_Flux_Spiral_Projected_Disk=Data_Spiral_Projected_Disk["Soft_Flux_Color"]
+    HC_Ratio_Flux_Spiral_Projected_Bulge=Data_Spiral_Projected_Bulge["Hard_Flux_Color"]
+    SC_Ratio_Flux_Spiral_Projected_Bulge=Data_Spiral_Projected_Bulge["Soft_Flux_Color"]
+    plt.plot(HC_Ratio_Flux_Spiral_Projected_Disk,SC_Ratio_Flux_Spiral_Projected_Disk,".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.plot(HC_Ratio_Flux_Spiral_Projected_Bulge,SC_Ratio_Flux_Spiral_Projected_Bulge,".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Flux_Spiral_Projected.pdf")
+    plt.cla()
+    plt.clf()
+    HC_Ratio_Counts_Spiral_Projected_Disk=Data_Spiral_Projected_Disk["Hard_Counts_Color"]
+    SC_Ratio_Counts_Spiral_Projected_Disk=Data_Spiral_Projected_Disk["Soft_Counts_Color"]
+    HC_Ratio_Counts_Spiral_Projected_Bulge=Data_Spiral_Projected_Bulge["Hard_Counts_Color"]
+    SC_Ratio_Counts_Spiral_Projected_Bulge=Data_Spiral_Projected_Bulge["Soft_Counts_Color"]
+    plt.plot(HC_Ratio_Counts_Spiral_Projected_Disk,SC_Ratio_Counts_Spiral_Projected_Disk,".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.plot(HC_Ratio_Counts_Spiral_Projected_Bulge,SC_Ratio_Counts_Spiral_Projected_Bulge,".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Counts_Spiral_Projected.pdf")
+    plt.cla()
+    plt.clf()
+    HC_Ratio_Flux=Data["Hard_Flux_Color"]
+    SC_Ratio_Flux=Data["Soft_Flux_Color"]
+    Source_Distance_From_GC_Elliptical_D25=Data["Source_Distance_From_GC_Elliptical_D25"]
+    #plt.plot(HC_Ratio_Flux,SC_Ratio_Flux,".", alpha=0.2)
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+    #ax.scatter3D(HC_Ratio_Flux, SC_Ratio_Flux, Source_Distance_From_GC_Elliptical_D25, c=Source_Distance_From_GC_Elliptical_D25)
+    #marker=".", alpha=0.2, vmax=10.0
+    ax.scatter3D(HC_Ratio_Flux, SC_Ratio_Flux, Source_Distance_From_GC_Elliptical_D25, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, vmax=10.0)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    #plt.zlim(1.0, 10)
+    ax.axes.set_zlim3d(bottom=0, top=10)
+    plt.savefig("Color_Color_Flux_Distance_3D.pdf")
+    plt.cla()
+    plt.clf()
 
-#Flux_Plotting()
+    plt.cla()
+    plt.clf()
+    HC_Ratio_Counts_Spiral_Projected_Disk=Data_Spiral_Projected_Disk["Hard_Counts_Color"]
+    SC_Ratio_Counts_Spiral_Projected_Disk=Data_Spiral_Projected_Disk["Soft_Counts_Color"]
+    HC_Ratio_Counts_Spiral_Projected_Bulge=Data_Spiral_Projected_Bulge["Hard_Counts_Color"]
+    SC_Ratio_Counts_Spiral_Projected_Bulge=Data_Spiral_Projected_Bulge["Soft_Counts_Color"]
+    plt.plot(HC_Ratio_Counts_Spiral_Projected_Disk,SC_Ratio_Counts_Spiral_Projected_Disk,".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.plot(HC_Ratio_Counts_Spiral_Projected_Bulge,SC_Ratio_Counts_Spiral_Projected_Bulge,".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Counts_Spiral_Projected.pdf")
+    plt.cla()
+    plt.clf()
+    HC_Ratio_Flux=Data["Hard_Flux_Color"]
+    SC_Ratio_Flux=Data["Soft_Flux_Color"]
+    Source_Distance_From_GC_Elliptical_D25=Data["Source_Distance_From_GC_Elliptical_D25"]
+    #plt.plot(HC_Ratio_Flux,SC_Ratio_Flux,".", alpha=0.2)
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+    #ax.scatter3D(HC_Ratio_Flux, SC_Ratio_Flux, Source_Distance_From_GC_Elliptical_D25, c=Source_Distance_From_GC_Elliptical_D25)
+    #marker=".", alpha=0.2, vmax=10.0
+    ax.scatter3D(HC_Ratio_Flux, SC_Ratio_Flux, Source_Distance_From_GC_Elliptical_D25, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, vmax=10.0)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    #plt.zlim(1.0, 10)
+    ax.axes.set_zlim3d(bottom=0, top=10)
+    #ax.view_init(30, 90)
+    ax.view_init(30, 75)
+    plt.savefig("Color_Color_Flux_Distance_3D_Side.pdf")
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    HC_Ratio_Counts_Spiral_Projected_Disk=Data_Spiral_Projected_Disk["Hard_Counts_Color"]
+    SC_Ratio_Counts_Spiral_Projected_Disk=Data_Spiral_Projected_Disk["Soft_Counts_Color"]
+    HC_Ratio_Counts_Spiral_Projected_Bulge=Data_Spiral_Projected_Bulge["Hard_Counts_Color"]
+    SC_Ratio_Counts_Spiral_Projected_Bulge=Data_Spiral_Projected_Bulge["Soft_Counts_Color"]
+    plt.plot(HC_Ratio_Counts_Spiral_Projected_Disk,SC_Ratio_Counts_Spiral_Projected_Disk,".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.plot(HC_Ratio_Counts_Spiral_Projected_Bulge,SC_Ratio_Counts_Spiral_Projected_Bulge,".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Counts_Spiral_Projected.pdf")
+    plt.cla()
+    plt.clf()
+    HC_Ratio_Flux=Data["Hard_Flux_Color"]
+    SC_Ratio_Flux=Data["Soft_Flux_Color"]
+    Source_Distance_From_GC_Elliptical_D25=Data["Source_Distance_From_GC_Elliptical_D25"]
+    #plt.plot(HC_Ratio_Flux,SC_Ratio_Flux,".", alpha=0.2)
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+    #ax.scatter3D(HC_Ratio_Flux, SC_Ratio_Flux, Source_Distance_From_GC_Elliptical_D25, c=Source_Distance_From_GC_Elliptical_D25)
+    #marker=".", alpha=0.2, vmax=10.0
+    ax.scatter3D(HC_Ratio_Flux, SC_Ratio_Flux, Source_Distance_From_GC_Elliptical_D25, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, vmax=10.0)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    #plt.zlim(1.0, 10)
+    ax.axes.set_zlim3d(bottom=0, top=10)
+    ax.view_init(30, 0)
+    plt.savefig("Color_Color_Flux_Distance_3D_Front.pdf")
+    plt.cla()
+    plt.clf()
+
+    HC_Ratio_Flux=Data["Hard_Flux_Color"]
+    SC_Ratio_Flux=Data["Soft_Flux_Color"]
+    Source_Distance_From_GC_Elliptical_D25=Data["Source_Distance_From_GC_Elliptical_D25"]
+    #plt.plot(Source_Distance_From_GC_Elliptical_D25, HC_Ratio_Flux,".", alpha=0.2)
+    plt.plot(HC_Ratio_Flux,Source_Distance_From_GC_Elliptical_D25,".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(0, 10)
+    plt.savefig("HC_vs_Distance.pdf")
+    plt.cla()
+    plt.clf()
+    HC_Ratio_Flux=Data["Hard_Flux_Color"]
+    SC_Ratio_Flux=Data["Soft_Flux_Color"]
+    Source_Distance_From_GC_Elliptical_D25=Data["Source_Distance_From_GC_Elliptical_D25"]
+    #plt.plot(Source_Distance_From_GC_Elliptical_D25, HC_Ratio_Flux,".", alpha=0.2)
+    plt.plot(SC_Ratio_Flux,Source_Distance_From_GC_Elliptical_D25,".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(0, 10)
+    plt.savefig("SC_vs_Distance.pdf")
+    plt.cla()
+    plt.clf()
+    HC_Ratio_Flux=Data["Hard_Flux_Color"]
+    SC_Ratio_Flux=Data["Soft_Flux_Color"]
+    Source_Distance_From_GC_Elliptical_D25=Data["Source_Distance_From_GC_Elliptical_D25"]
+    #plt.plot(HC_Ratio_Flux,SC_Ratio_Flux,".", alpha=0.2)
+    fig = plt.figure()
+    ax = plt.axes()
+    ax.scatter(HC_Ratio_Flux, SC_Ratio_Flux, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, vmax=10.0)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Flux_Distance.pdf")
+    plt.cla()
+    plt.clf()
+
+
+    HC_Ratio_Counts=Data["Hard_Counts_Color"]
+    SC_Ratio_Counts=Data["Soft_Counts_Color"]
+    Source_Distance_From_GC_Elliptical_D25=Data["Source_Distance_From_GC_Elliptical_D25"]
+    #plt.plot(Source_Distance_From_GC_Elliptical_D25, HC_Ratio_Counts,".", alpha=0.2)
+    plt.plot(HC_Ratio_Counts,Source_Distance_From_GC_Elliptical_D25,".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(0, 10)
+    plt.savefig("HC_Counts_vs_Distance.pdf")
+    plt.cla()
+    plt.clf()
+    HC_Ratio_Counts=Data["Hard_Counts_Color"]
+    SC_Ratio_Counts=Data["Soft_Counts_Color"]
+    Source_Distance_From_GC_Elliptical_D25=Data["Source_Distance_From_GC_Elliptical_D25"]
+    #plt.plot(Source_Distance_From_GC_Elliptical_D25, HC_Ratio_Counts,".", alpha=0.2)
+    plt.plot(SC_Ratio_Counts,Source_Distance_From_GC_Elliptical_D25,".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(0, 10)
+    plt.savefig("SC_Counts_vs_Distance.pdf")
+    plt.cla()
+    plt.clf()
+    HC_Ratio_Counts=Data["Hard_Counts_Color"]
+    SC_Ratio_Counts=Data["Soft_Counts_Color"]
+    Source_Distance_From_GC_Elliptical_D25=Data["Source_Distance_From_GC_Elliptical_D25"]
+    #plt.plot(HC_Ratio_Counts,SC_Ratio_Counts,".", alpha=0.2)
+    fig = plt.figure()
+    ax = plt.axes()
+    ax.scatter(HC_Ratio_Counts, SC_Ratio_Counts, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, vmax=10.0)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Counts_Distance.pdf")
+    plt.cla()
+    plt.clf()
+
+    Thermal_SN_Data=Thermal_SN_Calc(Data)
+    #Thermal_SNR_Data=Thermal_SN_Data[Thermal_SN_Data["Color_Color_Classification"]=="Thermal_SNR"]
+    Thermal_SNR_Data=Thermal_SNR_Calc(Data)
+    #XRB_Data=Thermal_SN_Data[Thermal_SN_Data["Color_Color_Classification"]=="XRB"]
+    XRB_Data=XRB_Calc(Data)
+    HC_Ratio_Flux_SN=Thermal_SN_Data["Hard_Flux_Color"]
+    SC_Ratio_Flux_SN=Thermal_SN_Data["Soft_Flux_Color"]
+    HC_Ratio_Flux_SNR=Thermal_SNR_Data["Hard_Flux_Color"]
+    SC_Ratio_Flux_SNR=Thermal_SNR_Data["Soft_Flux_Color"]
+    HC_Ratio_Flux_XRB=XRB_Data["Hard_Flux_Color"]
+    SC_Ratio_Flux_XRB=XRB_Data["Soft_Flux_Color"]
+
+    fig = plt.figure()
+    ax = plt.axes()
+    ax.scatter(HC_Ratio_Flux, SC_Ratio_Flux, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, vmax=10.0)
+    #ax.scatter(HC_Ratio_Flux_SN, SC_Ratio_Flux_SN, c="red", marker="o")
+    ax.scatter(HC_Ratio_Flux_SNR, SC_Ratio_Flux_SNR, c="red", marker="o")
+    ax.scatter(HC_Ratio_Flux_XRB, SC_Ratio_Flux_XRB, c="blue", marker="o")
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Flux_Distance_with_SN.pdf")
+    plt.cla()
+    plt.clf()
+
+    #Thermal_SN_Data=Thermal_SN_Calc()
+    HC_Ratio_Counts_SN=Thermal_SN_Data["Hard_Counts_Color"]
+    SC_Ratio_Counts_SN=Thermal_SN_Data["Soft_Counts_Color"]
+
+    HC_Ratio_Counts_SNR=Thermal_SNR_Data["Hard_Counts_Color"]
+    print("HC_Ratio_Counts_SNR:\n", HC_Ratio_Counts_SNR)
+    SC_Ratio_Counts_SNR=Thermal_SNR_Data["Soft_Counts_Color"]
+    print("SC_Ratio_Counts_SNR:\n", SC_Ratio_Counts_SNR)
+    HC_Ratio_Counts_XRB=XRB_Data["Hard_Counts_Color"]
+    print("HC_Ratio_Counts_XRB:\n", HC_Ratio_Counts_XRB)
+    SC_Ratio_Counts_XRB=XRB_Data["Soft_Counts_Color"]
+    print("SC_Ratio_Counts_XRB:\n", SC_Ratio_Counts_XRB)
+    #Soft_Counts_Color_Error
+
+    print("Thermal_SNR_Data:\n", Thermal_SNR_Data)
+    print("XRB_Data:\n", XRB_Data)
+
+    print('Thermal_SNR_Data["ObsID"]:\n ', Thermal_SNR_Data["ObsID"])
+    print('XRB_Data_Data["ObsID"]:\n ', XRB_Data["ObsID"])
+
+    fig = plt.figure()
+    ax = plt.axes()
+    ax.scatter(HC_Ratio_Counts, SC_Ratio_Counts, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, vmax=10.0)
+    #ax.scatter(HC_Ratio_Counts_SN, SC_Ratio_Counts_SN, c="red", marker="o")
+    ax.scatter(HC_Ratio_Counts_SNR, SC_Ratio_Counts_SNR, c="red", marker="o")
+    ax.scatter(HC_Ratio_Counts_XRB, SC_Ratio_Counts_XRB, c="blue", marker="o")
+    plt.errorbar(HC_Ratio_Counts_SNR, SC_Ratio_Counts_SNR, xerr=Thermal_SNR_Data["Hard_Counts_Color_Error"], yerr=Thermal_SNR_Data["Soft_Counts_Color_Error"], ls='none', c="red")
+    plt.errorbar(HC_Ratio_Counts_XRB, SC_Ratio_Counts_XRB, xerr=XRB_Data["Hard_Counts_Color_Error"], yerr=XRB_Data["Soft_Counts_Color_Error"], ls='none', c="blue")
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Counts_Distance_with_SN.pdf")
+    plt.cla()
+    plt.clf()
+    """
+    Soft_Counts=Data["NET_COUNTS_0.3-1.0"]
+    Medium_Counts=Data["NET_COUNTS_1.0-2.1"]
+    Hard_Counts=Data["NET_COUNTS_2.1-7.5"]
+    HC_Ratio=(Hard_Counts-Medium_Counts)/((Hard_Counts+Medium_Counts))
+    SC_Ratio=(Medium_Counts-Soft_Counts)/((Medium_Counts+Soft_Counts))
+    """
+    Alt_Soft_Counts=Data["NET_COUNTS_0.3-1.0"]
+    Alt_Medium_Counts=Data["NET_COUNTS_1.0-2.0"]
+    Alt_Hard_Counts=Data["NET_COUNTS_2.0-8.0"]
+    Alt_HC_Ratio=(Hard_Counts-Medium_Counts)/((Hard_Counts+Medium_Counts))
+    Alt_SC_Ratio=(Medium_Counts-Soft_Counts)/((Medium_Counts+Soft_Counts))
+    fig = plt.figure()
+    ax = plt.axes()
+    ax.scatter(HC_Ratio_Counts, SC_Ratio_Counts, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, vmax=10.0)
+    ax.scatter(HC_Ratio_Counts_SNR, SC_Ratio_Counts_SNR, c="red", marker="o")
+    ax.scatter(HC_Ratio_Counts_XRB, SC_Ratio_Counts_XRB, c="blue", marker="o")
+    plt.errorbar(HC_Ratio_Counts_SNR, SC_Ratio_Counts_SNR, xerr=Thermal_SNR_Data["Hard_Counts_Color_Error"], yerr=Thermal_SNR_Data["Soft_Counts_Color_Error"], ls='none', c="red")
+    plt.errorbar(HC_Ratio_Counts_XRB, SC_Ratio_Counts_XRB, xerr=XRB_Data["Hard_Counts_Color_Error"], yerr=XRB_Data["Soft_Counts_Color_Error"], ls='none', c="blue")
+    ax.scatter(Alt_HC_Ratio, Alt_SC_Ratio, c="black", marker=".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Counts_Distance_with_SN_with_Alt.pdf")
+    plt.cla()
+    plt.clf()
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    #NET_RATE_
+    Soft_Rate=Data["NET_RATE_0.3-1.0"]
+    Medium_Rate=Data["NET_RATE_1.0-2.1"]
+    Hard_Rate=Data["NET_RATE_2.1-7.5"]
+    #Beta
+    Soft_Beta=Soft_Flux/Soft_Rate
+    Medium_Beta=Medium_Flux/Medium_Rate
+    Hard_Beta=Hard_Flux/Hard_Rate
+    fig = plt.figure()
+    ax = plt.axes()
+    #HC_Ratio_Beta, SC_Ratio_Beta=Color_Color_Calc(Soft_Beta,Medium_Beta,Hard_Beta)
+    HC_Ratio_Beta=(Hard_Beta-Medium_Beta)/((Hard_Beta+Medium_Beta))
+    SC_Ratio_Beta=(Medium_Beta-Soft_Beta)/((Medium_Beta+Soft_Beta))
+    ax.scatter(HC_Ratio_Beta, SC_Ratio_Beta, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, vmax=10.0)
+    #ax.scatter(HC_Ratio_Counts_SNR, SC_Ratio_Counts_SNR, c="red", marker="o")
+    #ax.scatter(HC_Ratio_Counts_XRB, SC_Ratio_Counts_XRB, c="blue", marker="o")
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Beta_Distance.pdf")
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    #NET_RATE_
+    Soft_Rate=Data["NET_RATE_0.3-1.0"]
+    Medium_Rate=Data["NET_RATE_1.0-2.1"]
+    Hard_Rate=Data["NET_RATE_2.1-7.5"]
+    #Beta
+    Soft_Beta=Soft_Flux/Soft_Rate
+    Medium_Beta=Medium_Flux/Medium_Rate
+    Hard_Beta=Hard_Flux/Hard_Rate
+
+    Soft_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_2.1-7.5"]
+    #NET_RATE_
+    Soft_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_0.3-1.0"]
+    Medium_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_1.0-2.1"]
+    Hard_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_2.1-7.5"]
+    #Beta
+    Soft_Beta_Thermal_SNR=Soft_Flux_Thermal_SNR/Soft_Rate_Thermal_SNR
+    Medium_Beta_Thermal_SNR=Medium_Flux_Thermal_SNR/Medium_Rate_Thermal_SNR
+    Hard_Beta_Thermal_SNR=Hard_Flux/Hard_Rate_Thermal_SNR
+
+    Soft_Flux_XRB=XRB_Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux_XRB=XRB_Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux_XRB=XRB_Data["NET_FLUX_APER_2.1-7.5"]
+    #NET_RATE_
+    Soft_Rate_XRB=XRB_Data["NET_RATE_0.3-1.0"]
+    Medium_Rate_XRB=XRB_Data["NET_RATE_1.0-2.1"]
+    Hard_Rate_XRB=XRB_Data["NET_RATE_2.1-7.5"]
+    #Beta
+    Soft_Beta_XRB=Soft_Flux_XRB/Soft_Rate_XRB
+    Medium_Beta_XRB=Medium_Flux_XRB/Medium_Rate_XRB
+    Hard_Beta_XRB=Hard_Flux/Hard_Rate_XRB
+
+    """
+    HC_Ratio_Flux_SN=Thermal_SN_Data["Hard_Flux_Color"]
+    SC_Ratio_Flux_SN=Thermal_SN_Data["Soft_Flux_Color"]
+    HC_Ratio_Flux_SNR=Thermal_SNR_Data["Hard_Flux_Color"]
+    SC_Ratio_Flux_SNR=Thermal_SNR_Data["Soft_Flux_Color"]
+    HC_Ratio_Flux_XRB=XRB_Data["Hard_Flux_Color"]
+    SC_Ratio_Flux_XRB=XRB_Data["Soft_Flux_Color"]
+
+    """
+    fig = plt.figure()
+    ax = plt.axes()
+    #HC_Ratio_Beta, SC_Ratio_Beta=Color_Color_Calc(Soft_Beta,Medium_Beta,Hard_Beta)
+    HC_Ratio_Beta_Thermal_SNR=(Hard_Beta_Thermal_SNR-Medium_Beta_Thermal_SNR)/((Hard_Beta_Thermal_SNR+Medium_Beta_Thermal_SNR))
+    SC_Ratio_Beta_Thermal_SNR=(Medium_Beta-Soft_Beta_Thermal_SNR)/((Medium_Beta+Soft_Beta_Thermal_SNR))
+    HC_Ratio_Beta_Thermal_SNR=(Hard_Beta-Medium_Beta_Thermal_SNR)/((Hard_Beta+Medium_Beta_Thermal_SNR))
+    SC_Ratio_Beta_Thermal_SNR=(Medium_Beta-Soft_Beta_Thermal_SNR)/((Medium_Beta+Soft_Beta_Thermal_SNR))
+    HC_Ratio_Beta_XRB=(Hard_Beta-Medium_Beta_XRB)/((Hard_Beta+Medium_Beta_XRB))
+    SC_Ratio_Beta_XRB=(Medium_Beta-Soft_Beta_XRB)/((Medium_Beta+Soft_Beta_XRB))
+    ax.scatter(HC_Ratio_Beta, SC_Ratio_Beta, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, vmax=10.0)
+    ax.scatter(HC_Ratio_Beta_Thermal_SNR, SC_Ratio_Beta_Thermal_SNR, c="red", marker="o")
+    ax.scatter(HC_Ratio_Beta_XRB, SC_Ratio_Beta_XRB, c="blue", marker="o")
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Beta_Distance_With_SN.pdf")
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    #NET_RATE_
+    Soft_Rate=Data["NET_RATE_0.3-1.0"]
+    Medium_Rate=Data["NET_RATE_1.0-2.1"]
+    Hard_Rate=Data["NET_RATE_2.1-7.5"]
+    #Effective_Area
+    #Effective_Area_0.3-1.0
+    Soft_Effective_Area=Data["Effective_Area_0.3-1.0"]
+    Medium_Effective_Area=Data["Effective_Area_1.0-2.1"]
+    Hard_Effective_Area=Data["Effective_Area_2.1-7.5"]
+    #Rate_Effective_Area_Corrected
+    Soft_Rate_Effective_Area_Corrected=Soft_Rate/Soft_Effective_Area
+    Medium_Rate_Effective_Area_Corrected=Medium_Rate/Medium_Effective_Area
+    Hard_Rate_Effective_Area_Corrected=Hard_Rate/Hard_Effective_Area
+    #Beta
+    Soft_Beta=Soft_Flux/Soft_Rate_Effective_Area_Corrected
+    Medium_Beta=Medium_Flux/Medium_Rate_Effective_Area_Corrected
+    Hard_Beta=Hard_Flux/Hard_Rate_Effective_Area_Corrected
+
+    Soft_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_2.1-7.5"]
+    #NET_RATE_
+    Soft_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_0.3-1.0"]
+    Medium_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_1.0-2.1"]
+    Hard_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_2.1-7.5"]
+
+    Soft_Effective_Area_Thermal_SNR=Thermal_SNR_Data["Effective_Area_0.3-1.0"]
+    Medium_Effective_Area_Thermal_SNR=Thermal_SNR_Data["Effective_Area_1.0-2.1"]
+    Hard_Effective_Area_Thermal_SNR=Thermal_SNR_Data["Effective_Area_2.1-7.5"]
+    #Rate_Effective_Area_Corrected
+    Soft_Rate_Effective_Area_Corrected_Thermal_SNR=Soft_Rate/Soft_Effective_Area_Thermal_SNR
+    Medium_Rate_Effective_Area_Corrected_Thermal_SNR=Medium_Rate/Medium_Effective_Area_Thermal_SNR
+    Hard_Rate_Effective_Area_Corrected_Thermal_SNR=Hard_Rate/Hard_Effective_Area_Thermal_SNR
+
+    #Beta
+    Soft_Beta_Thermal_SNR=Soft_Flux_Thermal_SNR/Soft_Rate_Effective_Area_Corrected
+    Medium_Beta_Thermal_SNR=Medium_Flux_Thermal_SNR/Medium_Rate_Effective_Area_Corrected
+    Hard_Beta_Thermal_SNR=Hard_Flux_Thermal_SNR/Hard_Rate_Effective_Area_Corrected
+
+    Soft_Flux_XRB=XRB_Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux_XRB=XRB_Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux_XRB=XRB_Data["NET_FLUX_APER_2.1-7.5"]
+    #NET_RATE_
+    Soft_Rate_XRB=XRB_Data["NET_RATE_0.3-1.0"]
+    Medium_Rate_XRB=XRB_Data["NET_RATE_1.0-2.1"]
+    Hard_Rate_XRB=XRB_Data["NET_RATE_2.1-7.5"]
+
+    Soft_Effective_Area_XRB=XRB_Data["Effective_Area_0.3-1.0"]
+    Medium_Effective_Area_XRB=XRB_Data["Effective_Area_1.0-2.1"]
+    Hard_Effective_Area_XRB=XRB_Data["Effective_Area_2.1-7.5"]
+    #Rate_Effective_Area_Corrected
+    Soft_Rate_Effective_Area_Corrected_XRB=Soft_Rate_XRB/Soft_Effective_Area_XRB
+    Medium_Rate_Effective_Area_Corrected_XRB=Medium_Rate_XRB/Medium_Effective_Area_XRB
+    Hard_Rate_Effective_Area_Corrected_XRB=Hard_Rate_XRB/Hard_Effective_Area_XRB
+
+    #Beta
+    Soft_Beta_XRB=Soft_Flux_XRB/Soft_Rate_Effective_Area_Corrected_XRB
+    Medium_Beta_XRB=Medium_Flux_XRB/Medium_Rate_Effective_Area_Corrected_XRB
+    Hard_Beta_XRB=Hard_Flux/Hard_Rate_Effective_Area_Corrected_XRB
+
+
+    """
+    HC_Ratio_Flux_SN=Thermal_SN_Data["Hard_Flux_Color"]
+    SC_Ratio_Flux_SN=Thermal_SN_Data["Soft_Flux_Color"]
+    HC_Ratio_Flux_SNR=Thermal_SNR_Data["Hard_Flux_Color"]
+    SC_Ratio_Flux_SNR=Thermal_SNR_Data["Soft_Flux_Color"]
+    HC_Ratio_Flux_XRB=XRB_Data["Hard_Flux_Color"]
+    SC_Ratio_Flux_XRB=XRB_Data["Soft_Flux_Color"]
+
+    """
+    fig = plt.figure()
+    ax = plt.axes()
+    #HC_Ratio_Beta, SC_Ratio_Beta=Color_Color_Calc(Soft_Beta,Medium_Beta,Hard_Beta)
+    HC_Ratio_Beta=(Hard_Beta-Medium_Beta)/((Hard_Beta+Medium_Beta))
+    SC_Ratio_Beta=(Medium_Beta-Soft_Beta)/((Medium_Beta+Soft_Beta))
+    HC_Ratio_Beta_Thermal_SNR=(Hard_Beta_Thermal_SNR-Medium_Beta_Thermal_SNR)/((Hard_Beta_Thermal_SNR+Medium_Beta_Thermal_SNR))
+    SC_Ratio_Beta_Thermal_SNR=(Medium_Beta-Soft_Beta_Thermal_SNR)/((Medium_Beta+Soft_Beta_Thermal_SNR))
+    HC_Ratio_Beta_Thermal_SNR=(Hard_Beta-Medium_Beta_Thermal_SNR)/((Hard_Beta+Medium_Beta_Thermal_SNR))
+    SC_Ratio_Beta_Thermal_SNR=(Medium_Beta-Soft_Beta_Thermal_SNR)/((Medium_Beta+Soft_Beta_Thermal_SNR))
+    HC_Ratio_Beta_XRB=(Hard_Beta-Medium_Beta_XRB)/((Hard_Beta+Medium_Beta_XRB))
+    SC_Ratio_Beta_XRB=(Medium_Beta-Soft_Beta_XRB)/((Medium_Beta+Soft_Beta_XRB))
+    ax.scatter(HC_Ratio_Beta, SC_Ratio_Beta, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, vmax=10.0)
+    ax.scatter(HC_Ratio_Beta_Thermal_SNR, SC_Ratio_Beta_Thermal_SNR, c="red", marker="o")
+    ax.scatter(HC_Ratio_Beta_XRB, SC_Ratio_Beta_XRB, c="blue", marker="o")
+    plt.xlim(0, 1.0)
+    #plt.xlim(0.4, 0.8)
+    #plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Beta_Distance_With_SN_Effective_Area_Corrected.pdf")
+    #plt.savefig("Color_Color_Beta_Distance_With_SN_Zoomed_2.pdf")
+    plt.cla()
+    plt.clf()
+    #ax.scatter(HC_Ratio_Beta, SC_Ratio_Beta, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, vmax=10.0)
+    plt.plot(SC_Ratio_Beta,Source_Distance_From_GC_Elliptical_D25, ".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    #plt.ylim(0, 20.0)
+    plt.ylim(0, 10.0)
+    plt.savefig("SC_Ratio_Beta_vs_Distance.pdf")
+    plt.cla()
+    plt.clf()
+    plt.cla()
+    plt.clf()
+    Soft_Beta=Data["Beta_0.3-1.0"]
+    Medium_Beta=Data["Beta_1.0-2.1"]
+    Hard_Beta=Data["Beta_2.1-7.5"]
+    #Source_Distance_From_GC_Elliptical_D25
+    #plt.plot(Source_Distance_From_GC_Elliptical_D25, Soft_Beta, '.', alpha=0.2)
+    plt.plot(Soft_Beta, Source_Distance_From_GC_Elliptical_D25, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    plt.xlim(0, 10E-11)
+    plt.ylim(0, 10)
+    plt.savefig("Soft_Beta_vs_Distance.pdf")
+    plt.cla()
+    plt.clf()
+    Soft_Beta=Data["Beta_0.3-1.0"]
+    Medium_Beta=Data["Beta_1.0-2.1"]
+    Hard_Beta=Data["Beta_2.1-7.5"]
+    #Source_Distance_From_GC_Elliptical_D25
+    plt.plot(Medium_Beta, Source_Distance_From_GC_Elliptical_D25, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    plt.xlim(0, 10E-11)
+    plt.ylim(0, 10)
+    plt.savefig("Medium_Beta_vs_Distance.pdf")
+    plt.cla()
+    plt.clf()
+    plt.clf()
+    plt.clf()
+    Soft_Beta=Data["Beta_0.3-1.0"]
+    Medium_Beta=Data["Beta_1.0-2.1"]
+    Hard_Beta=Data["Beta_2.1-7.5"]
+    #Source_Distance_From_GC_Elliptical_D25
+    plt.plot(Hard_Beta, Source_Distance_From_GC_Elliptical_D25, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    plt.xlim(0, 10E-11)
+    plt.ylim(0, 10)
+    plt.savefig("Hard_Beta_vs_Distance.pdf")
+    plt.cla()
+    plt.clf()
+    Soft_Beta=Data["Beta_0.3-1.0"]
+    Medium_Beta=Data["Beta_1.0-2.1"]
+    Hard_Beta=Data["Beta_2.1-7.5"]
+    #Source_Distance_From_GC_Elliptical_D25
+    #plt.plot(Source_Distance_From_GC_Elliptical_D25, Soft_Beta, '.', alpha=0.2)
+    plt.plot(Soft_Beta, Source_Distance_From_GC_Elliptical_D25, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    plt.ylim(0, 4)
+    plt.xlim(0, 0.4E-11)
+    plt.savefig("Soft_Beta_vs_Distance_Zoomed.pdf")
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Soft_Beta=Data["Beta_0.3-1.0"]
+    Medium_Beta=Data["Beta_1.0-2.1"]
+    Hard_Beta=Data["Beta_2.1-7.5"]
+    #Source_Distance_From_GC_Elliptical_D25
+    #plt.plot(Source_Distance_From_GC_Elliptical_D25, Soft_Beta, '.', alpha=0.2)
+    plt.plot(Soft_Beta, Source_Distance_From_GC_Elliptical_D25, '.', alpha=0.2)
+    plt.plot(Medium_Beta, Source_Distance_From_GC_Elliptical_D25, '.', alpha=0.2)
+    plt.plot(Hard_Beta, Source_Distance_From_GC_Elliptical_D25, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    plt.xlim(0, 10E-11)
+    plt.ylim(0, 10)
+    plt.savefig("All_Beta_vs_Distance.pdf")
+    plt.cla()
+    plt.clf()
+
+
+    plt.cla()
+    plt.clf()
+    Soft_Beta=Data["Beta_0.3-1.0"]
+    Medium_Beta=Data["Beta_1.0-2.1"]
+    Hard_Beta=Data["Beta_2.1-7.5"]
+    #Source_Distance_From_GC_Elliptical_D25
+    #plt.plot(Source_Distance_From_GC_Elliptical_D25, Soft_Beta, '.', alpha=0.2)
+    plt.hist(Soft_Beta, bins=100, range=(0, 10E-11))
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    plt.savefig("Soft_Beta_Hist.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+    Soft_Beta=Data["Beta_0.3-1.0"]
+    Medium_Beta=Data["Beta_1.0-2.1"]
+    Hard_Beta=Data["Beta_2.1-7.5"]
+    #Source_Distance_From_GC_Elliptical_D25
+    #plt.plot(Source_Distance_From_GC_Elliptical_D25, Soft_Beta, '.', alpha=0.2)
+    plt.hist(Medium_Beta, bins=100, range=(0, 10E-11))
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    plt.savefig("Medium_Beta_Hist.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+    Soft_Beta=Data["Beta_0.3-1.0"]
+    Medium_Beta=Data["Beta_1.0-2.1"]
+    Hard_Beta=Data["Beta_2.1-7.5"]
+    #Source_Distance_From_GC_Elliptical_D25
+    #plt.plot(Source_Distance_From_GC_Elliptical_D25, Soft_Beta, '.', alpha=0.2)
+    plt.hist(Hard_Beta, bins=100, range=(0, 10E-11))
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    plt.savefig("Hard_Beta_Hist.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Soft_Beta=Data["Beta_0.3-1.0"]
+    Medium_Beta=Data["Beta_1.0-2.1"]
+    Hard_Beta=Data["Beta_2.1-7.5"]
+    #Source_Distance_From_GC_Elliptical_D25
+    #plt.plot(Source_Distance_From_GC_Elliptical_D25, Soft_Beta, '.', alpha=0.2)
+    plt.hist(Soft_Beta, bins=100, range=(0, 10E-11), alpha=0.2)
+    plt.hist(Medium_Beta, bins=100, range=(0, 10E-11), alpha=0.2)
+    plt.hist(Hard_Beta, bins=100, range=(0, 10E-11), alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    plt.savefig("All_Beta_Hist.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+
+    plt.cla()
+    plt.clf()
+    Soft_Beta=Data["Beta_0.3-1.0"]
+    Medium_Beta=Data["Beta_1.0-2.1"]
+    Hard_Beta=Data["Beta_2.1-7.5"]
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, Soft_Beta, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    plt.ylim(0, 10E-11)
+    plt.savefig("Soft_Beta_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Soft_Beta=Data["Beta_0.3-1.0"]
+    Medium_Beta=Data["Beta_1.0-2.1"]
+    Hard_Beta=Data["Beta_2.1-7.5"]
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, Medium_Beta, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    plt.ylim(0, 10E-11)
+    plt.savefig("Medium_Beta_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Soft_Beta=Data["Beta_0.3-1.0"]
+    Medium_Beta=Data["Beta_1.0-2.1"]
+    Hard_Beta=Data["Beta_2.1-7.5"]
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, Hard_Beta, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    plt.ylim(0, 10E-11)
+    plt.savefig("Hard_Beta_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    #NET_RATE_
+    Soft_Rate=Data["NET_RATE_0.3-1.0"]
+    Medium_Rate=Data["NET_RATE_1.0-2.1"]
+    Hard_Rate=Data["NET_RATE_2.1-7.5"]
+    #Effective_Area
+    #Effective_Area_0.3-1.0
+    Soft_Effective_Area=Data["Effective_Area_0.3-1.0"]
+    Medium_Effective_Area=Data["Effective_Area_1.0-2.1"]
+    Hard_Effective_Area=Data["Effective_Area_2.1-7.5"]
+    #Rate_Effective_Area_Corrected
+    Soft_Rate_Effective_Area_Corrected=Soft_Rate/Soft_Effective_Area
+    Medium_Rate_Effective_Area_Corrected=Medium_Rate/Medium_Effective_Area
+    Hard_Rate_Effective_Area_Corrected=Hard_Rate/Hard_Effective_Area
+    #Beta
+    Soft_Beta=Soft_Flux/Soft_Rate_Effective_Area_Corrected
+    Medium_Beta=Medium_Flux/Medium_Rate_Effective_Area_Corrected
+    Hard_Beta=Hard_Flux/Hard_Rate_Effective_Area_Corrected
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, Soft_Beta, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    plt.ylim(0, 10E-11)
+    plt.savefig("Soft_Beta_Effective_Area_Corrected_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    #NET_RATE_
+    Soft_Rate=Data["NET_RATE_0.3-1.0"]
+    Medium_Rate=Data["NET_RATE_1.0-2.1"]
+    Hard_Rate=Data["NET_RATE_2.1-7.5"]
+    #Effective_Area
+    #Effective_Area_0.3-1.0
+    Soft_Effective_Area=Data["Effective_Area_0.3-1.0"]
+    Medium_Effective_Area=Data["Effective_Area_1.0-2.1"]
+    Hard_Effective_Area=Data["Effective_Area_2.1-7.5"]
+    #Rate_Effective_Area_Corrected
+    Soft_Rate_Effective_Area_Corrected=Soft_Rate/Soft_Effective_Area
+    Medium_Rate_Effective_Area_Corrected=Medium_Rate/Medium_Effective_Area
+    Hard_Rate_Effective_Area_Corrected=Hard_Rate/Hard_Effective_Area
+    #Beta
+    Soft_Beta=Soft_Flux/Soft_Rate_Effective_Area_Corrected
+    Medium_Beta=Medium_Flux/Medium_Rate_Effective_Area_Corrected
+    Hard_Beta=Hard_Flux/Hard_Rate_Effective_Area_Corrected
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, Medium_Beta, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    plt.ylim(0, 10E-11)
+    plt.savefig("Medium_Beta_Effective_Area_Corrected_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    #NET_RATE_
+    Soft_Rate=Data["NET_RATE_0.3-1.0"]
+    Medium_Rate=Data["NET_RATE_1.0-2.1"]
+    Hard_Rate=Data["NET_RATE_2.1-7.5"]
+    #Effective_Area
+    #Effective_Area_0.3-1.0
+    Soft_Effective_Area=Data["Effective_Area_0.3-1.0"]
+    Medium_Effective_Area=Data["Effective_Area_1.0-2.1"]
+    Hard_Effective_Area=Data["Effective_Area_2.1-7.5"]
+    #Rate_Effective_Area_Corrected
+    Soft_Rate_Effective_Area_Corrected=Soft_Rate/Soft_Effective_Area
+    Medium_Rate_Effective_Area_Corrected=Medium_Rate/Medium_Effective_Area
+    Hard_Rate_Effective_Area_Corrected=Hard_Rate/Hard_Effective_Area
+    #Beta
+    Soft_Beta=Soft_Flux/Soft_Rate_Effective_Area_Corrected
+    Medium_Beta=Medium_Flux/Medium_Rate_Effective_Area_Corrected
+    Hard_Beta=Hard_Flux/Hard_Rate_Effective_Area_Corrected
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, Hard_Beta, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    plt.ylim(0, 10E-11)
+    plt.savefig("Hard_Beta_Effective_Area_Corrected_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    #Soft_Rate_Effective_Area_Corrected
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, Soft_Rate, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 0.01)
+    plt.ylim(0, 0.002)
+    plt.savefig("Soft_Rate_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    #Soft_Rate_Effective_Area_Corrected
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, Soft_Rate_Effective_Area_Corrected, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    #plt.ylim(0, 0.01)
+    plt.ylim(0, 0.002)
+    plt.savefig("Soft_Rate_Effective_Area_Corrected_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    #Medium_Rate_Effective_Area_Corrected
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, Medium_Rate, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 0.01)
+    plt.ylim(0, 0.002)
+    plt.savefig("Medium_Rate_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    #Medium_Rate_Effective_Area_Corrected
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, Medium_Rate_Effective_Area_Corrected, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    #plt.ylim(0, 0.01)
+    plt.ylim(0, 0.002)
+    plt.savefig("Medium_Rate_Effective_Area_Corrected_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    #Hard_Rate_Effective_Area_Corrected
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, Hard_Rate, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 0.01)
+    plt.ylim(0, 0.002)
+    plt.savefig("Hard_Rate_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    #Hard_Rate_Effective_Area_Corrected
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, Hard_Rate_Effective_Area_Corrected, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    #plt.ylim(0, 0.01)
+    plt.ylim(0, 0.002)
+    plt.savefig("Hard_Rate_Effective_Area_Corrected_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+
+    plt.cla()
+    plt.clf()
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, Soft_Flux, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    #plt.ylim(10E-15, 10E-14)
+    plt.ylim(10E-16, 10E-13)
+    plt.savefig("Soft_Flux_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, Medium_Flux, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    #plt.ylim(10E-15, 10E-14)
+    plt.ylim(10E-16, 10E-13)
+    plt.savefig("Medium_Flux_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, Hard_Flux, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    #plt.ylim(10E-15, 10E-14)
+    plt.ylim(10E-16, 10E-13)
+    plt.savefig("Hard_Flux_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+
+    #"""
+    plt.cla()
+    plt.clf()
+    Thermal_SN_Data=Thermal_SN_Calc(Data)
+    #Thermal_SNR_Data=Thermal_SN_Data[Thermal_SN_Data["Color_Color_Classification"]=="Thermal_SNR"]
+    Thermal_SNR_Data=Thermal_SNR_Calc(Data)
+    #XRB_Data=Thermal_SN_Data[Thermal_SN_Data["Color_Color_Classification"]=="XRB"]
+    XRB_Data=XRB_Calc(Data)
+    HC_Ratio_Flux=Data["Hard_Flux_Color"]
+    SC_Ratio_Flux=Data["Soft_Flux_Color"]
+    HC_Ratio_Flux_SN=Thermal_SN_Data["Hard_Flux_Color"]
+    SC_Ratio_Flux_SN=Thermal_SN_Data["Soft_Flux_Color"]
+    HC_Ratio_Flux_SNR=Thermal_SNR_Data["Hard_Flux_Color"]
+    SC_Ratio_Flux_SNR=Thermal_SNR_Data["Soft_Flux_Color"]
+    HC_Ratio_Flux_XRB=XRB_Data["Hard_Flux_Color"]
+    SC_Ratio_Flux_XRB=XRB_Data["Soft_Flux_Color"]
+
+    fig = plt.figure()
+    ax = plt.axes()
+    ##ax.scatter(HC_Ratio_Flux, SC_Ratio_Flux, c=Start_Date, marker=".", alpha=0.2)
+    Start_Date_L=list(Start_Date)
+    Start_Timestamp_L=[]
+    for Date in Start_Date_L:
+        #date_object = datetime.strptime(date_str, '%m-%d-%Y').date()
+        #1999-12-05T21:37:28
+        #Cur_Date=datetime.strptime(Date, '%Y-%m-%dT%H:%M:%S').date()
+        Cur_Date=datetime.strptime(Date, '%Y-%m-%dT%H:%M:%S')
+        Cur_Timestamp=Cur_Date.timestamp()
+        Start_Timestamp_L.append(Cur_Timestamp)
+    ax.scatter(HC_Ratio_Flux, SC_Ratio_Flux, c=Start_Timestamp_L, marker=".", alpha=0.2)
+    #ax.scatter(HC_Ratio_Flux_SN, SC_Ratio_Flux_SN, c="red", marker="o")
+    ax.scatter(HC_Ratio_Flux_SNR, SC_Ratio_Flux_SNR, c="red", marker="o")
+    ax.scatter(HC_Ratio_Flux_XRB, SC_Ratio_Flux_XRB, c="blue", marker="o")
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Flux_Start_Date_with_SN.pdf")
+    plt.cla()
+    plt.clf()
+    #"""
+
+    plt.cla()
+    plt.clf()
+    Soft_Beta_Color=Data["Soft_Beta_Color"]
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, Soft_Beta_Color, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Soft_Beta_Color_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    #Soft_Beta_Color=Data["Soft_Beta_Color"]
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    #NET_RATE_
+    Soft_Rate=Data["NET_RATE_0.3-1.0"]
+    Medium_Rate=Data["NET_RATE_1.0-2.1"]
+    Hard_Rate=Data["NET_RATE_2.1-7.5"]
+    #Effective_Area
+    #Effective_Area_0.3-1.0
+    Soft_Effective_Area=Data["Effective_Area_0.3-1.0"]
+    Medium_Effective_Area=Data["Effective_Area_1.0-2.1"]
+    Hard_Effective_Area=Data["Effective_Area_2.1-7.5"]
+    #Rate_Effective_Area_Corrected
+    Soft_Rate_Effective_Area_Corrected=Soft_Rate/Soft_Effective_Area
+    Medium_Rate_Effective_Area_Corrected=Medium_Rate/Medium_Effective_Area
+    Hard_Rate_Effective_Area_Corrected=Hard_Rate/Hard_Effective_Area
+    #Beta
+    Soft_Beta=Soft_Flux/Soft_Rate_Effective_Area_Corrected
+    Medium_Beta=Medium_Flux/Medium_Rate_Effective_Area_Corrected
+    Hard_Beta=Hard_Flux/Hard_Rate_Effective_Area_Corrected
+    #HC_Ratio_Beta=(Hard_Beta-Medium_Beta)/((Hard_Beta+Medium_Beta))
+    SC_Ratio_Beta=(Medium_Beta-Soft_Beta)/((Medium_Beta+Soft_Beta))
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, SC_Ratio_Beta, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Soft_Beta_Color_Effective_Area_Corrected_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Hard_Beta_Color=Data["Hard_Beta_Color"]
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, Hard_Beta_Color, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Hard_Beta_Color_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    #Soft_Beta_Color=Data["Soft_Beta_Color"]
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    #NET_RATE_
+    Soft_Rate=Data["NET_RATE_0.3-1.0"]
+    Medium_Rate=Data["NET_RATE_1.0-2.1"]
+    Hard_Rate=Data["NET_RATE_2.1-7.5"]
+    #Effective_Area
+    #Effective_Area_0.3-1.0
+    Soft_Effective_Area=Data["Effective_Area_0.3-1.0"]
+    Medium_Effective_Area=Data["Effective_Area_1.0-2.1"]
+    Hard_Effective_Area=Data["Effective_Area_2.1-7.5"]
+    #Rate_Effective_Area_Corrected
+    Soft_Rate_Effective_Area_Corrected=Soft_Rate/Soft_Effective_Area
+    Medium_Rate_Effective_Area_Corrected=Medium_Rate/Medium_Effective_Area
+    Hard_Rate_Effective_Area_Corrected=Hard_Rate/Hard_Effective_Area
+    #Beta
+    Soft_Beta=Soft_Flux/Soft_Rate_Effective_Area_Corrected
+    Medium_Beta=Medium_Flux/Medium_Rate_Effective_Area_Corrected
+    Hard_Beta=Hard_Flux/Hard_Rate_Effective_Area_Corrected
+    HC_Ratio_Beta=(Hard_Beta-Medium_Beta)/((Hard_Beta+Medium_Beta))
+    #SC_Ratio_Beta=(Medium_Beta-Soft_Beta)/((Medium_Beta+Soft_Beta))
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, HC_Ratio_Beta, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Hard_Beta_Color_Effective_Area_Corrected_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Soft_Flux_Color=Data["Soft_Flux_Color"]
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, Soft_Flux_Color, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Soft_Flux_Color_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Hard_Flux_Color=Data["Hard_Flux_Color"]
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, Hard_Flux_Color, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Hard_Flux_Color_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+
+
+
+    plt.cla()
+    plt.clf()
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    #NET_RATE_
+    Soft_Rate=Data["NET_RATE_0.3-1.0"]
+    Medium_Rate=Data["NET_RATE_1.0-2.1"]
+    Hard_Rate=Data["NET_RATE_2.1-7.5"]
+    #Beta
+    Soft_Beta=Soft_Flux/Soft_Rate
+    Medium_Beta=Medium_Flux/Medium_Rate
+    Hard_Beta=Hard_Flux/Hard_Rate
+
+    Soft_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_2.1-7.5"]
+    #NET_RATE_
+    Soft_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_0.3-1.0"]
+    Medium_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_1.0-2.1"]
+    Hard_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_2.1-7.5"]
+    #Beta
+    Soft_Beta_Thermal_SNR=Soft_Flux_Thermal_SNR/Soft_Rate_Thermal_SNR
+    Medium_Beta_Thermal_SNR=Medium_Flux_Thermal_SNR/Medium_Rate_Thermal_SNR
+    Hard_Beta_Thermal_SNR=Hard_Flux/Hard_Rate_Thermal_SNR
+
+    Soft_Flux_XRB=XRB_Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux_XRB=XRB_Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux_XRB=XRB_Data["NET_FLUX_APER_2.1-7.5"]
+    #NET_RATE_
+    Soft_Rate_XRB=XRB_Data["NET_RATE_0.3-1.0"]
+    Medium_Rate_XRB=XRB_Data["NET_RATE_1.0-2.1"]
+    Hard_Rate_XRB=XRB_Data["NET_RATE_2.1-7.5"]
+    #Beta
+    Soft_Beta_XRB=Soft_Flux_XRB/Soft_Rate_XRB
+    Medium_Beta_XRB=Medium_Flux_XRB/Medium_Rate_XRB
+    Hard_Beta_XRB=Hard_Flux/Hard_Rate_XRB
+
+    """
+    HC_Ratio_Flux_SN=Thermal_SN_Data["Hard_Flux_Color"]
+    SC_Ratio_Flux_SN=Thermal_SN_Data["Soft_Flux_Color"]
+    HC_Ratio_Flux_SNR=Thermal_SNR_Data["Hard_Flux_Color"]
+    SC_Ratio_Flux_SNR=Thermal_SNR_Data["Soft_Flux_Color"]
+    HC_Ratio_Flux_XRB=XRB_Data["Hard_Flux_Color"]
+    SC_Ratio_Flux_XRB=XRB_Data["Soft_Flux_Color"]
+
+    """
+    fig = plt.figure()
+    ax = plt.axes()
+    #HC_Ratio_Beta, SC_Ratio_Beta=Color_Color_Calc(Soft_Beta,Medium_Beta,Hard_Beta)
+    HC_Ratio_Beta_Thermal_SNR=(Hard_Beta_Thermal_SNR-Medium_Beta_Thermal_SNR)/((Hard_Beta_Thermal_SNR+Medium_Beta_Thermal_SNR))
+    SC_Ratio_Beta_Thermal_SNR=(Medium_Beta-Soft_Beta_Thermal_SNR)/((Medium_Beta+Soft_Beta_Thermal_SNR))
+    HC_Ratio_Beta_Thermal_SNR=(Hard_Beta-Medium_Beta_Thermal_SNR)/((Hard_Beta+Medium_Beta_Thermal_SNR))
+    SC_Ratio_Beta_Thermal_SNR=(Medium_Beta-Soft_Beta_Thermal_SNR)/((Medium_Beta+Soft_Beta_Thermal_SNR))
+    HC_Ratio_Beta_XRB=(Hard_Beta-Medium_Beta_XRB)/((Hard_Beta+Medium_Beta_XRB))
+    SC_Ratio_Beta_XRB=(Medium_Beta-Soft_Beta_XRB)/((Medium_Beta+Soft_Beta_XRB))
+    ax.scatter(HC_Ratio_Beta, SC_Ratio_Beta, c=Start_Timestamp_L, marker=".", alpha=0.2)
+    ax.scatter(HC_Ratio_Beta_Thermal_SNR, SC_Ratio_Beta_Thermal_SNR, c="red", marker="o")
+    ax.scatter(HC_Ratio_Beta_XRB, SC_Ratio_Beta_XRB, c="blue", marker="o")
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Beta_Start_Date_With_SN.pdf")
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    #NET_RATE_
+    Soft_Rate=Data["NET_RATE_0.3-1.0"]
+    Medium_Rate=Data["NET_RATE_1.0-2.1"]
+    Hard_Rate=Data["NET_RATE_2.1-7.5"]
+    #Effective_Area
+    #Effective_Area_0.3-1.0
+    Soft_Effective_Area=Data["Effective_Area_0.3-1.0"]
+    Medium_Effective_Area=Data["Effective_Area_1.0-2.1"]
+    Hard_Effective_Area=Data["Effective_Area_2.1-7.5"]
+    #Rate_Effective_Area_Corrected
+    Soft_Rate_Effective_Area_Corrected=Soft_Rate/Soft_Effective_Area
+    Medium_Rate_Effective_Area_Corrected=Medium_Rate/Medium_Effective_Area
+    Hard_Rate_Effective_Area_Corrected=Hard_Rate/Hard_Effective_Area
+    #Beta
+    Soft_Beta=Soft_Flux/Soft_Rate_Effective_Area_Corrected
+    Medium_Beta=Medium_Flux/Medium_Rate_Effective_Area_Corrected
+    Hard_Beta=Hard_Flux/Hard_Rate_Effective_Area_Corrected
+
+    Soft_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_2.1-7.5"]
+    #NET_RATE_
+    Soft_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_0.3-1.0"]
+    Medium_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_1.0-2.1"]
+    Hard_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_2.1-7.5"]
+
+    Soft_Effective_Area_Thermal_SNR=Thermal_SNR_Data["Effective_Area_0.3-1.0"]
+    Medium_Effective_Area_Thermal_SNR=Thermal_SNR_Data["Effective_Area_1.0-2.1"]
+    Hard_Effective_Area_Thermal_SNR=Thermal_SNR_Data["Effective_Area_2.1-7.5"]
+    #Rate_Effective_Area_Corrected
+    Soft_Rate_Effective_Area_Corrected_Thermal_SNR=Soft_Rate/Soft_Effective_Area_Thermal_SNR
+    Medium_Rate_Effective_Area_Corrected_Thermal_SNR=Medium_Rate/Medium_Effective_Area_Thermal_SNR
+    Hard_Rate_Effective_Area_Corrected_Thermal_SNR=Hard_Rate/Hard_Effective_Area_Thermal_SNR
+
+    #Beta
+    Soft_Beta_Thermal_SNR=Soft_Flux_Thermal_SNR/Soft_Rate_Effective_Area_Corrected
+    Medium_Beta_Thermal_SNR=Medium_Flux_Thermal_SNR/Medium_Rate_Effective_Area_Corrected
+    Hard_Beta_Thermal_SNR=Hard_Flux_Thermal_SNR/Hard_Rate_Effective_Area_Corrected
+
+    Soft_Flux_XRB=XRB_Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux_XRB=XRB_Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux_XRB=XRB_Data["NET_FLUX_APER_2.1-7.5"]
+    #NET_RATE_
+    Soft_Rate_XRB=XRB_Data["NET_RATE_0.3-1.0"]
+    Medium_Rate_XRB=XRB_Data["NET_RATE_1.0-2.1"]
+    Hard_Rate_XRB=XRB_Data["NET_RATE_2.1-7.5"]
+
+    Soft_Effective_Area_XRB=XRB_Data["Effective_Area_0.3-1.0"]
+    Medium_Effective_Area_XRB=XRB_Data["Effective_Area_1.0-2.1"]
+    Hard_Effective_Area_XRB=XRB_Data["Effective_Area_2.1-7.5"]
+    #Rate_Effective_Area_Corrected
+    Soft_Rate_Effective_Area_Corrected_XRB=Soft_Rate_XRB/Soft_Effective_Area_XRB
+    Medium_Rate_Effective_Area_Corrected_XRB=Medium_Rate_XRB/Medium_Effective_Area_XRB
+    Hard_Rate_Effective_Area_Corrected_XRB=Hard_Rate_XRB/Hard_Effective_Area_XRB
+
+    #Beta
+    Soft_Beta_XRB=Soft_Flux_XRB/Soft_Rate_Effective_Area_Corrected_XRB
+    Medium_Beta_XRB=Medium_Flux_XRB/Medium_Rate_Effective_Area_Corrected_XRB
+    Hard_Beta_XRB=Hard_Flux/Hard_Rate_Effective_Area_Corrected_XRB
+
+
+    """
+    HC_Ratio_Flux_SN=Thermal_SN_Data["Hard_Flux_Color"]
+    SC_Ratio_Flux_SN=Thermal_SN_Data["Soft_Flux_Color"]
+    HC_Ratio_Flux_SNR=Thermal_SNR_Data["Hard_Flux_Color"]
+    SC_Ratio_Flux_SNR=Thermal_SNR_Data["Soft_Flux_Color"]
+    HC_Ratio_Flux_XRB=XRB_Data["Hard_Flux_Color"]
+    SC_Ratio_Flux_XRB=XRB_Data["Soft_Flux_Color"]
+
+    """
+    fig = plt.figure()
+    ax = plt.axes()
+    #HC_Ratio_Beta, SC_Ratio_Beta=Color_Color_Calc(Soft_Beta,Medium_Beta,Hard_Beta)
+    HC_Ratio_Beta=(Hard_Beta-Medium_Beta)/((Hard_Beta+Medium_Beta))
+    SC_Ratio_Beta=(Medium_Beta-Soft_Beta)/((Medium_Beta+Soft_Beta))
+    HC_Ratio_Beta_Thermal_SNR=(Hard_Beta_Thermal_SNR-Medium_Beta_Thermal_SNR)/((Hard_Beta_Thermal_SNR+Medium_Beta_Thermal_SNR))
+    SC_Ratio_Beta_Thermal_SNR=(Medium_Beta-Soft_Beta_Thermal_SNR)/((Medium_Beta+Soft_Beta_Thermal_SNR))
+    HC_Ratio_Beta_Thermal_SNR=(Hard_Beta-Medium_Beta_Thermal_SNR)/((Hard_Beta+Medium_Beta_Thermal_SNR))
+    SC_Ratio_Beta_Thermal_SNR=(Medium_Beta-Soft_Beta_Thermal_SNR)/((Medium_Beta+Soft_Beta_Thermal_SNR))
+    HC_Ratio_Beta_XRB=(Hard_Beta-Medium_Beta_XRB)/((Hard_Beta+Medium_Beta_XRB))
+    SC_Ratio_Beta_XRB=(Medium_Beta-Soft_Beta_XRB)/((Medium_Beta+Soft_Beta_XRB))
+    ax.scatter(HC_Ratio_Beta, SC_Ratio_Beta, c=Start_Timestamp_L, marker=".", alpha=0.2)
+    ax.scatter(HC_Ratio_Beta_Thermal_SNR, SC_Ratio_Beta_Thermal_SNR, c="red", marker="o")
+    ax.scatter(HC_Ratio_Beta_XRB, SC_Ratio_Beta_XRB, c="blue", marker="o")
+    plt.xlim(0, 1.0)
+    #plt.xlim(0.4, 0.8)
+    #plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Beta_Start_Date_With_SN_Effective_Area_Corrected.pdf")
+    #plt.savefig("Color_Color_Beta_Distance_With_SN_Zoomed_2.pdf")
+    #'''
+    plt.cla()
+    plt.clf()
+    Limiting_Flux_A=Data["Limiting_Flux"]
+    Flux_A=Data["NET_FLUX_APER_0.3-8.0"]
+    plt.loglog(Limiting_Flux_A, Flux_A, '.', alpha=0.2)
+    plt.loglog(Limiting_Flux_A, Limiting_Flux_A, '.', alpha=0.2)
+    plt.xlim(1E-19, 1E-9)
+    plt.ylim(1E-19, 1E-9)
+    plt.xlabel("Limiting_Flux (erg/s*cm^2)")
+    plt.ylabel("Flux (erg/s*cm^2)")
+    plt.savefig("Flux_vs_Limiting_Flux.pdf")
+    plt.cla()
+    plt.clf()
+    Galactic_Distance_A=Data["Galactic_Distance"]
+    Soft_Counts_Effective_Area_Corrected=Data["NET_COUNTS_AREA_CORRECTED_0.3-1.0"]
+    Medium_Counts_Effective_Area_Corrected=Data["NET_COUNTS_AREA_CORRECTED_1.0-2.1"]
+    Hard_Counts_Effective_Area_Corrected=Data["NET_COUNTS_AREA_CORRECTED_2.1-7.5"]
+    Soft_Counts_Distance_Adjusted=Soft_Counts_Effective_Area_Corrected/(4.0*np.pi*(Galactic_Distance_A**2.0))
+    Medium_Counts_Distance_Adjusted=Medium_Counts_Effective_Area_Corrected/(4.0*np.pi*(Galactic_Distance_A**2.0))
+    Hard_Counts_Distance_Adjusted=Hard_Counts_Effective_Area_Corrected/(4.0*np.pi*(Galactic_Distance_A**2.0))
+    #4.0*np.pi*(Galactic_Distance_A**2.0)
+    fig = plt.figure()
+    ax = plt.axes()
+    #HC_Ratio_Beta, SC_Ratio_Beta=Color_Color_Calc(Soft_Beta,Medium_Beta,Hard_Beta)
+    HC_Ratio_Counts_Distance_Adjusted=(Hard_Counts_Distance_Adjusted-Medium_Counts_Distance_Adjusted)/((Hard_Counts_Distance_Adjusted+Medium_Counts_Distance_Adjusted))
+    SC_Ratio_Counts_Distance_Adjusted=(Medium_Counts_Distance_Adjusted-Soft_Counts_Distance_Adjusted)/((Medium_Counts_Distance_Adjusted+Soft_Counts_Distance_Adjusted))
+    ax.scatter(HC_Ratio_Counts_Distance_Adjusted, SC_Ratio_Counts_Distance_Adjusted, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, vmax=10.0)
+    #ax.scatter(HC_Ratio_Counts_SNR, SC_Ratio_Counts_SNR, c="red", marker="o")
+    #ax.scatter(HC_Ratio_Counts_XRB, SC_Ratio_Counts_XRB, c="blue", marker="o")
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Counts_Galactic_Distance_Adjusted_Distance.pdf")
+    plt.cla()
+    plt.clf()
+
+Flux_Plotting()
 #print(Morph_Check("SAB(s)bc"))
 #print(Morph_Check("E3"))
 #print(Find_Duplicate(316,17))
 #print(Find_Duplicate(316,31))
 #print(Find_Duplicate(1302,54))
-Duplicate_Table_Calc()
+#Duplicate_Table_Calc()
+#print(Thermal_SN_Calc())
