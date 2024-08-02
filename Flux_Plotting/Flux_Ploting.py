@@ -2,8 +2,12 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
+import matplotlib.dates as mdates
+import matplotlib.cm as cm
+from matplotlib.colors import Normalize
 import re
 from datetime import datetime
+
 
 def Morph_Check(Morph_Str):
     if(isinstance(Morph_Str,float)):
@@ -412,6 +416,7 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     Data=pd.read_csv(Standard_File_Fpath)
     ##Data=Data[Data["NET_COUNTS_0.3-8.0"]> 25.0]
     Data=Data[Data["Source_Detection_Probability"]> 0.90]
+    Data=Data.sort_values(by=['Start_Date_Timestamp'])
     ##Data=Data[(Data["Soft_Beta_Color"]<-0.25) & (Data["Soft_Beta_Color"]>-0.90)]
     Data_Outside_D25=Data[Data["Outside_D25_Bool"]]
     Data_Inside_D25=Data[Data["Outside_D25_Bool"]==False]
@@ -1626,6 +1631,7 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
+    Data=Data.sort_values(by=['Start_Date_Timestamp'])
     Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
     Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
     Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
@@ -1636,7 +1642,7 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     #plt.xlim(0, 10E-11)
     #plt.ylim(0, 10)
     #plt.ylim(10E-15, 10E-14)
-    plt.ylim(10E-16, 10E-13)
+    plt.ylim(10E-16, 10E-15)
     plt.savefig("Soft_Flux_vs_Start_Date.pdf")
     #plt.show()
     plt.cla()
@@ -1654,7 +1660,8 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     #plt.xlim(0, 10E-11)
     #plt.ylim(0, 10)
     #plt.ylim(10E-15, 10E-14)
-    plt.ylim(10E-16, 10E-13)
+    #plt.ylim(10E-16, 10E-13)
+    plt.ylim(10E-16, 10E-15)
     plt.savefig("Medium_Flux_vs_Start_Date.pdf")
     #plt.show()
     plt.cla()
@@ -1672,13 +1679,240 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     #plt.xlim(0, 10E-11)
     #plt.ylim(0, 10)
     #plt.ylim(10E-15, 10E-14)
-    plt.ylim(10E-16, 10E-13)
+    #plt.ylim(10E-16, 10E-13)
+    plt.ylim(10E-16, 10E-15)
     plt.savefig("Hard_Flux_vs_Start_Date.pdf")
     #plt.show()
     plt.cla()
     plt.clf()
 
+    plt.cla()
+    plt.clf()
+    ax = plt.gca()
+    Data=Data.sort_values(by=['Start_Date_Timestamp'])
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, Soft_Flux, '.', alpha=0.2)
+    plt.plot(Start_Date, Medium_Flux, '.', alpha=0.2)
+    #plt.plot(Start_Date, Hard_Flux, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    #plt.ylim(10E-15, 10E-14)
+    plt.ylim(10E-16, 10E-15)
+    plt.savefig("Combined_Flux_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
 
+    plt.cla()
+    plt.clf()
+    Data=Data.sort_values(by=['Start_Date_Timestamp'])
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Start_Date=Data["Start_Date"]
+    #df = df[df['EPS'].notna()]
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    #plt.ylim(10E-15, 10E-14)
+    #plt.ylim(10E-16, 10E-15)
+    plt.hist(Start_Date, bins=100)
+    #plt.hist(Data_Medium_Start_Date, bins=100, alpha=0.2)
+    #plt.hist(Data_Hard_Start_Date, bins=100, alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    #plt.savefig("All_Beta_Hist.pdf")
+    plt.savefig("Start_Date_Hist.pdf")
+    plt.xlabel("Start_Date")
+    plt.ylabel("Number of Sources")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    ax = plt.gca()
+    Data=Data.sort_values(by=['Start_Date_Timestamp'])
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Start_Date=Data["Start_Date"]
+    #df = df[df['EPS'].notna()]
+    Data_Soft = Data[Data["NET_FLUX_APER_0.3-1.0"].notna()]
+    Data_Soft_Start_Date=Data_Soft["Start_Date"]
+    Data_Medium = Data[Data["NET_FLUX_APER_1.0-2.1"].notna()]
+    Data_Medium_Start_Date=Data_Medium["Start_Date"]
+    Data_Hard = Data[Data["NET_FLUX_APER_2.1-7.5"].notna()]
+    Data_Hard_Start_Date=Data_Hard["Start_Date"]
+    Data_All=Data[(Data["NET_FLUX_APER_0.3-1.0"].notna()) & (Data["NET_FLUX_APER_1.0-2.1"].notna()) & (Data["NET_FLUX_APER_2.1-7.5"].notna())]
+    #plt.plot(Start_Date, Soft_Flux, '.', alpha=0.2)
+    #plt.plot(Start_Date, Medium_Flux, '.', alpha=0.2)
+    #plt.plot(Start_Date, Hard_Flux, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    #plt.ylim(10E-15, 10E-14)
+    #plt.ylim(10E-16, 10E-15)
+    ax.xaxis.set_major_locator(matplotlib.dates.YearLocator())
+    ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%Y'))
+    plt.hist(Data_Soft_Start_Date, bins=100, alpha=0.2, label="Soft")
+    plt.hist(Data_Medium_Start_Date, bins=100, alpha=0.2, label="Medium")
+    plt.hist(Data_Hard_Start_Date, bins=100, alpha=0.2, label="Hard")
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    #plt.savefig("All_Beta_Hist.pdf")
+    plt.xlabel("Start_Date")
+    plt.ylabel("Number of Sources")
+    plt.legend(loc="upper right")
+    plt.savefig("Combined_Start_Date_Hist.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+    plt.cla()
+    plt.clf()
+    ax = plt.gca()
+    Data=Data.sort_values(by=['Start_Date_Timestamp'])
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Start_Date=Data["Start_Date"]
+    #df = df[df['EPS'].notna()]
+    Data_Soft = Data[Data["NET_FLUX_APER_0.3-1.0"].notna()]
+    Data_Soft_Start_Date=Data_Soft["Start_Date"]
+    Data_Medium = Data[Data["NET_FLUX_APER_1.0-2.1"].notna()]
+    Data_Medium_Start_Date=Data_Medium["Start_Date"]
+    Data_Hard = Data[Data["NET_FLUX_APER_2.1-7.5"].notna()]
+    Data_Hard_Start_Date=Data_Hard["Start_Date"]
+    #plt.plot(Start_Date, Soft_Flux, '.', alpha=0.2)
+    #plt.plot(Start_Date, Medium_Flux, '.', alpha=0.2)
+    #plt.plot(Start_Date, Hard_Flux, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    #plt.ylim(10E-15, 10E-14)
+    #plt.ylim(10E-16, 10E-15)
+    ax.xaxis.set_major_locator(matplotlib.dates.YearLocator())
+    ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%Y'))
+    plt.hist(Data_Soft_Start_Date, bins=100, alpha=0.2, label="Soft")
+    plt.hist(Data_Medium_Start_Date, bins=100, alpha=0.2, label="Medium")
+    #plt.hist(Data_Hard_Start_Date, bins=100, alpha=0.2, label="Hard")
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    #plt.savefig("All_Beta_Hist.pdf")
+    plt.xlabel("Start_Date")
+    plt.ylabel("Number of Sources")
+    plt.legend(loc="upper right")
+    plt.savefig("Soft_Medium_Combined_Start_Date_Hist.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+    ax = plt.gca()
+    Data=Data.sort_values(by=['Start_Date_Timestamp'])
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_MFlux=Data["NET_MFLUX_APER_0.3-1.0"]
+    Start_Date=Data["Start_Date"]
+    #df = df[df['EPS'].notna()]
+    Data_Soft = Data[Data["NET_FLUX_APER_0.3-1.0"].notna()]
+    Data_Soft_Start_Date=Data_Soft["Start_Date"]
+    Data_MSoft = Data[Data["NET_MFLUX_APER_0.3-1.0"].notna()]
+    Data_MSoft_Start_Date=Data_MSoft["Start_Date"]
+    Data_Medium = Data[Data["NET_FLUX_APER_1.0-2.1"].notna()]
+    Data_Medium_Start_Date=Data_Medium["Start_Date"]
+    Data_Hard = Data[Data["NET_FLUX_APER_2.1-7.5"].notna()]
+    Data_Hard_Start_Date=Data_Hard["Start_Date"]
+    #plt.plot(Start_Date, Soft_Flux, '.', alpha=0.2)
+    #plt.plot(Start_Date, Medium_Flux, '.', alpha=0.2)
+    #plt.plot(Start_Date, Hard_Flux, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    #plt.ylim(10E-15, 10E-14)
+    #plt.ylim(10E-16, 10E-15)
+    ax.xaxis.set_major_locator(matplotlib.dates.YearLocator())
+    ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%Y'))
+    plt.hist(Data_Soft_Start_Date, bins=100, alpha=0.2, label="Independent")
+    plt.hist(Data_MSoft_Start_Date, bins=100, alpha=0.2, label="Model")
+    #plt.hist(Data_Medium_Start_Date, bins=100, alpha=0.2, label="Medium")
+    #plt.hist(Data_Hard_Start_Date, bins=100, alpha=0.2, label="Hard")
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    #plt.savefig("All_Beta_Hist.pdf")
+    plt.xlabel("Start_Date")
+    plt.ylabel("Number of Sources")
+    plt.legend(loc="upper right")
+    plt.savefig("Soft_Independent_and_Model_Combined_Start_Date_Hist.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+    plt.cla()
+    plt.clf()
+    Data=Data.sort_values(by=['Start_Date_Timestamp'])
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_MFlux=Data["NET_MFLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_MFLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_MFLUX_APER_2.1-7.5"]
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, Soft_Flux, '.', alpha=0.2, label="Independent")
+    plt.plot(Start_Date, Soft_MFlux, '.', alpha=0.2, label="Model")
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    #plt.ylim(10E-15, 10E-14)
+    plt.xlabel("Start Date")
+    plt.ylabel("Soft Flux")
+    plt.legend(loc="upper right")
+    plt.ylim(10E-16, 10E-15)
+    plt.savefig("Soft_Flux_and_Soft_MFlux_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+    plt.cla()
+    plt.clf()
+    Data=Data.sort_values(by=['Start_Date_Timestamp'])
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_MFlux=Data["NET_MFLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_MFLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_MFLUX_APER_2.1-7.5"]
+    Start_Date=Data["Start_Date"]
+    #plt.plot(Start_Date, Soft_Flux, '.', alpha=0.2, label="Independent")
+    plt.plot(Start_Date, Soft_MFlux, '.', alpha=0.2, label="Model")
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    #plt.ylim(10E-15, 10E-14)
+    plt.xlabel("Start Date")
+    plt.ylabel("Soft Flux")
+    plt.legend(loc="upper right")
+    plt.ylim(10E-16, 10E-15)
+    plt.savefig("Soft_MFlux_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
     #"""
     plt.cla()
     plt.clf()
@@ -1825,14 +2059,39 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Flux_Color=Data["Soft_Flux_Color"]
-    Start_Date=Data["Start_Date"]
-    plt.plot(Start_Date, Soft_Flux_Color, '.', alpha=0.2)
+    #ax = plt.gca()
+    figure, axes = plt.subplots(figsize=(10, 6))
+    #axes.xaxis.set_major_locator(matplotlib.dates.YearLocator())
+    #axes.xaxis.set_major_locator(mdates.YearLocator())
+    #axes.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+    ##locator = mdates.AutoDateLocator()
+    ##axes.xaxis.set_major_locator(locator)
+    ##axes.xaxis.set_major_formatter(mdates.AutoDateFormatter(locator))
+    Soft_Flux_Color_A=Data["Soft_Flux_Color"]
+    Start_Date_A=Data["Start_Date"]
+    #Start_Date=Start_Date_A.get_column("Start_Date")
+    #Soft_Flux_Color=Soft_Flux_Color_A.get_column("Soft_Flux_Color")
+    #Start_Date=Data.get_column("Start_Date")
+    #Soft_Flux_Color=Data.get_column("Soft_Flux_Color")
+    Start_Date=list(Start_Date_A)
+    Soft_Flux_Color=list(Soft_Flux_Color_A)
+    #Start_Date=Data["Start_Date_Timestamp"]
+    #ax.xaxis.set_major_locator(matplotlib.dates.YearLocator())
+    #ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%Y'))
+    #plt.plot(Start_Date, Soft_Flux_Color, '.', alpha=0.2)
+    #ax.plot(Start_Date, Soft_Flux_Color, '.', alpha=0.2)
+    axes.plot(Start_Date, Soft_Flux_Color, '.', alpha=0.2)
+    axes.xaxis.set_major_locator(mdates.YearLocator())
+    axes.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+    #axes.plot("Start_Date", "Soft_Flux_Color", data=Data)
     #plt.ylim(-0.00001, 0.00001)
     #plt.ylim(-10E-11, 10E-11)
     #plt.xlim(0, 10E-11)
     #plt.ylim(0, 10)
     plt.ylim(-1.0, 1.0)
+    plt.xlabel("Observation Start Date")
+    plt.ylabel("Soft Flux Color [(M-S)/(M+S); S=0.3-1.0, M=1.0-2.1]")
+    plt.title("Soft Model Independent Flux Color vs Start_Date")
     plt.savefig("Soft_Flux_Color_vs_Start_Date.pdf")
     #plt.show()
     plt.cla()
@@ -1841,7 +2100,8 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.cla()
     plt.clf()
     Hard_Flux_Color=Data["Hard_Flux_Color"]
-    Start_Date=Data["Start_Date"]
+    #Start_Date=Data["Start_Date"]
+    #Start_Date=Data["Start_Date_Timestamp"]
     plt.plot(Start_Date, Hard_Flux_Color, '.', alpha=0.2)
     #plt.ylim(-0.00001, 0.00001)
     #plt.ylim(-10E-11, 10E-11)
@@ -2051,7 +2311,70 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.savefig("Color_Color_Counts_Galactic_Distance_Adjusted_Distance.pdf")
     plt.cla()
     plt.clf()
+    fig = plt.figure()
+    ax = plt.axes()
+    #HC_Ratio_Beta, SC_Ratio_Beta=Color_Color_Calc(Soft_Beta,Medium_Beta,Hard_Beta)
+    #HC_Ratio_Counts_Distance_Adjusted=(Hard_Counts_Distance_Adjusted-Medium_Counts_Distance_Adjusted)/((Hard_Counts_Distance_Adjusted+Medium_Counts_Distance_Adjusted))
+    #SC_Ratio_Counts_Distance_Adjusted=(Medium_Counts_Distance_Adjusted-Soft_Counts_Distance_Adjusted)/((Medium_Counts_Distance_Adjusted+Soft_Counts_Distance_Adjusted))
+    #ax.scatter(HC_Ratio_Counts_Distance_Adjusted, SC_Ratio_Counts_Distance_Adjusted, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, vmax=10.0)
+    #ax.scatter(HC_Ratio_Counts_SNR, SC_Ratio_Counts_SNR, c="red", marker="o")
+    #ax.scatter(HC_Ratio_Counts_XRB, SC_Ratio_Counts_XRB, c="blue", marker="o")
+    Soft_Counts_Color=Data["Soft_Counts_Color"]
+    Hard_Counts_Color=Data["Hard_Counts_Color"]
+    Soft_Color_Transformation=Data["Soft_Counts_Color_To_Flux_Color_Transformation"]
+    Hard_Color_Transformation=Data["Hard_Counts_Color_To_Flux_Color_Transformation"]
+    Color = np.sqrt(np.square(Hard_Color_Transformation) + np.square(Soft_Color_Transformation))
+    #norm = Normalize()
+    #norm = matplotlib.colors.Normalize(vmin=0, vmax=1)
+    #norm.autoscale(Color)
+    #colormap = cm.viridis
+    #ax.quiver(Hard_Counts_Color, Soft_Counts_Color, Hard_Color_Transformation, Soft_Color_Transformation, color=colormap(norm(Color)))
+    #ax.quiver(Hard_Counts_Color, Soft_Counts_Color, Hard_Color_Transformation, Soft_Color_Transformation, Color, minlength=0.001)
+    #ax.quiver(Hard_Counts_Color, Soft_Counts_Color, Hard_Color_Transformation, Soft_Color_Transformation, Color)
+    #plt.quiver(Hard_Counts_Color, Soft_Counts_Color, Hard_Color_Transformation, Soft_Color_Transformation, color=colormap(norm(Color)))
+    ax.quiver(Hard_Counts_Color, Soft_Counts_Color, Hard_Color_Transformation, Soft_Color_Transformation, Color)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Transformation.pdf")
+    plt.cla()
+    plt.clf()
 
+    plt.cla()
+    plt.clf()
+    ##Soft_Flux_Color=Data["Soft_Flux_Color"]
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    HC_Ratio_Flux=(Hard_Flux-Medium_Flux)/((Hard_Flux+Medium_Flux))
+    SC_Ratio_Flux=(Medium_Flux-Soft_Flux)/((Medium_Flux+Soft_Flux))
+    Start_Date=Data["Start_Date"]
+    plt.plot(Start_Date, SC_Ratio_Flux, '.', alpha=0.2)
+    #plt.ylim(-0.00001, 0.00001)
+    #plt.ylim(-10E-11, 10E-11)
+    #plt.xlim(0, 10E-11)
+    #plt.ylim(0, 10)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Soft_Model_Flux_Color_vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+    plt.cla()
+    plt.clf()
+    Soft_Flux=Data_All["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data_All["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data_All["NET_FLUX_APER_2.1-7.5"]
+    fig = plt.figure()
+    ax = plt.axes()
+    #HC_Ratio_Beta, SC_Ratio_Beta=Color_Color_Calc(Soft_Beta,Medium_Beta,Hard_Beta)
+    HC_Ratio_Flux=(Hard_Flux-Medium_Flux)/((Hard_Flux+Medium_Flux))
+    SC_Ratio_Flux=(Medium_Flux-Soft_Flux)/((Medium_Flux+Soft_Flux))
+    Source_Distance_From_GC_Elliptical_D25_No_Nan=Data_All["Source_Distance_From_GC_Elliptical_D25"]
+    ax.scatter(HC_Ratio_Flux, SC_Ratio_Flux, c=Source_Distance_From_GC_Elliptical_D25_No_Nan, marker=".", alpha=0.2, vmax=10.0)
+    #ax.scatter(HC_Ratio_Counts_SNR, SC_Ratio_Counts_SNR, c="red", marker="o")
+    #ax.scatter(HC_Ratio_Counts_XRB, SC_Ratio_Counts_XRB, c="blue", marker="o")
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Flux_Distance_No_Nan.pdf")
 Flux_Plotting()
 #print(Morph_Check("SAB(s)bc"))
 #print(Morph_Check("E3"))
