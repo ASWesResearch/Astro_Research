@@ -43,7 +43,7 @@ def Split_FPath(FPath):
     for str in Path_L:
         Path=Path+str+"/"
     return Path
-def Fluximage(ObsID_L,ObsID_Path='/Volumes/expansion/ObsIDs/', key="evt2", Clobber_Bool=False):
+def Fluximage(ObsID_L,ObsID_Path='/Volumes/expansion/ObsIDs/', key="evt2", Clobber_Bool=False, Scale_16_Bool=False):
     for ObsID in ObsID_L:
         ObsID_N=int(ObsID)
         Filepath=File_Query(ObsID_N,ObsID_Path,key)
@@ -56,6 +56,8 @@ def Fluximage(ObsID_L,ObsID_Path='/Volumes/expansion/ObsIDs/', key="evt2", Clobb
         print("Primary_Path: ", Primary_Path)
         #Outpath=Primary_Path+"exposure_correction/"
         Outpath=Primary_Path+"exposure_correction/"+str(ObsID_N)
+        if(Scale_16_Bool):
+            Outpath=Primary_Path+"exposure_correction_Scale_16/"+str(ObsID_N)
         ##Outpath=Primary_Path+str(ObsID_N)
         print("Outpath: ", Outpath)
         if(Clobber_Bool):
@@ -63,7 +65,7 @@ def Fluximage(ObsID_L,ObsID_Path='/Volumes/expansion/ObsIDs/', key="evt2", Clobb
         else:
             os.system("fluximage "+str(Filepath)+" "+str(Outpath)+" psfecf=0.9 binsize=1 clobber=no verbose=1")
 
-def Wavdetect(ObsID_L,ObsID_Path='/Volumes/expansion/ObsIDs/', key="broad_thresh", Clobber_Bool=False):
+def Wavdetect(ObsID_L,ObsID_Path='/Volumes/expansion/ObsIDs/', key="broad_thresh", Clobber_Bool=False, Scale_16_Bool=False):
     for ObsID in ObsID_L:
         ObsID_N=int(ObsID)
         Evt2_Filepath=File_Query(ObsID_N,ObsID_Path)
@@ -73,6 +75,8 @@ def Wavdetect(ObsID_L,ObsID_Path='/Volumes/expansion/ObsIDs/', key="broad_thresh
         Primary_Path=Split_FPath(Evt2_Filepath)
         print("Primary_Path: ", Primary_Path)
         Exposure_Path=Primary_Path+"exposure_correction/"
+        if(Scale_16_Bool):
+            Exposure_Path=Primary_Path+"exposure_correction_Scale_16/"
         ##Exposure_Path=Primary_Path
         ##"""
         Broad_Thresh_Img_Path=File_Query(ObsID_N,ObsID_Path,key="broad_thresh.img")
@@ -99,9 +103,15 @@ def Wavdetect(ObsID_L,ObsID_Path='/Volumes/expansion/ObsIDs/', key="broad_thresh
         #os.system("wavdetect "+str(Broad_Thresh_Img_Path)+" outfile="+str(Outfile)+" scellfile="+str(Scellfile)+" imagefile="+str(Imagefile)+" defnbkgfile="+str(Defnbkgfile)+" regfile="+str(Regfile)+" scales='1 2 4 8 16'"+" expfile="+str(Exposure_Map_Path)+" psffile="+str(PSF_Map_Path)+" clobber=yes")
         ##os.system("wavdetect "+str(Broad_Thresh_Img_Path)+" outfile="+str(Outfile)+" scellfile="+str(Scellfile)+" imagefile="+str(Imagefile)+" defnbkgfile="+str(Defnbkgfile)+" regfile="+str(Regfile)+" scales='1 2 4 8 16'"+" expfile="+str(Exposure_Map_Path)+" psffile="+str(PSF_Map_Path)+" clobber=yes") #This is a test without the 16 scale
         if(Clobber_Bool):
-            os.system("wavdetect "+str(Broad_Thresh_Img_Path)+" outfile="+str(Outfile)+" scellfile="+str(Scellfile)+" imagefile="+str(Imagefile)+" defnbkgfile="+str(Defnbkgfile)+" regfile="+str(Regfile)+" scales='1 2 4 8'"+" expfile="+str(Exposure_Map_Path)+" psffile="+str(PSF_Map_Path)+" clobber=yes verbose=1") #This is a test without the 16 scale
+            if(Scale_16_Bool==False):
+                os.system("wavdetect "+str(Broad_Thresh_Img_Path)+" outfile="+str(Outfile)+" scellfile="+str(Scellfile)+" imagefile="+str(Imagefile)+" defnbkgfile="+str(Defnbkgfile)+" regfile="+str(Regfile)+" scales='1 2 4 8'"+" expfile="+str(Exposure_Map_Path)+" psffile="+str(PSF_Map_Path)+" clobber=yes verbose=1") #This is a test without the 16 scale
+            elif(Scale_16_Bool):
+                os.system("wavdetect "+str(Broad_Thresh_Img_Path)+" outfile="+str(Outfile)+" scellfile="+str(Scellfile)+" imagefile="+str(Imagefile)+" defnbkgfile="+str(Defnbkgfile)+" regfile="+str(Regfile)+" scales='1 2 4 8 16'"+" expfile="+str(Exposure_Map_Path)+" psffile="+str(PSF_Map_Path)+" clobber=yes verbose=1")
         else:
-            os.system("wavdetect "+str(Broad_Thresh_Img_Path)+" outfile="+str(Outfile)+" scellfile="+str(Scellfile)+" imagefile="+str(Imagefile)+" defnbkgfile="+str(Defnbkgfile)+" regfile="+str(Regfile)+" scales='1 2 4 8'"+" expfile="+str(Exposure_Map_Path)+" psffile="+str(PSF_Map_Path)+" clobber=no verbose=1") #This is a test without the 16 scale
+            if(Scale_16_Bool==False):
+                os.system("wavdetect "+str(Broad_Thresh_Img_Path)+" outfile="+str(Outfile)+" scellfile="+str(Scellfile)+" imagefile="+str(Imagefile)+" defnbkgfile="+str(Defnbkgfile)+" regfile="+str(Regfile)+" scales='1 2 4 8'"+" expfile="+str(Exposure_Map_Path)+" psffile="+str(PSF_Map_Path)+" clobber=no verbose=1") #This is a test without the 16 scale
+            elif(Scale_16_Bool):
+                os.system("wavdetect "+str(Broad_Thresh_Img_Path)+" outfile="+str(Outfile)+" scellfile="+str(Scellfile)+" imagefile="+str(Imagefile)+" defnbkgfile="+str(Defnbkgfile)+" regfile="+str(Regfile)+" scales='1 2 4 8 16'"+" expfile="+str(Exposure_Map_Path)+" psffile="+str(PSF_Map_Path)+" clobber=no verbose=1")
         ##os.system("wavdetect "+str(Broad_Flux_Img_Path)+" outfile="+str(Outfile)+" scellfile="+str(Scellfile)+" imagefile="+str(Imagefile)+" defnbkgfile="+str(Defnbkgfile)+" regfile="+str(Regfile)+" scales='1 2 4 8 16'"+" expfile="+str(Exposure_Map_Path)+" psffile="+str(PSF_Map_Path)+" clobber=yes")
         #os.system("wavdetect "+str(Broad_Flux_Img_Path)+" outfile="+str(Outfile)+" scellfile="+str(Scellfile)+" imagefile="+str(Imagefile)+" defnbkgfile="+str(Defnbkgfile)+" regfile="+str(Regfile)+" scales='1 2 4 8'"+" expfile="+str(Exposure_Map_Path)+" psffile="+str(PSF_Map_Path)+" clobber=yes") #This is a test without the 16 scale
         ##Input_Filepath=File_Query(ObsID_N,ObsID_Path,key=key)
@@ -109,7 +119,7 @@ def Wavdetect(ObsID_L,ObsID_Path='/Volumes/expansion/ObsIDs/', key="broad_thresh
         #os.system("wavdetect "+str(Input_Filepath)+" outfile="+str(Outfile)+" scellfile="+str(Scellfile)+" imagefile="+str(Imagefile)+" defnbkgfile="+str(Defnbkgfile)+" regfile="+str(Regfile)+" scales='2 4 8 16'"+"psffile=default  verbose=1 clobber=yes")
         ##os.system("wavdetect "+str(Input_Filepath)+" outfile="+str(Outfile)+" scellfile="+str(Scellfile)+" imagefile="+str(Imagefile)+" defnbkgfile="+str(Defnbkgfile)+" regfile="+str(Regfile)+" scales='2 4 8 16'"+"psffile="+str(PSF_Map_Path)+" clobber=yes")
         #os.system("wavdetect "+str(Input_Filepath)+" outfile="+str(Outfile)+" scellfile="+str(Scellfile)+" imagefile="+str(Imagefile)+" defnbkgfile="+str(Defnbkgfile)+" regfile="+str(Regfile)+" scales='1 2 4 8 16'"+" expfile="+str(Exposure_Map_Path)+" psffile="+str(PSF_Map_Path)+" clobber=yes")
-def Source_Detection_Big_Input(ObsID_L, Clobber_Bool=False, Full_Clobber_Bool=False):
+def Source_Detection_Big_Input(ObsID_L, Clobber_Bool=False, Skip_Existing_Directory_Bool=True):
     Fluximage_Fail_L=[]
     Wavdetect_Fail_L=[]
     #ObsID_L=Read_ObsIDs(Raw=True) #Full List
@@ -125,7 +135,7 @@ def Source_Detection_Big_Input(ObsID_L, Clobber_Bool=False, Full_Clobber_Bool=Fa
     Fluximage_Error_Log_File=open("/Volumes/expansion/Fluximage_Error_Log.txt","w")
     Wavdetect_Error_Log_File=open("/Volumes/expansion/Wavdetect_Error_Log.txt","w")
     for ObsID in ObsID_L:
-        if(Full_Clobber_Bool==False):
+        if(Skip_Existing_Directory_Bool):
             Glob_L=glob.glob("/Volumes/expansion/ObsIDs/"+str(ObsID)+"/*/exposure_correction")
             print("Glob_L: ", Glob_L)
             if(len(Glob_L)>0):
@@ -134,6 +144,7 @@ def Source_Detection_Big_Input(ObsID_L, Clobber_Bool=False, Full_Clobber_Bool=Fa
             try:
                 #Fluximage([ObsID],ObsID_Path="/Volumes/expansion/ObsIDs/", Clobber_Bool=True)
                 Fluximage([ObsID],ObsID_Path="/Volumes/expansion/ObsIDs/", Clobber_Bool=Clobber_Bool)
+                Fluximage([ObsID],ObsID_Path="/Volumes/expansion/ObsIDs/", Clobber_Bool=Clobber_Bool, Scale_16_Bool=True)
             except Exception as Argument:
                 Fluximage_Fail_L.append(ObsID)
                 Error_Log_File.write(str(ObsID)+" "+"Fluximage Error:\n"+str(Argument)+"\n")
@@ -141,6 +152,7 @@ def Source_Detection_Big_Input(ObsID_L, Clobber_Bool=False, Full_Clobber_Bool=Fa
             try:
                 #Wavdetect([ObsID],ObsID_Path="/Volumes/expansion/ObsIDs/", Clobber_Bool=True)
                 Wavdetect([ObsID],ObsID_Path="/Volumes/expansion/ObsIDs/", Clobber_Bool=Clobber_Bool)
+                Wavdetect([ObsID],ObsID_Path="/Volumes/expansion/ObsIDs/", Clobber_Bool=Clobber_Bool, Scale_16_Bool=True)
             except Exception as Argument:
                 Wavdetect_Fail_L.append(ObsID)
                 Error_Log_File.write(str(ObsID)+" "+"Wavdetect Error:\n"+str(Argument)+"\n")
@@ -173,7 +185,9 @@ def Main():
     #Wavdetect(Fail_L)
     ObsID_L=ObsID_From_CSV_Query.Read_ObsIDs(Remove_Unarchived=True)
     print("ObsID_L: ", ObsID_L)
-    Source_Detection_Big_Input(ObsID_L, Clobber_Bool=False, Full_Clobber_Bool=False)
+    ##Source_Detection_Big_Input(ObsID_L, Clobber_Bool=False, Skip_Existing_Directory_Bool=True)
+    #Source_Detection_Big_Input(ObsID_L, Clobber_Bool=False, Skip_Existing_Directory_Bool=False)
+    Source_Detection_Big_Input(ObsID_L, Clobber_Bool=True, Skip_Existing_Directory_Bool=False)
     #Fail_L:  [349, 353, 380, 400, 963, 1578, 3786, 16005, 23498, 23499, 25179]
     #Source_Detection_Big_Input([3786, 16005, 23498], Clobber_Bool=True)
 Main()
