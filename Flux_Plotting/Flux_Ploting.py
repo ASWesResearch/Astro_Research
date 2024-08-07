@@ -414,6 +414,7 @@ def XRB_Calc(Data, SN_Fpath="/opt/xray/anthony/Research_Git/SQL_Standard_File/Th
 
 def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standard_File/Source_Flux_All_Modified_6.csv"):
     Data=pd.read_csv(Standard_File_Fpath)
+    Data_ObsIDs=Data.drop_duplicates(subset=['ObsID'])
     ##Data=Data[Data["NET_COUNTS_0.3-8.0"]> 25.0]
     Data=Data[Data["Source_Detection_Probability"]> 0.90]
     Data=Data.sort_values(by=['Start_Date_Timestamp'])
@@ -2375,6 +2376,13 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.xlim(-1.0, 1.0)
     plt.ylim(-1.0, 1.0)
     plt.savefig("Color_Color_Flux_Distance_No_Nan.pdf")
+    plt.cla()
+    plt.clf()
+    Distance_GC_to_Aimpoint_A=Data_ObsIDs["Distance_GC_to_Aimpoint"]
+    plt.hist(Distance_GC_to_Aimpoint_A,bins=20,range=(0,10))
+    plt.savefig("Distance_GC_to_Aimpoint.pdf")
+    plt.cla()
+    plt.clf()
 Flux_Plotting()
 #print(Morph_Check("SAB(s)bc"))
 #print(Morph_Check("E3"))
