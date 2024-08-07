@@ -350,6 +350,42 @@ def File_Query(Gname,File_Type_Str="evt2",Extension=".fits",Obs_Check_B=True,Exp
         """
         return fname_L_H
 
+def ObsID_File_Query(ObsID,ObsID_Path='/opt/xray/anthony/expansion_backup/ObsIDs/',key="evt2"):
+    """
+    ObsID-int: Observation ID, The integer ObsID
+    ObsID_Path-str: Observation ID Path, The path to the observation files
+    key-str: Key, The key for the type of file, for example, "evt2" for Event 2 files
+
+    Output: fpath:-str, The path for the file associated with the ObsID. For example, the Event 2 file for a given input ObsID
+
+    This funtion takes an ObsID and key input and returns the filepath of the observation file that matches that key. This is primarly used for accessing the data products from the ciao pipeline such as FOV 1 files and Event 2 files.
+    """
+    Query_Path=ObsID_Path+str(ObsID)+'/**/*'+str(key)+'*'
+    #print("Query_Path:", Query_Path)
+    fpath_L=glob.glob(Query_Path, recursive = True)
+    print("fpath_L: ", fpath_L)
+    if(len(fpath_L)==0):
+        raise Exception("ObsID "+str(ObsID)+" has 0 "+str(key)+" Files ! ! !")
+    if(len(fpath_L)!=1):
+        ##raise Exception(str(ObsID)+" has "+str(len(fpath_L))+" "+str(key)+" Files ! ! !")
+        Match_Bool=False
+        for cur_fpath in fpath_L:
+            #print("cur_fpath: ", cur_fpath)
+            if("repro" in cur_fpath):
+                #print("Match")
+                fpath=cur_fpath
+                Match_Bool=True
+                break
+            elif("/new/" in cur_fpath):
+                fpath=cur_fpath
+                Match_Bool=True
+                break
+        if(Match_Bool==False):
+            raise Exception("ObsID "+str(ObsID)+" has "+str(len(fpath_L))+" "+str(key)+" Files ! ! !")
+    else:
+        fpath=fpath_L[0]
+    return fpath
+
 #print(File_Query("NGC 891","evt2")) #In in CSC
 #print File_Query("NGC 6946","evt2") #In CSC
 #print File_Query("NGC 891","fov1") #In in CSC
@@ -398,3 +434,4 @@ def File_Query(Gname,File_Type_Str="evt2",Extension=".fits",Obs_Check_B=True,Exp
 #print File_Query("NGC 5018","evt2")
 #print(File_Query("MESSIER 049","evt2"))
 #print(File_Query("NGC 4051","evt2"))
+#print(ObsID_File_Query(10125))
