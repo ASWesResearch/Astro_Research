@@ -307,6 +307,48 @@ def Background_Finder_3(gname,evtfpath,objLfpath,R): #Need to apply energy filte
 
     #Need for figure out how to select where the test circle should be, needs to be on a CCD, (back and front Illiminated?)
 
+def GC_Query(Gname):
+    """
+    ObsID:-int  Observation ID, The integer ObsID
+    raGC, decGC
+    Output: tuple:
+        raGC:-float, Right Ascension Galatic Center, The Right Ascension of the Galatic Center
+        decGC:-float, Declination Galatic Center, The Declination of the Galatic Center
+
+    This function takes an ObsID as an input and returns the associated galaxy's galatic center coordinates.
+
+    """
+    #Gname=Gname_Query(ObsID)
+    if(str(Gname)=="nan"):
+        print("Error Gname: ", Gname)
+        return np.nan,np.nan
+    try:
+        G_Data= Ned.query_object(Gname) #G_Data:-astropy.table.table.Table, Galaxy_Data, The Galaxy Data Table queried from NED
+    except:
+        raise Exception("Galaxy name "+str(Gname)+" ObsID "+str(ObsID)+" Not Queryied from NED")
+    try:
+        raGC=float(G_Data['RA(deg)'])
+        decGC=float(G_Data['DEC(deg)'])
+    except:
+        raGC=float(G_Data['RA'])
+        decGC=float(G_Data['DEC'])
+    return raGC, decGC
+
+def Background_Finder_3(Gname,Evtfpath,Reg_Filepath):
+    Source_Regions=CXCRegion(Reg_Filepath)
+    Source_Regions_Modified=Source_Regions.edit(stretch=3.0)
+    G_Data = Ned.query_object(Gname) #G_Data:-astropy.table.table.Table, Galaxy_Data, The queryed data of the galaxy from NED in the form of a astropy table
+    raGC,decGC=GC_Query(Gname) #raGC:-float, Right Ascension of Galatic Center, The right ascension of the galatic center of the current galaxy in degrees. #decGC:-float, Declination of Galatic Center, The declination of the galatic center of the current galaxy in degrees.
+    D25_S_Maj_Deg=D25_Finder.D25_Finder(Gname)
+    D25_S_Maj=D25_S_Maj_Deg*3600.0 #D25_S_Maj:-float, D25_Semi_Major_Axis, The D25 Semi Major Axis of the current galaxy in arcseconds
+    dmcoords(infile=str(Evtfpath),ra=str(raGC), dec=str(decGC), option='cel', verbose=0, celfmt='deg') # Runs the dmcoords CIAO tool, which converts coordinates like CHIP_ID to SKY, the tool is now being used to convert the RA and Dec of the GC to SKY coodinates in pixels (?)
+    X_Phys=dmcoords.x #X_Phys:-float, X_Physical, The sky plane X pixel coordinate in units of pixels of the galatic center
+    Y_Phys=dmcoords.y #Y_Phys:-float, Y_Physical, The sky plane Y pixel coordinate in units of pixels of the galatic center
+    Chip_ID=dmcoords.chip_id #Chip_ID:-int, Chip_ID, The Chip ID number the GC is on
+    R_Phys=D25_S_Maj*2.03252032520325 #R_Phys:-numpy.float64, Radius_Physical, The radius of the galaxy in pixels, the converstion factor is 2.03252032520325pix/arcsec
+    D25_Shape_String='circle(' + str(X_Phys) +','+ str(Y_Phys)+','+ str(R_Phys)+')'
+    Source_Regions=CXCRegion(D25_Shape_String)
+
 
 
 
