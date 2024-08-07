@@ -6,6 +6,7 @@ from os import system
 import sys
 import gzip
 import astropy.io.ascii as ascii
+import pandas as pd
 #import time
 dir = os.path.dirname(__file__)
 path=os.path.realpath('../')
@@ -172,6 +173,9 @@ def Pipeline_B(Gname_L):
                     directory_Obs=os.path.dirname(path_Obs)
                     if not os.path.exists(directory_Obs):
                         os.makedirs(directory_Obs)
+                    print("directory_Obs: ", directory_Obs)
+                    #return #This is for testing
+                    '''
                     #os.chdir(path_Obs) #This os.chdir actullay effects the outcome of the code
                     #print "path_Obs : ", path_Obs
                     #print "THE PWD AT END IS :"
@@ -254,8 +258,49 @@ def Pipeline_B(Gname_L):
                     #print "Simple_Region_Filepath : ", Simple_Region_Filepath
                     #Area_Calc_Frac_B_2_Alt_8.Area_Calc_Frac_B_2_Alt_2(Gname,Simple_Region_Filename,Cur_Evt2_Filepath)
                     #Cur_Area_L=Area_Calc_Frac_B_2_Alt_8.Area_Calc_Frac_B_2_Alt_2(Gname,Cur_Evt2_Filepath,Simple_Region_Filename)
-                    Cur_Area_L=Area_Calc_Frac_B_2_Alt_8.Area_Calc_Frac_B_2_Alt_2(Gname,Cur_Evt2_Filepath,Simple_Region_Filepath)
-                    Cur_Area_L_D25=Area_Calc_Frac_B_2_Alt_8.Area_Calc_Frac_B_2_Alt_2(Gname,Cur_Evt2_Filepath,Simple_Region_Filepath,D25_Steps_Bool=True,Fnamekey="D25")
+                    '''
+                    ##Cur_Area_L=Area_Calc_Frac_B_2_Alt_8.Area_Calc_Frac_B_2_Alt_2(Gname,Cur_Evt2_Filepath,Simple_Region_Filepath)
+                    ##Cur_Area_L_D25=Area_Calc_Frac_B_2_Alt_8.Area_Calc_Frac_B_2_Alt_2(Gname,Cur_Evt2_Filepath,Simple_Region_Filepath,D25_Steps_Bool=True,Fnamekey="D25")
+                    Outpath_Root=directory_Obs+"/"+str(Gname_Modifed)+"_"+str(Cur_Evt2_ObsID)
+
+                    CCD_Completeness_Area_List=Area_Calc_Frac_B_2_Alt_8.Area_Calc(Gname, Cur_Evt2_Filepath, Cur_Fov_Filepath)
+                    #print("CCD_Completeness_Area_List:\n", CCD_Completeness_Area_List)
+
+                    CCD_Completeness_Area_List_D25=Area_Calc_Frac_B_2_Alt_8.Area_Calc(Gname, Cur_Evt2_Filepath, Cur_Fov_Filepath, D25_Steps_Bool=True)
+                    #print("CCD_Completeness_Area_List_D25:\n", CCD_Completeness_Area_List_D25)
+
+                    GC_CCD_Completeness_Area_List,GC_CCD_Incompleteness_Area_List=Area_Calc_Frac_B_2_Alt_8.GC_Area_Calc(Gname, Cur_Evt2_Filepath, Cur_Fov_Filepath)
+                    #print("GC_CCD_Completeness_Area_List:\n", GC_CCD_Completeness_Area_List)
+                    #print("GC_CCD_Incompleteness_Area_List:\n", GC_CCD_Incompleteness_Area_List)
+
+                    GC_CCD_Completeness_Area_List_D25,GC_CCD_Incompleteness_Area_List_D25=Area_Calc_Frac_B_2_Alt_8.GC_Area_Calc(Gname, Cur_Evt2_Filepath, Cur_Fov_Filepath, D25_Steps_Bool=True)
+                    #print("GC_CCD_Completeness_Area_List_D25:\n", GC_CCD_Completeness_Area_List_D25)
+                    #print("GC_CCD_Incompleteness_Area_List_D25:\n", GC_CCD_Incompleteness_Area_List_D25)
+
+                    Galactic_Area_Reasonable_FOV_Intersection_L=Area_Calc_Frac_B_2_Alt_8.Galactic_Area_Reasonable_FOV_Intersection_Calc(Gname, Cur_Evt2_Filepath, Cur_Fov_Filepath)
+                    Galactic_Area_Reasonable_FOV_Intersection_Bool_L=Area_Calc_Frac_B_2_Alt_8.Galactic_Area_Reasonable_FOV_Intersection_Bool_Calc(Gname, Cur_Evt2_Filepath, Cur_Fov_Filepath)
+
+                    Area_DF = pd.DataFrame({'Aimpoint_CCD_Completeness': CCD_Completeness_Area_List, 'Galactic_Center_CCD_Completeness': GC_CCD_Completeness_Area_List, 'Galactic_Center_CCD_Incompleteness': GC_CCD_Incompleteness_Area_List, 'Reasonable_FOV_Completeness': Galactic_Area_Reasonable_FOV_Intersection_L, 'Reasonable_FOV_Completeness_Bool': Galactic_Area_Reasonable_FOV_Intersection_Bool_L})
+                    print("Area_DF:\n", Area_DF)
+                    Area_Outpath=Outpath_Root+"_Area_List.csv"
+                    Area_DF.to_csv(Area_Outpath, index=False)
+
+                    Area_D25_DF = pd.DataFrame({'Aimpoint_CCD_Completeness_D25': CCD_Completeness_Area_List_D25, 'Galactic_Center_CCD_Completeness_D25': GC_CCD_Completeness_Area_List_D25, 'Galactic_Center_CCD_Incompleteness_D25': GC_CCD_Incompleteness_Area_List_D25})
+                    print("Area_D25_DF:\n", Area_D25_DF)
+                    Area_Outpath_D25=Outpath_Root+"_Area_List_D25.csv"
+                    Area_D25_DF.to_csv(Area_Outpath_D25, index=False)
+
+                    Area_Intersection_Map_DF=Area_Calc_Frac_B_2_Alt_8.Area_Intersection_Map(Gname, Cur_Evt2_Filepath, Cur_Fov_Filepath)
+                    print("Area_Intersection_Map_DF:\n", Area_Intersection_Map_DF)
+                    Area_Intersection_Map_Outpath=Outpath_Root+"_Area_Intersection_Map.csv"
+                    Area_Intersection_Map_DF.to_csv(Area_Intersection_Map_Outpath, index=False)
+
+                    Area_Intersection_Map_D25_DF=Area_Calc_Frac_B_2_Alt_8.Area_Intersection_Map(Gname, Cur_Evt2_Filepath, Cur_Fov_Filepath, D25_Steps_Bool=True)
+                    print("Area_Intersection_Map_D25_DF:\n", Area_Intersection_Map_D25_DF)
+                    Area_Intersection_Map_Outpath_D25=Outpath_Root+"_Area_Intersection_Map_D25.csv"
+                    Area_Intersection_Map_D25_DF.to_csv(Area_Intersection_Map_Outpath_D25, index=False)
+
+
                     #print Cur_Area_L
                     #system('pwd')
                     #Simple_Region_Filename_L=Simple_Region_Filename.split("CCD")
