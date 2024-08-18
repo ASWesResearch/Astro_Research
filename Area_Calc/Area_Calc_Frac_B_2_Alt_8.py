@@ -488,7 +488,8 @@ def Galactic_Center_Offaxis_Angle_Annulus_Calc(Gname, Evt2_Fpath, FOV_Filepath, 
     Intersected_Region_Area=Intersected_Region.area()
     return Annulus_Region, Intersected_Region
 
-def Area_Intersection_Map(Gname, Evt2_Fpath, FOV_Filepath, rchange=121.95121955, Num_Steps=10, D25_Steps_Bool=False, CCD_Completeness_Bool=False):
+"""
+def Area_Intersection_Map_Old(Gname, Evt2_Fpath, FOV_Filepath, rchange=121.95121955, Num_Steps=10, D25_Steps_Bool=False, CCD_Completeness_Bool=False):
     Ratio_HL=[]
     CCD_Completeness_Int=int(CCD_Completeness_Bool)
     if(D25_Steps_Bool):
@@ -498,13 +499,13 @@ def Area_Intersection_Map(Gname, Evt2_Fpath, FOV_Filepath, rchange=121.95121955,
         R_Phys=D25_S_Maj*2.03252032520325 #R_Phys:-numpy.float64, Radius_Physical, The radius of the galaxy in pixels, the converstion factor is 2.03252032520325pix/arcsec
         rchange=R_Phys
         Num_Steps=int(np.floor(Reasonable_FOV/rchange))
-    #Reasonable_FOV_Region=Reasonable_FOV_Region_Calc(Gname, Evt2_Fpath)
     for Step in range(0, Num_Steps):
         Ratio_L=[]
         #Cur_Ratio=Offaxis_Angle_Annulus_CCD_Completeness_Calc(Evt2_Fpath, FOV_Filepath, Step, rchange=rchange)
         Offaxis_Angle_Annulus=Offaxis_Angle_Annulus_Region_Calc(Evt2_Fpath, FOV_Filepath, Step, rchange=rchange)[CCD_Completeness_Int]
         Offaxis_Angle_Annulus_Area=Offaxis_Angle_Annulus.area()
         for GC_Step in range(0, Num_Steps):
+            #GC_Offaxis_Angle_Annulus=Galactic_Center_Offaxis_Angle_Annulus_Calc(Gname, Evt2_Fpath, FOV_Filepath, GC_Step, rchange=rchange)[CCD_Completeness_Int]
             GC_Offaxis_Angle_Annulus=Galactic_Center_Offaxis_Angle_Annulus_Calc(Gname, Evt2_Fpath, FOV_Filepath, GC_Step, rchange=rchange)[CCD_Completeness_Int]
             #print("Offaxis_Angle_Annulus: ", Offaxis_Angle_Annulus)
             #print("GC_Offaxis_Angle_Annulus: ", GC_Offaxis_Angle_Annulus)
@@ -515,36 +516,61 @@ def Area_Intersection_Map(Gname, Evt2_Fpath, FOV_Filepath, rchange=121.95121955,
             Intersected_Ratio=Intersected_Region_Area/Offaxis_Angle_Annulus_Area
             Ratio_L.append(Intersected_Ratio)
         Ratio_HL.append(Ratio_L)
+        #print("Ratio_HL:\n", Ratio_HL)
         Ratio_DF = pd.DataFrame(Ratio_HL)
     return Ratio_DF
+"""
 
-def Galactic_Area_Intersection_Map(Gname, Evt2_Fpath, FOV_Filepath, rchange=121.95121955, Num_Steps=10, D25_Steps_Bool=False):
+def Area_Intersection_Map(Gname, Evt2_Fpath, FOV_Filepath, rchange=121.95121955, Num_Steps=10, D25_Steps_Bool=False, CCD_Completeness_Bool=False):
     Ratio_HL=[]
+    CCD_Completeness_Int=int(CCD_Completeness_Bool)
     if(D25_Steps_Bool):
         Reasonable_FOV=10*60*2.03252032520325
         D25_S_Maj_Deg=D25_Finder.D25_Finder(Gname)
         D25_S_Maj=D25_S_Maj_Deg*3600.0 #D25_S_Maj:-float, D25_Semi_Major_Axis, The D25 Semi Major Axis of the current galaxy in arcseconds
         R_Phys=D25_S_Maj*2.03252032520325 #R_Phys:-numpy.float64, Radius_Physical, The radius of the galaxy in pixels, the converstion factor is 2.03252032520325pix/arcsec
-        rchange=R_Phys
-        Num_Steps=int(np.floor(Reasonable_FOV/rchange))
-    for GC_Step in range(0, Num_Steps):
+        rchange_D25=R_Phys
+        Num_Steps_D25=int(np.floor(Reasonable_FOV/rchange_D25))
+    if(D25_Steps_Bool):
+        Num_Steps_GC=Num_Steps_D25
+    else:
+        Num_Steps_GC=Num_Steps
+    for GC_Step in range(0, Num_Steps_GC):
         Ratio_L=[]
-        #Cur_Ratio=Offaxis_Angle_Annulus_CCD_Completeness_Calc(Evt2_Fpath, FOV_Filepath, Step, rchange=rchange)
-        GC_Offaxis_Angle_Annulus=Galactic_Center_Offaxis_Angle_Annulus_Calc(Gname, Evt2_Fpath, FOV_Filepath, GC_Step, rchange=rchange)[0]
-        GC_Offaxis_Angle_Annulus_Area=GC_Offaxis_Angle_Annulus.area()
+        #GC_Offaxis_Angle_Annulus=Galactic_Center_Offaxis_Angle_Annulus_Calc(Gname, Evt2_Fpath, FOV_Filepath, GC_Step, rchange=rchange)[CCD_Completeness_Int]
+        if(D25_Steps_Bool):
+            GC_Offaxis_Angle_Annulus=Galactic_Center_Offaxis_Angle_Annulus_Calc(Gname, Evt2_Fpath, FOV_Filepath, GC_Step, rchange=rchange_D25)[CCD_Completeness_Int]
+        else:
+            GC_Offaxis_Angle_Annulus=Galactic_Center_Offaxis_Angle_Annulus_Calc(Gname, Evt2_Fpath, FOV_Filepath, GC_Step, rchange=rchange)[CCD_Completeness_Int]
+        #GC_Offaxis_Angle_Annulus_Area=GC_Offaxis_Angle_Annulus.area()
         for Step in range(0, Num_Steps):
-            #GC_Offaxis_Angle_Annulus=Galactic_Center_Offaxis_Angle_Annulus_Calc(Gname, Evt2_Fpath, FOV_Filepath, GC_Step, rchange=rchange)[0]
-            Offaxis_Angle_Annulus=Offaxis_Angle_Annulus_Region_Calc(Evt2_Fpath, FOV_Filepath, Step, rchange=rchange)[0]
+            #Ratio_L=[]
+            #Cur_Ratio=Offaxis_Angle_Annulus_CCD_Completeness_Calc(Evt2_Fpath, FOV_Filepath, Step, rchange=rchange)
+            Offaxis_Angle_Annulus=Offaxis_Angle_Annulus_Region_Calc(Evt2_Fpath, FOV_Filepath, Step, rchange=rchange)[CCD_Completeness_Int]
+            Offaxis_Angle_Annulus_Area=Offaxis_Angle_Annulus.area()
             #print("Offaxis_Angle_Annulus: ", Offaxis_Angle_Annulus)
             #print("GC_Offaxis_Angle_Annulus: ", GC_Offaxis_Angle_Annulus)
             #GC_Offaxis_Angle_Annulus_Area=GC_Offaxis_Angle_Annulus.area()
             Intersected_Region=Offaxis_Angle_Annulus*GC_Offaxis_Angle_Annulus
             Intersected_Region_Area=Intersected_Region.area()
-            #Intersected_Ratio=Intersected_Region_Area/GC_Offaxis_Angle_Annulus_Area
-            Intersected_Ratio=Intersected_Region_Area/GC_Offaxis_Angle_Annulus_Area
+            if(Offaxis_Angle_Annulus_Area==0.0):
+                Intersected_Ratio=0.0
+            else:
+                #Intersected_Ratio=Intersected_Region_Area/GC_Offaxis_Angle_Annulus_Area
+                Intersected_Ratio=Intersected_Region_Area/Offaxis_Angle_Annulus_Area
             Ratio_L.append(Intersected_Ratio)
         Ratio_HL.append(Ratio_L)
-        Ratio_DF = pd.DataFrame(Ratio_HL)
+    print("Ratio_HL:\n", Ratio_HL)
+    #for i in range(0,Num_Steps_GC):
+    for i in range(0,len(Ratio_HL)):
+        print("i: ", i)
+        print("Num_Steps_GC: ", Num_Steps_GC)
+        Ratio_L=Ratio_HL[i]
+        if(i==0):
+            Ratio_DF = pd.DataFrame(Ratio_L)
+        else:
+            Ratio_DF.insert(i,i,Ratio_L)
+        #Ratio_DF = pd.DataFrame(Ratio_HL)
     return Ratio_DF
 
 def Galactic_Area_Reasonable_FOV_Intersection_Calc(Gname, Evt2_Fpath, FOV_Filepath, rchange=121.95121955, Num_Steps=10, D25_Steps_Bool=False):
@@ -604,3 +630,8 @@ def Galactic_Area_Reasonable_FOV_Intersection_Bool_Calc(Gname, Evt2_Fpath, FOV_F
 #print(Area_Intersection_Map("NGC 4449", "/opt/xray/anthony/expansion_backup/ObsIDs/10125/new/acisf10125_repro_evt2.fits", "/opt/xray/anthony/expansion_backup/ObsIDs/10125/new/acisf10125_repro_fov1.fits", D25_Steps_Bool=True, CCD_Completeness_Bool=True))
 #print(Galactic_Area_Reasonable_FOV_Intersection_Calc("NGC 4449", "/opt/xray/anthony/expansion_backup/ObsIDs/10125/new/acisf10125_repro_evt2.fits", "/opt/xray/anthony/expansion_backup/ObsIDs/10125/new/acisf10125_repro_fov1.fits", D25_Steps_Bool=True))
 #print(Galactic_Area_Reasonable_FOV_Intersection_Bool_Calc("NGC 4449", "/opt/xray/anthony/expansion_backup/ObsIDs/10125/new/acisf10125_repro_evt2.fits", "/opt/xray/anthony/expansion_backup/ObsIDs/10125/new/acisf10125_repro_fov1.fits"))
+#print(Area_Intersection_Map("NGC 4449", "/opt/xray/anthony/expansion_backup/ObsIDs/10125/new/acisf10125_repro_evt2.fits", "/opt/xray/anthony/expansion_backup/ObsIDs/10125/new/acisf10125_repro_fov1.fits", D25_Steps_Bool=True))
+#print(Area_Intersection_Map("NGC 4449", "/opt/xray/anthony/expansion_backup/ObsIDs/10125/new/acisf10125_repro_evt2.fits", "/opt/xray/anthony/expansion_backup/ObsIDs/10125/new/acisf10125_repro_fov1.fits"))
+#print(Area_Intersection_Map_2("NGC 4449", "/opt/xray/anthony/expansion_backup/ObsIDs/10125/new/acisf10125_repro_evt2.fits", "/opt/xray/anthony/expansion_backup/ObsIDs/10125/new/acisf10125_repro_fov1.fits", D25_Steps_Bool=True))
+#print(Area_Intersection_Map_2("NGC 4449", "/opt/xray/anthony/expansion_backup/ObsIDs/10125/new/acisf10125_repro_evt2.fits", "/opt/xray/anthony/expansion_backup/ObsIDs/10125/new/acisf10125_repro_fov1.fits"))
+#print(Area_Intersection_Map_2("NGC 4449", "/opt/xray/anthony/expansion_backup/ObsIDs/10125/new/acisf10125_repro_evt2.fits", "/opt/xray/anthony/expansion_backup/ObsIDs/10125/new/acisf10125_repro_fov1.fits", CCD_Completeness_Bool=True))
