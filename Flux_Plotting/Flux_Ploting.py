@@ -413,11 +413,15 @@ def XRB_Calc(Data, SN_Fpath="/opt/xray/anthony/Research_Git/SQL_Standard_File/Th
     return Match_Data
 
 def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standard_File/Source_Flux_All_Modified_6.csv"):
-    Data=pd.read_csv(Standard_File_Fpath)
+    #Data=pd.read_csv(Standard_File_Fpath)
+    Data=pd.read_csv(Standard_File_Fpath, low_memory=False)
     Data_ObsIDs=Data.drop_duplicates(subset=['ObsID'])
     ##Data=Data[Data["NET_COUNTS_0.3-8.0"]> 25.0]
     Data=Data[Data["Source_Detection_Probability"]> 0.90]
     Data=Data.sort_values(by=['Start_Date_Timestamp'])
+    #Flux issue cutoff time: 2012-09-26T05:12:47, 1348650767
+    Data_Before_Cutoff=Data[Data["Start_Date_Timestamp"]<= 1348650767]
+    Data_After_Cutoff=Data[Data["Start_Date_Timestamp"]> 1348650767]
     ##Data=Data[(Data["Soft_Beta_Color"]<-0.25) & (Data["Soft_Beta_Color"]>-0.90)]
     Data_Outside_D25=Data[Data["Outside_D25_Bool"]]
     Data_Inside_D25=Data[Data["Outside_D25_Bool"]==False]
@@ -2381,6 +2385,322 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     Distance_GC_to_Aimpoint_A=Data_ObsIDs["Distance_GC_to_Aimpoint"]
     plt.hist(Distance_GC_to_Aimpoint_A,bins=20,range=(0,10))
     plt.savefig("Distance_GC_to_Aimpoint.pdf")
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Soft_Flux=Data_Before_Cutoff["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data_Before_Cutoff["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data_Before_Cutoff["NET_FLUX_APER_2.1-7.5"]
+    Soft_MFlux=Data_Before_Cutoff["NET_MFLUX_APER_0.3-1.0"]
+    Medium_MFlux=Data_Before_Cutoff["NET_MFLUX_APER_1.0-2.1"]
+    Hard_MFlux=Data_Before_Cutoff["NET_MFLUX_APER_2.1-7.5"]
+    #Start_Date=Data["Start_Date"]
+    plt.plot(Soft_Flux, Soft_MFlux, '.', alpha=0.2)
+    #plt.ylim(10E-15, 10E-14)
+    plt.xlim(10E-16, 10E-15)
+    plt.ylim(10E-16, 10E-15)
+    plt.xlabel("Independent")
+    plt.ylabel("Model")
+    plt.title("Soft Independent Flux vs Model Before Cutoff")
+    plt.savefig("Soft_Flux_vs_Soft_MFlux_Before_Cutoff.pdf")
+
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Soft_Flux=Data_After_Cutoff["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data_After_Cutoff["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data_After_Cutoff["NET_FLUX_APER_2.1-7.5"]
+    Soft_MFlux=Data_After_Cutoff["NET_MFLUX_APER_0.3-1.0"]
+    Medium_MFlux=Data_After_Cutoff["NET_MFLUX_APER_1.0-2.1"]
+    Hard_MFlux=Data_After_Cutoff["NET_MFLUX_APER_2.1-7.5"]
+    #Start_Date=Data["Start_Date"]
+    plt.plot(Soft_Flux, Soft_MFlux, '.', alpha=0.2)
+    #plt.ylim(10E-15, 10E-14)
+    plt.xlim(10E-16, 10E-15)
+    plt.ylim(10E-16, 10E-15)
+    plt.xlabel("Independent")
+    plt.ylabel("Model")
+    plt.title("Soft Independent Flux vs Model After Cutoff")
+    plt.savefig("Soft_Flux_vs_Soft_MFlux_After_Cutoff.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Soft_Flux=Data_Before_Cutoff["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data_Before_Cutoff["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data_Before_Cutoff["NET_FLUX_APER_2.1-7.5"]
+    Soft_MFlux=Data_Before_Cutoff["NET_MFLUX_APER_0.3-1.0"]
+    Medium_MFlux=Data_Before_Cutoff["NET_MFLUX_APER_1.0-2.1"]
+    Hard_MFlux=Data_Before_Cutoff["NET_MFLUX_APER_2.1-7.5"]
+    #Start_Date=Data["Start_Date"]
+    plt.plot(Hard_Flux, Hard_MFlux, '.', alpha=0.2)
+    #plt.ylim(10E-15, 10E-14)
+    plt.xlim(10E-16, 10E-15)
+    plt.ylim(10E-16, 10E-15)
+    plt.xlabel("Independent")
+    plt.ylabel("Model")
+    plt.title("Hard Independent Flux vs Model Before Cutoff")
+    plt.savefig("Hard_Flux_vs_Hard_MFlux_Before_Cutoff.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Soft_Flux=Data_After_Cutoff["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data_After_Cutoff["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data_After_Cutoff["NET_FLUX_APER_2.1-7.5"]
+    Soft_MFlux=Data_After_Cutoff["NET_MFLUX_APER_0.3-1.0"]
+    Medium_MFlux=Data_After_Cutoff["NET_MFLUX_APER_1.0-2.1"]
+    Hard_MFlux=Data_After_Cutoff["NET_MFLUX_APER_2.1-7.5"]
+    #Start_Date=Data["Start_Date"]
+    plt.plot(Hard_Flux, Hard_MFlux, '.', alpha=0.2)
+    #plt.ylim(10E-15, 10E-14)
+    plt.xlim(10E-16, 10E-15)
+    plt.ylim(10E-16, 10E-15)
+    plt.xlabel("Independent")
+    plt.ylabel("Model")
+    plt.title("Hard Independent Flux vs Model After Cutoff")
+    plt.savefig("Hard_Flux_vs_Hard_MFlux_After_Cutoff.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_MFlux=Data["NET_MFLUX_APER_0.3-1.0"]
+    Medium_MFlux=Data["NET_MFLUX_APER_1.0-2.1"]
+    Hard_MFlux=Data["NET_MFLUX_APER_2.1-7.5"]
+    Start_Date=Data["Start_Date"]
+    Soft_Flux_Comparison_Ratio=Soft_MFlux/Soft_Flux
+    Hard_Flux_Comparison_Ratio=Hard_MFlux/Hard_Flux
+    #plt.plot(Hard_Flux, Hard_MFlux, '.', alpha=0.2)
+    plt.plot(Start_Date, Soft_Flux_Comparison_Ratio, '.', alpha=0.2)
+    plt.ylim(0, 5)
+    #plt.ylim(0, 2)
+    plt.xlabel("Start Date")
+    plt.ylabel("Soft Model/Independent")
+    plt.title("Soft Model/Independent vs Start Date")
+    plt.savefig("Soft_Flux_Comparison_Ratio_Vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_MFlux=Data["NET_MFLUX_APER_0.3-1.0"]
+    Medium_MFlux=Data["NET_MFLUX_APER_1.0-2.1"]
+    Hard_MFlux=Data["NET_MFLUX_APER_2.1-7.5"]
+    Start_Date=Data["Start_Date"]
+    Soft_Flux_Comparison_Ratio=Soft_MFlux/Soft_Flux
+    Hard_Flux_Comparison_Ratio=Hard_MFlux/Hard_Flux
+    #plt.plot(Hard_Flux, Hard_MFlux, '.', alpha=0.2)
+    plt.plot(Start_Date, Hard_Flux_Comparison_Ratio, '.', alpha=0.2)
+    plt.ylim(0, 5)
+    #plt.ylim(0, 2)
+    plt.xlabel("Start Date")
+    plt.ylabel("Hard Model/Independent")
+    plt.title("Hard Model/Independent vs Start Date")
+    plt.savefig("Hard_Flux_Comparison_Ratio_Vs_Start_Date.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_MFlux=Data["NET_MFLUX_APER_0.3-1.0"]
+    Medium_MFlux=Data["NET_MFLUX_APER_1.0-2.1"]
+    Hard_MFlux=Data["NET_MFLUX_APER_2.1-7.5"]
+    Start_Date=Data["Start_Date"]
+    Soft_Flux_Comparison_Ratio=Soft_MFlux/Soft_Flux
+    Hard_Flux_Comparison_Ratio=Hard_MFlux/Hard_Flux
+    #plt.plot(Hard_Flux, Hard_MFlux, '.', alpha=0.2)
+    plt.plot(Start_Date, Soft_Flux_Comparison_Ratio, '.', alpha=0.2)
+    #plt.ylim(0, 5)
+    plt.ylim(0, 2)
+    plt.xlabel("Start Date")
+    plt.ylabel("Soft Model/Independent")
+    plt.title("Soft Model/Independent vs Start Date")
+    plt.savefig("Soft_Flux_Comparison_Ratio_Vs_Start_Date_Zoomed.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_MFlux=Data["NET_MFLUX_APER_0.3-1.0"]
+    Medium_MFlux=Data["NET_MFLUX_APER_1.0-2.1"]
+    Hard_MFlux=Data["NET_MFLUX_APER_2.1-7.5"]
+    Start_Date=Data["Start_Date"]
+    Soft_Flux_Comparison_Ratio=Soft_MFlux/Soft_Flux
+    Hard_Flux_Comparison_Ratio=Hard_MFlux/Hard_Flux
+    #plt.plot(Hard_Flux, Hard_MFlux, '.', alpha=0.2)
+    plt.plot(Start_Date, Hard_Flux_Comparison_Ratio, '.', alpha=0.2)
+    #plt.ylim(0, 5)
+    plt.ylim(0, 2)
+    plt.xlabel("Start Date")
+    plt.ylabel("Hard Model/Independent")
+    plt.title("Hard Model/Independent vs Start Date")
+    plt.savefig("Hard_Flux_Comparison_Ratio_Vs_Start_Date_Zoomed.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+    plt.cla()
+    plt.clf()
+    Source_Distance_From_GC_Elliptical_D25=Data["Source_Distance_From_GC_Elliptical_D25"]
+    plt.hist(Source_Distance_From_GC_Elliptical_D25,bins=20,range=(0,10))
+    plt.savefig("Source_Distance_From_GC_Elliptical_D25_Hist.pdf")
+    plt.cla()
+    plt.clf()
+    plt.cla()
+    plt.clf()
+    #Hist=plt.hist(Data["NET_LUM_APER_0.3-7.5"],  bins=100, range=(10E42,10E44), cumulative=-1)
+    #Hist=plt.hist(Data["NET_LUM_APER_0.3-7.5"],  bins=100, range=(10E37,10E38), cumulative=-1)
+    #Hist=plt.hist(Data["NET_LUM_APER_0.3-7.5"],  bins=100, range=(10E37,10E44), cumulative=-1)
+    #Hist=plt.hist(Data["NET_FLUX_APER_0.3-7.5"],  bins=100, range=(2E-18,1E-13))
+    #plt.hist(x, bins=np.logspace(start=np.log10(10), stop=np.log10(15), num=10))
+    #Hist=plt.hist(Data["NET_FLUX_APER_0.3-7.5"],  bins=100, range=(2E-18,1E-13))
+    Hist=plt.hist(Data["NET_FLUX_APER_0.3-7.5"], bins=np.logspace(start=np.log10(2E-17), stop=np.log10(1E-10), num=100))
+    plt.gca().set_xscale("log")
+    plt.savefig("NET_FLUX_APER_Hist.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+    plt.cla()
+    plt.clf()
+    Hist=plt.hist(Data["Limiting_Flux_0.3-7.5"], bins=np.logspace(start=np.log10(2E-17), stop=np.log10(1E-10), num=100))
+    plt.gca().set_xscale("log")
+    plt.savefig("Limiting_Flux_Hist.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+    plt.cla()
+    plt.clf()
+    Hist=plt.hist(Data["NET_FLUX_APER_hard"], bins=np.logspace(start=np.log10(2E-17), stop=np.log10(1E-10), num=100))
+    plt.gca().set_xscale("log")
+    plt.savefig("NET_FLUX_APER_csc_hard_Hist.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+    plt.cla()
+    plt.clf()
+    Hist=plt.hist(Data["Limiting_Flux_hard"], bins=np.logspace(start=np.log10(2E-17), stop=np.log10(1E-10), num=100))
+    plt.gca().set_xscale("log")
+    plt.savefig("Limiting_Flux_csc_hard_Hist.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+    plt.cla()
+    plt.clf()
+    Hist=plt.hist(Data["NET_FLUX_APER_soft"], bins=np.logspace(start=np.log10(2E-17), stop=np.log10(1E-10), num=100))
+    plt.gca().set_xscale("log")
+    plt.savefig("NET_FLUX_APER_csc_soft_Hist.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+    plt.cla()
+    plt.clf()
+    Hist=plt.hist(Data["Limiting_Flux_soft"], bins=np.logspace(start=np.log10(2E-17), stop=np.log10(1E-10), num=100))
+    plt.gca().set_xscale("log")
+    plt.savefig("Limiting_Flux_csc_soft_Hist.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+    plt.cla()
+    plt.clf()
+    #Data_Before_Cutoff=Data[Data["Start_Date_Timestamp"]<= 1348650767]
+    #Data_After_Cutoff=Data[Data["Start_Date_Timestamp"]> 1348650767]
+    Hist_Before_Cutoff=plt.hist(Data_Before_Cutoff["Limiting_Flux_soft"], bins=np.logspace(start=np.log10(2E-17), stop=np.log10(1E-10), num=100))
+    Hist_After_Cutoff=plt.hist(Data_After_Cutoff["Limiting_Flux_soft"], bins=np.logspace(start=np.log10(2E-17), stop=np.log10(1E-10), num=100))
+    plt.gca().set_xscale("log")
+    plt.savefig("Limiting_Flux_csc_soft_Hist_Split.pdf")
+    plt.cla()
+    plt.clf()
+    Flux_A=Data["NET_FLUX_APER_0.3-7.5"]
+    Counts_A=Data["NET_COUNTS_0.3-7.5"]
+    Gamma_A=Flux_A/Counts_A
+    Hist=plt.hist(Gamma_A, bins=np.logspace(start=np.log10(2E-18), stop=np.log10(1E-13), num=100))
+    plt.gca().set_xscale("log")
+    plt.savefig("Gamma_Hist.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+    plt.cla()
+    plt.clf()
+    Flux_A=Data["NET_FLUX_APER_hard"]
+    Counts_A=Data["NET_COUNTS_hard"]
+    Gamma_A=Flux_A/Counts_A
+    Hist=plt.hist(Gamma_A, bins=np.logspace(start=np.log10(2E-18), stop=np.log10(1E-13), num=100))
+    plt.gca().set_xscale("log")
+    plt.savefig("Gamma_csc_hard_Hist.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+    plt.cla()
+    plt.clf()
+    Flux_A=Data["NET_FLUX_APER_0.3-7.5"]
+    Counts_A=Data["NET_COUNTS_0.3-7.5"]
+    Gamma_A=Flux_A/Counts_A
+    Start_Date=Data["Start_Date"]
+    #plt.plot(Start_Date, Gamma_A, '.', alpha=0.2)
+    plt.semilogy(Start_Date, Gamma_A, '.', alpha=0.2)
+    plt.ylim(2E-18, 1E-13)
+    plt.savefig("Gamma_vs_Start_Date.pdf")
+    plt.cla()
+    plt.clf()
+    plt.cla()
+    plt.clf()
+    Flux_A=Data["NET_FLUX_APER_hard"]
+    Counts_A=Data["NET_COUNTS_hard"]
+    Gamma_A=Flux_A/Counts_A
+    Start_Date=Data["Start_Date"]
+    #plt.plot(Start_Date, Gamma_A, '.', alpha=0.2)
+    plt.semilogy(Start_Date, Gamma_A, '.', alpha=0.2)
+    plt.ylim(2E-18, 1E-13)
+    plt.savefig("Gamma_csc_hard_vs_Start_Date.pdf")
+    plt.cla()
+    plt.clf()
+    plt.cla()
+    plt.clf()
+    Flux_A=Data["NET_FLUX_APER_0.3-7.5"]
+    Counts_A=Data["NET_COUNTS_0.3-7.5"]
+    Gamma_A=Flux_A/Counts_A
+    Start_Date=Data["Start_Date"]
+    #plt.plot(Start_Date, Gamma_A, '.', alpha=0.2)
+    plt.semilogy(Offaxis_Angle, Gamma_A, '.', alpha=0.2)
+    plt.ylim(2E-18, 1E-13)
+    plt.savefig("Gamma_vs_Offaxis_Angle.pdf")
+    plt.cla()
+    plt.clf()
+    plt.cla()
+    plt.clf()
+    Flux_A=Data["NET_FLUX_APER_hard"]
+    Counts_A=Data["NET_COUNTS_hard"]
+    Gamma_A=Flux_A/Counts_A
+    Start_Date=Data["Start_Date"]
+    #plt.plot(Start_Date, Gamma_A, '.', alpha=0.2)
+    plt.semilogy(Offaxis_Angle, Gamma_A, '.', alpha=0.2)
+    plt.ylim(2E-18, 1E-13)
+    plt.savefig("Gamma_csc_hard_vs_Offaxis_Angle.pdf")
     plt.cla()
     plt.clf()
 Flux_Plotting()
