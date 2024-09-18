@@ -240,6 +240,238 @@ def D_P_C_Big_Input_90_Per_Check(Backgrounds,Off_Angs=[0,1,2,3,4,5,6,7,8,9,10],C
 #Counts_L=[10,20,30,40,50,60,70,80,90,100]
 #D_P_C_Big_Input_90_Per_Check([0.0411256372949457,0.135727335468768,0.13725522292245054,0.153680013049534],[10,20,30,40,50,60,70,80,90,100],[0,2,5,10])
 
+def Counts_Detection_Threshold_Calc(B,OFF,P=0.90,fname_L_H=[['Graph 1 3.0 counts.csv','Graph 1 8.4 counts.csv','Graph 1 22 counts.csv'],['Graph 2 2.8 counts.csv','Graph 2 8.3 counts.csv','Graph 2 22 counts.csv'],['Graph 3 2.4 counts.csv','Graph 3 7.0 counts.csv','Graph 3 23 counts.csv','Graph 3 91 counts.csv'],['Graph 4 3.7 counts.csv','Graph 4 11 counts.csv','Graph 4 29 counts.csv','Graph 4 36 counts.csv','Graph 4 110 counts.csv']]): #Graph 3 18 counts.csv removed for testing!!!
+    """
+    fname_L_H:-hlist, Filename High List, a high list of the filenames of the files contianing the data from the 4D dectection probablity plot, The filenames must in in the form of 'Graph 1 3.0 counts.csv'
+    B:-float, Background, The background of the observation
+    P:-float, Detection Probability, The probablity of detecting an object given the background, number of counts and offaxis angle
+    OFF:-float, Offaxis angle, The offaxis angle at which objects are trying to be detected
+    Returns: C_Off_N:-float, Counts as a function of Offaxis Number, The the number of counts in a object given the probablity of detecting the object, the background and offaxis angle.
+
+    This funtion takes the names of datafiles contianing data
+
+    """
+    if((OFF>10.0) or (P>=1.0)):
+        return np.nan
+    C_L=[] # Count List, A list of float count values
+    P_L=[] # A list of the probabilities as a function of the background
+    #P_C_L=[] # P_C_L:-list, Probablity as a function of Counts List, The Probablity as a function of the user given background and user given count value in a list, with each value and the order of the list associated with a list of offaxis anlges Off_T_L=[0,2,5,10], Example The first probablity in the list is associated with 0'
+    C_P_L=[] # P_C_L:-list, Counts as a function of Probablity List, The Counts as a function of the user given background and user given Probablity value in a list, with each value and the order of the list associated with a list of offaxis anlges Off_T_L=[0,2,5,10], Example The first counts in the list is associated with 0'
+    Off_L=[] # A list of graph numbers, ie. graph 1, graph 2, graph 3, graph 4
+    Off_T_L=[0,2,5,10] # A list of the known offaxis angles in minutes in the order of the graphs associated with each graph number. For example Graph 1 = 0', Graph 2 = 2'
+    for fname_L in fname_L_H:
+        C_L=[] # Count List, A list of float count values
+        P_L=[] # A list of the probabilities as a function of the background
+        for fname in fname_L: # Selects each filename from the high filename list
+            #data = ascii.read('/home/asantini/Desktop/Background_Graph_Data_2/' + str(fname)) # Reads in the data from the current filename's file
+            dir = os.path.dirname(__file__)
+            #path=os.path.realpath('../Background_Graph_Data_2/' + str(fname))
+            path=os.path.realpath('/opt/xray/anthony/Research_Git/Background_Graph_Data_2/' + str(fname))
+            data = ascii.read(path) #data:-astropy.table.table.Table, data, The data from the SQL_Standard_File
+            #data = ascii.read('~/asantini/Desktop/Background_Graph_Data_2/' + str(fname)) # Reads in the data from the current filename's file
+            B_A=data['col1'] # B_A:-array, Background Array, The array contianing the background data from the current data file, in order of increasing background
+            P_A=data['col2'] # P_A:-array, Probablity Array, The array of probabilities in the order of the increasing backgrounds they are associated with
+            P_Check=False
+            #print "B: ", B
+            #print "B_A: ", B_A
+            #print "P_A: ", P_A
+            #print "len(B_A) is ", len(B_A)
+            #print fname
+            for i in range(0,len(B_A)-1): # Choses every background vaule in the background array Note:This might be wrong, NEED to FIX !!!
+                #print "i is ", i
+                B_S=B_A[i] # B_S:-numpy.float64, Background Small, The smaller background used to find the probablity to background slope
+                B_Lg=B_A[i+1] # B_Lg:-numpy.float64, Background Large, The Larger background used to find the probablity to background slope
+                #print "B_S is ", B_S
+                #print "B_Lg is ",B_Lg
+                #print "B: ", B
+                #print B_A
+                """
+                This apoximates a linear relationship between any 2 points in a file (the fname file) and uses it to find a probablity as a function of background value inbetween the points
+                """
+                if((B>=B_S) and (B<=B_Lg)): # Checks to see if the input background is in between the Background Small value and the Background Large value
+                    #print "Interpolation Conditions Satisfied"
+                    slope=(P_A[i+1]-P_A[i])/(B_A[i+1]-B_A[i]) # slope:-numpy.float64, slope, Slope formula m=(y2-y1)/(x2-x1), given that y2=P_A[i+1]=Probablity Large, y1=P_A[i]=Probablity Small
+                    P_B=(slope*(B-B_S))+P_A[i] #P_B:- Probablity as a function of Background, Solved Point Slope Formula y=m(x-x1)+y1
+                    #print "P_B before is ", P_B
+                    B_P=((P_B+(slope*B_S)-P_A[i]))/slope #B_P:-numpy.float64, Background as a function of Probablity, The inverse function of P_B
+                    #print "The slope is ",slope
+                    #print "i is ",i
+                    #print "i+1 is ",i+1
+                    #print "P_A[i+1] is ",P_A[i+1]
+                    #print "P_A[i] is ",P_A[i]
+                    #print "B_A[i+1] is ",B_A[i+1]
+                    #print "B_A[i] is ", B_A[i]
+                    #print "P_B is ",((P_B+(slope*B_S)-P_A[i]))/slope
+                    #print B_S
+                    #print B_Lg
+                    #print "P_B is ", P_B
+                    #print "B_P: ", B_P
+                    P_L.append(P_B) #P_L:-list, Probablity List, appends the current Probablity as a function of Background onto the Probablity List
+                    P_Check=True
+                    #print "P_L is ", P_L
+            #print "P_Check: ", P_Check #Checks to see if the observered input background is within the interpolation range of  the 4D Graph Data. If False then the observation input background is out of range
+            if(P_Check==False):
+                return False
+            C_Str=fname.split(' ')[2] #C_Str:-str, Count String, The string value of the current count value, the filename is spilt inorder to get the string, the filename must be in the standard form 'Graph 2 8.3 counts'
+            C_Num=float(C_Str) #C_Num:-float, Count Number, The float value of the current count
+            C_L.append(C_Num) # Appends the current float count value to the count list
+            #print P_Check
+        #print "P_L : ", P_L
+        #print "C_L : ", C_L
+        #print "P_L Length : ",len(P_L)
+        #print "C_L Length : ",len(C_L)
+        #P_C_f=interpolate.interp1d(C_L,P_L,bounds_error=0,fill_value=(float("NaN"),1.0)) #P_C_f:-scipy.interpolate.interpolate.interp1d, Probablity Count Function, This is a function that interpolates the probablity and count arrays and returns the probablity as a function of counts #Note: May have to remove bounds_error variable, it also might make the data for C=30 counts wrong
+        ##C_P_f=interpolate.interp1d(P_L,C_L,bounds_error=0,fill_value=(float("NaN"),1.0)) #C_P_f:-scipy.interpolate.interpolate.interp1d, Count Probablity Function, This is a function that interpolates the probablity and count arrays and returns the counts as a function of probablity #Note: May have to remove bounds_error variable, it also might make the data for C=30 counts wrong
+        C_P_f=interpolate.interp1d(P_L,C_L,bounds_error=0,fill_value=(float("NaN"),float("NaN"))) #C_P_f:-scipy.interpolate.interpolate.interp1d, Count Probablity Function, This is a function that interpolates the probablity and count arrays and returns the counts as a function of probablity #Note: May have to remove bounds_error variable, it also might make the data for C=30 counts wrong
+        #P_C_f=interpolate.interp1d(C_L,P_L,bounds_error=0,fill_value=(float("NaN"),1.0)) #P_C_f:-scipy.interpolate.interpolate.interp1d, Probablity Count Function, This is a function that interpolates the probablity and count arrays and returns the probablity as a function of counts #Note: May have to remove bounds_error variable, it also might make the data for C=30 counts wrong
+        #P_C_f=interpolate.interp1d(C_L,P_L,bounds_error=1,fill_value=(float("NaN"),1.0)) #P_C_f:-scipy.interpolate.interpolate.interp1d, Probablity Count Function, This is a function that interpolates the probablity and count arrays and returns the probablity as a function of counts #Note: May have to remove bounds_error variable, it also might make the data for C=30 counts wrong
+        #print "C_P_f", type(C_P_f)
+        #print "C : ", C
+        C_P=C_P_f(P) #C_P:-numpy.ndarray, Counts as a function of Probablity, The number of counts for  the given probablity of making a dectection, probablity is not any probablity but the User chosen probablity
+        C_P_Str=str(C_P) #C_P_Str:-str, Counts as a function of Probablity String, The string value Counts as a function of Probablity
+        C_P_N=float(C_P_Str) #C_P_N:-float, Counts as a function of Probablity Number, The float value of the Counts as a function of Probablity
+        for fname in fname_L: #Note: All the outputs for this should be the same offaxis angle
+            Off_Str=fname.split(' ')[1] #Off_Str:-string, Offaxis String, The string value of the graph number associated with the offaxis angle for that current graph
+            Off_N=int(Off_Str) #Off_N:-int, Offaxis Number, The integer value of the of graph number. #Note: Maybe this should be a float value
+        Off=Off_T_L[Off_N-1]# Off:-int, Offaxis angle, The current offaxis anlge in minutes for the current filename list, fname_L
+        Off_L.append(Off) #Off_L:-list, Offaxis List, A list of all offaxis angles used in the high filename list in minutes
+        C_P_L=C_P_L+[C_P_N] # Adds the calculated probablity for the current offaxis anlge to the Probablity as a function of Counts List. #Note: For some reason P_C is an Array,
+        #print "C__L", C_P_L
+    #print Off_L
+    #print C_P_L
+    C_Off_f=interpolate.interp1d(Off_L,C_P_L) # C_Off_f:-'scipy.interpolate.interpolate.interp1d', Counts Offaxis Function, This is a a function that interpolates the Count Probablity List and the Offaxis List and retruns the counts as a function of offaxis anlge #May be effected by the fact the the offaxis anlge values are integers
+    #print "P_Off_f", type(P_Off_f)
+    C_Off=C_Off_f(OFF) # P_Off:-numpy.ndarray, Counts as a function of Offaxis, The clacluated counts object given the background, probablity of detection, and offaxis angle
+    #print "P_Off", type (P_Off)
+    C_Off_Str=str(C_Off) #P_Off_Str:-str, Counts as a function of Offaxis String, The string value of the Counts
+    C_Off_N=float(C_Off_Str) #P_Off_N:-float, Counts as a function of Offaxis Number, The float value of the Counts.
+    """
+    This clipping has been added in to test the plotting. More work needs to be done to dertermine if it will be completely included
+    """
+    """
+    if(P_Off_N>1.0):
+        P_Off_N=1.0
+    if(P_Off_N<0.0):
+        P_Off_N=0.0
+    """
+    return C_Off_N # Returns the Counts for a given detection probablity
+
+def Offaxis_Detection_Threshold_Calc(B,C,P=0.90,fname_L_H=[['Graph 1 3.0 counts.csv','Graph 1 8.4 counts.csv','Graph 1 22 counts.csv'],['Graph 2 2.8 counts.csv','Graph 2 8.3 counts.csv','Graph 2 22 counts.csv'],['Graph 3 2.4 counts.csv','Graph 3 7.0 counts.csv','Graph 3 23 counts.csv','Graph 3 91 counts.csv'],['Graph 4 3.7 counts.csv','Graph 4 11 counts.csv','Graph 4 29 counts.csv','Graph 4 36 counts.csv','Graph 4 110 counts.csv']]): #Graph 3 18 counts.csv removed for testing!!!
+    """
+    fname_L_H:-hlist, Filename High List, a high list of the filenames of the files contianing the data from the 4D dectection probablity plot, The filenames must in in the form of 'Graph 1 3.0 counts.csv'
+    B:-float, Background, The background of the observation
+    P:-float, Detection Probability, The probablity of detecting an object given the background, number of counts and offaxis angle
+    OFF:-float, Offaxis angle, The offaxis angle at which objects are trying to be detected
+    Returns: C_Off_N:-float, Counts as a function of Offaxis Number, The the number of counts in a object given the probablity of detecting the object, the background and offaxis angle.
+
+    This funtion takes the names of datafiles contianing data
+
+    """
+    C_L=[] # Count List, A list of float count values
+    P_L=[] # A list of the probabilities as a function of the background
+    #P_C_L=[] # P_C_L:-list, Probablity as a function of Counts List, The Probablity as a function of the user given background and user given count value in a list, with each value and the order of the list associated with a list of offaxis anlges Off_T_L=[0,2,5,10], Example The first probablity in the list is associated with 0'
+    C_P_L=[] # P_C_L:-list, Counts as a function of Probablity List, The Counts as a function of the user given background and user given Probablity value in a list, with each value and the order of the list associated with a list of offaxis anlges Off_T_L=[0,2,5,10], Example The first counts in the list is associated with 0'
+    Off_L=[] # A list of graph numbers, ie. graph 1, graph 2, graph 3, graph 4
+    Off_T_L=[0,2,5,10] # A list of the known offaxis angles in minutes in the order of the graphs associated with each graph number. For example Graph 1 = 0', Graph 2 = 2'
+    for fname_L in fname_L_H:
+        C_L=[] # Count List, A list of float count values
+        P_L=[] # A list of the probabilities as a function of the background
+        for fname in fname_L: # Selects each filename from the high filename list
+            #data = ascii.read('/home/asantini/Desktop/Background_Graph_Data_2/' + str(fname)) # Reads in the data from the current filename's file
+            dir = os.path.dirname(__file__)
+            #path=os.path.realpath('../Background_Graph_Data_2/' + str(fname))
+            path=os.path.realpath('/opt/xray/anthony/Research_Git/Background_Graph_Data_2/' + str(fname))
+            data = ascii.read(path) #data:-astropy.table.table.Table, data, The data from the SQL_Standard_File
+            #data = ascii.read('~/asantini/Desktop/Background_Graph_Data_2/' + str(fname)) # Reads in the data from the current filename's file
+            B_A=data['col1'] # B_A:-array, Background Array, The array contianing the background data from the current data file, in order of increasing background
+            P_A=data['col2'] # P_A:-array, Probablity Array, The array of probabilities in the order of the increasing backgrounds they are associated with
+            P_Check=False
+            #print "B: ", B
+            #print "B_A: ", B_A
+            #print "P_A: ", P_A
+            #print "len(B_A) is ", len(B_A)
+            #print fname
+            for i in range(0,len(B_A)-1): # Choses every background vaule in the background array Note:This might be wrong, NEED to FIX !!!
+                #print "i is ", i
+                B_S=B_A[i] # B_S:-numpy.float64, Background Small, The smaller background used to find the probablity to background slope
+                B_Lg=B_A[i+1] # B_Lg:-numpy.float64, Background Large, The Larger background used to find the probablity to background slope
+                #print "B_S is ", B_S
+                #print "B_Lg is ",B_Lg
+                #print "B: ", B
+                #print B_A
+                """
+                This apoximates a linear relationship between any 2 points in a file (the fname file) and uses it to find a probablity as a function of background value inbetween the points
+                """
+                if((B>=B_S) and (B<=B_Lg)): # Checks to see if the input background is in between the Background Small value and the Background Large value
+                    #print "Interpolation Conditions Satisfied"
+                    slope=(P_A[i+1]-P_A[i])/(B_A[i+1]-B_A[i]) # slope:-numpy.float64, slope, Slope formula m=(y2-y1)/(x2-x1), given that y2=P_A[i+1]=Probablity Large, y1=P_A[i]=Probablity Small
+                    P_B=(slope*(B-B_S))+P_A[i] #P_B:- Probablity as a function of Background, Solved Point Slope Formula y=m(x-x1)+y1
+                    #print "P_B before is ", P_B
+                    B_P=((P_B+(slope*B_S)-P_A[i]))/slope #B_P:-numpy.float64, Background as a function of Probablity, The inverse function of P_B
+                    #print "The slope is ",slope
+                    #print "i is ",i
+                    #print "i+1 is ",i+1
+                    #print "P_A[i+1] is ",P_A[i+1]
+                    #print "P_A[i] is ",P_A[i]
+                    #print "B_A[i+1] is ",B_A[i+1]
+                    #print "B_A[i] is ", B_A[i]
+                    #print "P_B is ",((P_B+(slope*B_S)-P_A[i]))/slope
+                    #print B_S
+                    #print B_Lg
+                    #print "P_B is ", P_B
+                    #print "B_P: ", B_P
+                    ##P_L.append(P_B) #P_L:-list, Probablity List, appends the current Probablity as a function of Background onto the Probablity List
+                    P_L.append(P_B[0]) #P_L:-list, Probablity List, appends the current Probablity as a function of Background onto the Probablity List
+                    P_Check=True
+                    #print "P_L is ", P_L
+            #print "P_Check: ", P_Check #Checks to see if the observered input background is within the interpolation range of  the 4D Graph Data. If False then the observation input background is out of range
+            if(P_Check==False):
+                return False
+            C_Str=fname.split(' ')[2] #C_Str:-str, Count String, The string value of the current count value, the filename is spilt inorder to get the string, the filename must be in the standard form 'Graph 2 8.3 counts'
+            C_Num=float(C_Str) #C_Num:-float, Count Number, The float value of the current count
+            C_L.append(C_Num) # Appends the current float count value to the count list
+            #print P_Check
+        #print("P_L : ", P_L)
+        #print("C_L : ", C_L)
+        #print "P_L Length : ",len(P_L)
+        #print "C_L Length : ",len(C_L)
+        #P_C_f=interpolate.interp1d(C_L,P_L,bounds_error=0,fill_value=(float("NaN"),1.0)) #P_C_f:-scipy.interpolate.interpolate.interp1d, Probablity Count Function, This is a function that interpolates the probablity and count arrays and returns the probablity as a function of counts #Note: May have to remove bounds_error variable, it also might make the data for C=30 counts wrong
+        ##C_P_f=interpolate.interp1d(P_L,C_L,bounds_error=0,fill_value=(float("NaN"),1.0)) #C_P_f:-scipy.interpolate.interpolate.interp1d, Count Probablity Function, This is a function that interpolates the probablity and count arrays and returns the counts as a function of probablity #Note: May have to remove bounds_error variable, it also might make the data for C=30 counts wrong
+        C_P_f=interpolate.interp1d(P_L,C_L,bounds_error=0,fill_value=(float("NaN"),float("NaN"))) #C_P_f:-scipy.interpolate.interpolate.interp1d, Count Probablity Function, This is a function that interpolates the probablity and count arrays and returns the counts as a function of probablity #Note: May have to remove bounds_error variable, it also might make the data for C=30 counts wrong
+        #P_C_f=interpolate.interp1d(C_L,P_L,bounds_error=0,fill_value=(float("NaN"),1.0)) #P_C_f:-scipy.interpolate.interpolate.interp1d, Probablity Count Function, This is a function that interpolates the probablity and count arrays and returns the probablity as a function of counts #Note: May have to remove bounds_error variable, it also might make the data for C=30 counts wrong
+        #P_C_f=interpolate.interp1d(C_L,P_L,bounds_error=1,fill_value=(float("NaN"),1.0)) #P_C_f:-scipy.interpolate.interpolate.interp1d, Probablity Count Function, This is a function that interpolates the probablity and count arrays and returns the probablity as a function of counts #Note: May have to remove bounds_error variable, it also might make the data for C=30 counts wrong
+        #print "C_P_f", type(C_P_f)
+        #print "C : ", C
+        C_P=C_P_f(P) #C_P:-numpy.ndarray, Counts as a function of Probablity, The number of counts for  the given probablity of making a dectection, probablity is not any probablity but the User chosen probablity
+        C_P_Str=str(C_P) #C_P_Str:-str, Counts as a function of Probablity String, The string value Counts as a function of Probablity
+        C_P_N=float(C_P_Str) #C_P_N:-float, Counts as a function of Probablity Number, The float value of the Counts as a function of Probablity
+        for fname in fname_L: #Note: All the outputs for this should be the same offaxis angle
+            Off_Str=fname.split(' ')[1] #Off_Str:-string, Offaxis String, The string value of the graph number associated with the offaxis angle for that current graph
+            Off_N=int(Off_Str) #Off_N:-int, Offaxis Number, The integer value of the of graph number. #Note: Maybe this should be a float value
+        Off=Off_T_L[Off_N-1]# Off:-int, Offaxis angle, The current offaxis anlge in minutes for the current filename list, fname_L
+        Off_L.append(Off) #Off_L:-list, Offaxis List, A list of all offaxis angles used in the high filename list in minutes
+        C_P_L=C_P_L+[C_P_N] # Adds the calculated probablity for the current offaxis anlge to the Probablity as a function of Counts List. #Note: For some reason P_C is an Array,
+        #print "C__L", C_P_L
+    #print Off_L
+    #print C_P_L
+    ##C_Off_f=interpolate.interp1d(Off_L,C_P_L) # C_Off_f:-'scipy.interpolate.interpolate.interp1d', Counts Offaxis Function, This is a a function that interpolates the Count Probablity List and the Offaxis List and retruns the counts as a function of offaxis anlge #May be effected by the fact the the offaxis anlge values are integers
+    Off_C_f=interpolate.interp1d(C_P_L,Off_L) # Off_C_f:-'scipy.interpolate.interpolate.interp1d', Offaxis Counts Function, This is a a function that interpolates the  Offaxis List and the Count Probablity List and retruns the offaxis anlge as a function of counts #May be effected by the fact the the offaxis anlge values are integers
+    #print "P_Off_f", type(P_Off_f)
+    Off_C=Off_C_f(C) # P_Off:-numpy.ndarray, Counts as a function of Offaxis, The clacluated counts object given the background, probablity of detection, and offaxis angle
+    #print "P_Off", type (P_Off)
+    Off_C_Str=str(Off_C) #P_Off_Str:-str, Counts as a function of Offaxis String, The string value of the Counts
+    Off_C_N=float(Off_C_Str) #P_Off_N:-float, Counts as a function of Offaxis Number, The float value of the Counts.
+    """
+    This clipping has been added in to test the plotting. More work needs to be done to dertermine if it will be completely included
+    """
+    """
+    if(P_Off_N>1.0):
+        P_Off_N=1.0
+    if(P_Off_N<0.0):
+        P_Off_N=0.0
+    """
+    return Off_C_N # Returns the offaxis angle for a given detection probablity
+
 def Count_Range_Generator(C_Min,C_Max,Step):
     """
     C_Min:-int, Count Minimum, The minimum amount of counts
@@ -350,3 +582,9 @@ def Detection_Probability_Plot(F):
 #print D_P_C_Big_Input_90_Per_Check([0.0005,0.0007,0.001,0.002,0.005,0.03,0.05,0.1]) #This is the current working version's input
 #print D_P_C_Big_Input_90_Per_Check([0.0005]) #This is the current working version's input
 #Detection_Probability_Plot(Detection_Probability_Calc_3)
+#print(Offaxis_Detection_Threshold_Calc([0.0005],10))
+#print(Offaxis_Detection_Threshold_Calc([0.0005],30))
+#print(Offaxis_Detection_Threshold_Calc([0.0005],8))
+#print(Offaxis_Detection_Threshold_Calc([0.0005],28))
+print(Offaxis_Detection_Threshold_Calc([0.001],28))
+print(Offaxis_Detection_Threshold_Calc([0.001],40))
