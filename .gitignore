@@ -17,6 +17,8 @@
 **.doc
 **.docx
 **.jpg
+**.dat
+**.par
 Galaxy_Test/2022/secondary/axaff02022N002_VV001_vvref2.pdf.gz
 Galaxy_Test/2198/secondary/axaff02198N002_VV001_vvref2.pdf.gz
 Galaxy_Test/9518/primary/acisf09518N002_evt2.fits.gz
@@ -54,3 +56,11 @@ Observation_Tester/1
 Observation_Tester/1.9.0
 PIMMS/Counts_PIMMS_Data.csv
 Galaxy_List/*.csv
+Marx_Source_Injection/Background_Generator/Backgrounds
+Marx_Source_Injection/Background_Generator/Test_Example
+Marx_Source_Injection/Source_Generator_Test/point
+Marx_Source_Injection/Source_Generator_Test/test
+Marx_Source_Injection/Source_Generator/Empty_Coords
+Marx_Source_Injection/Source_Generator/Marx_Sources
+Marx_Source_Injection/Source_Generator/Source_Test
+Marx_Source_Injection/Synthetic_Background_Generator/Synthetic_Backgrounds
