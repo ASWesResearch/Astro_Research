@@ -417,8 +417,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     Data=pd.read_csv(Standard_File_Fpath, low_memory=False)
     Data_ObsIDs=Data.drop_duplicates(subset=['ObsID'])
     ##Data=Data[Data["NET_COUNTS_0.3-8.0"]> 25.0]
-    Data=Data[Data["Source_Detection_Probability"]> 0.90]
+    ##Data=Data[Data["Source_Detection_Probability"]> 0.90]
     Data=Data.sort_values(by=['Start_Date_Timestamp'])
+    Data_ObsIDs=Data_ObsIDs.sort_values(by=['Start_Date_Timestamp'])
     #Flux issue cutoff time: 2012-09-26T05:12:47, 1348650767
     Data_Before_Cutoff=Data[Data["Start_Date_Timestamp"]<= 1348650767]
     Data_After_Cutoff=Data[Data["Start_Date_Timestamp"]> 1348650767]
@@ -427,8 +428,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     Data_Inside_D25=Data[Data["Outside_D25_Bool"]==False]
     Data_Outside_Elliptical_D25=Data[Data["Outside_Elliptical_D25_Bool"]]
     Data_Inside_Elliptical_D25=Data[Data["Outside_Elliptical_D25_Bool"]==False]
-    Data_Count_Cut=Data[Data["NET_COUNTS_0.3-8.0"]> 25.0]
+    #Data_Count_Cut=Data[Data["NET_COUNTS_0.3-8.0"]> 25.0]
     #Data=Data[Data["NET_COUNTS_0.3-8.0"]> 25.0]
+    Data=Data[Data["NET_COUNTS_0.3-8.0"]> 30.0]
     Data_Near_Chip_Edge=Data[Data["NEAR_CHIP_EDGE"]]
     Data_Away_Chip_Edge=Data[Data["NEAR_CHIP_EDGE"]==False]
     Data_Spiral_Projected=Data[(Data["Galaxy_Morph_Simple"]=="S") & (Data["Circular_D25_Bool"]==False)]
@@ -512,6 +514,7 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     Hard_Counts_Irregular=Data_Irregular["NET_COUNTS_2.1-7.5"]
     HC_Ratio_Irregular=(Hard_Counts_Irregular-Medium_Counts_Irregular)/((Hard_Counts_Irregular+Medium_Counts_Irregular))
     SC_Ratio_Irregular=(Medium_Counts_Irregular-Soft_Counts_Irregular)/((Medium_Counts_Irregular+Soft_Counts_Irregular))
+    '''
     """
     Flux Color-Color Plots
     """
@@ -2282,6 +2285,7 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.savefig("Color_Color_Beta_Start_Date_With_SN_Effective_Area_Corrected.pdf")
     #plt.savefig("Color_Color_Beta_Distance_With_SN_Zoomed_2.pdf")
     #'''
+    '''
     plt.cla()
     plt.clf()
     Limiting_Flux_A=Data["Limiting_Flux"]
@@ -2703,6 +2707,17 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.savefig("Gamma_csc_hard_vs_Offaxis_Angle.pdf")
     plt.cla()
     plt.clf()
+    '''
+    plt.cla()
+    plt.clf()
+    Hist=plt.hist(Data["Source_Background_0.3-8.0"], bins=np.logspace(start=np.log10(1E-4), stop=np.log10(100), num=100))
+    plt.gca().set_xscale("log")
+    plt.savefig("Source_Background_0.3-8.0_Hist.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+    print("Data_ObsIDs:\n", Data_ObsIDs)
+    print("Start_Dates:\n", Data_ObsIDs["Start_Date"])
 Flux_Plotting()
 #print(Morph_Check("SAB(s)bc"))
 #print(Morph_Check("E3"))
