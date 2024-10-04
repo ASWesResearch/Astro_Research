@@ -22,6 +22,7 @@
 **.img
 **.expmap
 **.psfmap
+**.fov
 Galaxy_Test/2022/secondary/axaff02022N002_VV001_vvref2.pdf.gz
 Galaxy_Test/2198/secondary/axaff02198N002_VV001_vvref2.pdf.gz
 Galaxy_Test/9518/primary/acisf09518N002_evt2.fits.gz
@@ -68,3 +69,4 @@ Marx_Source_Injection/Source_Generator/Marx_Sources
 Marx_Source_Injection/Source_Generator/Source_Test
 Marx_Source_Injection/Synthetic_Background_Generator/Synthetic_Backgrounds
 Marx_Source_Injection/Reproject_Test
+Marx_Source_Injection/Source_Detect/Old_Outputs/Broken_Run/Cropped_Outpath
