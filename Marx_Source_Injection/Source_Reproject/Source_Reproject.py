@@ -8,7 +8,6 @@ from ciao_contrib.runtool import * #Imports ciao tools into python
 import ciao_contrib.runtool as rt
 import time
 import logging
-from astropy.io import fits
 from multiprocessing import Pool
 
 dir = os.path.dirname(__file__)
@@ -57,66 +56,67 @@ def Postage_Stamp_Coords_Calc(n=3, N=49, d=1024.0, X_P_Start=4065.0, Y_P_Start=4
             Coords_L.append(Cur_Coords)
     return Coords_L, S, g
 
-def Fluximage(Filepath, Outpath):
-    """
-    with rt.new_pfiles_environment(ardlib=True):
-        with new_tmpdir() as tmpdir:
-    """
-    #os.system("fluximage "+str(Filepath)+" "+str(Outpath)+" psfecf=0.9 binsize=1 clobber=yes verbose=1")
-    os.system("fluximage "+str(Filepath)+" "+str(Outpath)+" psfecf=0.9 binsize=1 asolfile='0_1_78_8E-2_1_asol1.fits' badpixfile='NONE' maskfile='NONE' clobber=yes verbose=0")
-
-def Make_PSF_Map(Filepath, PSF_Outpath, Outpath):
-    ##os.system("mkpsfmap "+str(Filepath)+" "+str(Outpath)+" 1.4 ecf=0.9 clobber=yes")
-    Bash_Command="bash Bash_Scripts/Make_PSF_Map.sh "+str(Filepath)+" "+str(PSF_Outpath)+" "+Outpath
-    #print(Bash_Command)
-    os.system(Bash_Command)
-
-def Wavdetect(Filepath, Outpath, PSF_Map_Path):
-    ##Wavdetect_Command="wavdetect "+str(Filepath)+" outfile="+str(Outpath)+" scellfile=source_cell.fits imagefile=image.fits defnbkgfile=background.fits regfile="+str(Regfile)+" scales='1 2 4 8' psffile="+str(PSF_Map_Path)+" clobber=yes verbose=1"
-    Outfile=Outpath+"_Wavdetect.fits"
-    Scellfile=Outpath+"_source_cell.fits"
-    Imagefile=Outpath+"_image.fits"
-    Defnbkgfile=Outpath+"_background.fits"
-    Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)
-    #print(Bash_Command)
-    os.system(Bash_Command)
-
-def Source_Detection_Bool_Calc(Filepath, X_Expected, Y_Expected, Tolarance=17):
-    hdul = fits.open(Filepath)
-    Data=hdul[1].data
-    hdul.close()
-    X=list(Data["X"])
-    Y=list(Data["Y"])
-    #print("(X,Y): ", (X,Y))
-    if(len(X)<1):
-        ##return False
-        return (False,0)
-    for i in range(0,len(X)):
-        Cur_Test_X=X[i]
-        Cur_Test_Y=Y[i]
-        #print(Cur_Test_X,Cur_Test_Y)
-        X_Diff=np.abs(X_Expected-Cur_Test_X)
-        Y_Diff=np.abs(Y_Expected-Cur_Test_Y)
-        #print("(X_Diff,Y_Diff): ", (X_Diff,Y_Diff))
-        if((X_Diff<=Tolarance) and (Y_Diff<=Tolarance)):
-            ##return True
-            return (True,len(X))
-    ##return False
-    return (False,len(X))
-
-def Save_Detection_Bool(Filepath, X_Expected, Y_Expected, Outpath, Tolarance=17):
-    Outfile=Outpath+"_Detection_Bool.txt"
-    Outfile_Amount=Outpath+"_Detection_Amount.txt"
-    Source_Detection_Bool=Source_Detection_Bool_Calc(Filepath, X_Expected, Y_Expected, Tolarance=Tolarance)[0]
-    Source_Detection_Amount=Source_Detection_Bool_Calc(Filepath, X_Expected, Y_Expected, Tolarance=Tolarance)[1]
-    Command='echo "'+str(int(Source_Detection_Bool))+'" > '+str(Outfile)
-    #print(Command)
+def Source_Reproject(Source_Path, Source_RA, Source_Dec, Target_RA, Target_Dec, Outpath, Reproject_Parameter_Path):
+    #print("Source_RA: ", Source_RA)
+    #print("type(Source_RA): ", type(Source_RA))
+    #print("Target_RA: ", Target_RA)
+    #print("type(Target_RA): ", type(Target_RA))
+    Transformed_RA=Source_RA-Target_RA
+    Transformed_Dec=Source_Dec-Target_Dec
+    Transformed_RA=Angle_Convert(Transformed_RA)
+    ##Command='reproject_events infile='+str(Source_Path)+' outfile='+str(Outpath)+' aspect=none match="'+str(Transformed_RA)+' '+str(Transformed_Dec)+'" random=-1 verbose=0 clobber=yes'
+    os.system("cp /Users/asantini/cxcds_param4/reproject_events.par "+Reproject_Parameter_Path)
+    Command='reproject_events @@'+str(Reproject_Parameter_Path)+' infile='+str(Source_Path)+' outfile='+str(Outpath)+' aspect=none match="'+str(Transformed_RA)+' '+str(Transformed_Dec)+'" random=-1 verbose=0 clobber=yes'
     os.system(Command)
-    Command_Amount='echo "'+str(int(Source_Detection_Amount))+'" > '+str(Outfile_Amount)
-    #print(Command_Amount)
-    os.system(Command_Amount)
 
-def Source_Detect_Big_Input_Generator(Max_Runs=1):
+def Source_Injection(Source_Path, Background_Path, Outpath, Dmmerge_Parameter_Path):
+    #dmmerge "Source.fits,Source_New_11.fits" merged.fits
+    os.system("cp /Users/asantini/cxcds_param4/dmmerge.par "+Dmmerge_Parameter_Path)
+    ##Command='dmmerge "'+str(Source_Path)+'[EVENTS][columns sky],'+str(Background_Path)+'[EVENTS][columns sky]" '+str(Outpath)+' lookupTab=dmmerge_header_lookup_Modified.txt clobber=yes verbose=0'
+    Command='dmmerge @@'+str(Dmmerge_Parameter_Path)+' "'+str(Source_Path)+'[EVENTS][columns sky],'+str(Background_Path)+'[EVENTS][columns sky]" '+str(Outpath)+' lookupTab=dmmerge_header_lookup_Modified.txt clobber=yes verbose=0'
+    """
+    File # 1 : column 0 is TIME
+    File # 1 : column 1 is CCD_ID
+    File # 1 : column 2 is NODE_ID
+    File # 1 : column 3 is EXPNO
+    File # 1 : column 4 is chip
+    File # 1 : column 5 is tdet
+    File # 1 : column 6 is det
+    File # 1 : column 7 is sky
+    File # 1 : column 8 is PHA
+    File # 1 : column 9 is ENERGY
+    File # 1 : column 10 is PI
+    File # 1 : column 11 is FLTGRADE
+    File # 1 : column 12 is GRADE
+    File # 1 : column 13 is STATUS
+    File # 1 : column 14 is SHELL
+    File # 1 : column 15 is ZCOS
+    File # 1 : column 16 is YCOS
+    File # 1 : column 17 is XCOS
+    File # 1 : column 18 is ZPOS
+    File # 1 : column 19 is YPOS
+    File # 1 : column 20 is XPOS
+    File # 1 : column 21 is MARX_ENERGY
+    """
+    os.system(Command)
+
+def Crop_Image(X_Low, X_High, Y_Low, Y_High, Evt2_Fpath, Outfile, Dmcopy_Parameter_Path):
+    ##Command='dmcopy "'+str(Evt2_Fpath)+'[EVENTS][bin x='+str(X_Low)+':'+str(X_High)+':1,y='+str(Y_Low)+':'+str(Y_High)+':1]" '+str(Outfile)+' clobber=yes'
+    print("Dmcopy_Parameter_Path: ", Dmcopy_Parameter_Path)
+    os.system("cp /Users/asantini/cxcds_param4/dmcopy.par "+Dmcopy_Parameter_Path)
+    Command='dmcopy @@'+str(Dmcopy_Parameter_Path)+' "'+str(Evt2_Fpath)+'[EVENTS][bin x='+str(X_Low)+':'+str(X_High)+':1,y='+str(Y_Low)+':'+str(Y_High)+':1]" '+str(Outfile)+' clobber=yes'
+    #print("Command: ", Command)
+    os.system(Command)
+
+def Crop_Image_Centered(X, Y, Evt2_Fpath, Outfile, Dmcopy_Parameter_Path, X_Length=128.0, Y_Length=128.0):
+    X_Low=X-(X_Length/2.0)
+    X_High=X+(X_Length/2.0)
+    Y_Low=Y-(Y_Length/2.0)
+    Y_High=Y+(Y_Length/2.0)
+    Crop_Image(X_Low, X_High, Y_Low, Y_High, Evt2_Fpath=Evt2_Fpath, Outfile=Outfile, Dmcopy_Parameter_Path=Dmcopy_Parameter_Path)
+
+
+def Source_Reproject_Big_Input_Generator(Max_Runs=1):
     #Source_Coords_HL=Source_Coords_Generator()
     ##Source_Coords_HL=[[0, [1, 2, 3, 4, 5, 6, 7, 8]], [15, [1, 2, 3, 4, 5, 6, 7, 8]], [30, [1, 2, 3, 4, 5, 6, 7, 8, 9]], [45, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]], [60, [1, 2, 3, 4, 5, 6, 7, 8, 9]], [75, [1, 2, 3, 4, 5, 6, 7, 8]], [90, [1, 2, 3, 4, 5, 6, 7, 8]], [105, [2, 3, 4, 5, 6, 7, 8]], [120, [1, 2, 3, 4, 5, 6, 7, 8, 9]], [135, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]], [150, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]], [165, [1, 2, 3, 4, 5, 6, 7, 8, 9]], [180, [1, 2, 3, 4, 5, 6, 7, 8]], [195, [1, 2, 3, 4, 5, 6, 7, 8, 9]], [210, [2, 3, 4, 5, 6, 7, 8, 9, 10]], [225, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]], [240, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]], [255, [2, 3, 4, 5, 6, 7, 8, 9]], [270, [1, 2, 3, 4, 5, 6, 7, 8]], [285, [1, 2, 3, 4, 5, 6, 7, 8, 9]], [300, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]], [315, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]], [330, [2, 3, 4, 5, 6, 7, 8, 9]], [345, [1, 3, 4, 5, 6, 7, 8]]]
     #Source_Coords_HL=[[0, [1, 2]]]
@@ -149,73 +149,60 @@ def Source_Detect_Big_Input_Generator(Max_Runs=1):
                     for Run_Count in Run_Count_L:
                         Run_Index=int(Run_Count-1)
                         Number_of_Runs=Number_of_Runs+1
-                        Cur_Outpath="./Wavdetect_Outputs/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Run_Count)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_"+str(Run_Count)
-                        Cur_Postage_Stamp_Outpath="../Source_Reproject/Injected_Sources/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Run_Count)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_"+str(Run_Count)+"_Postage_Stamp.fits"
-                        Cur_PSF_Outpath=Cur_Outpath+"_PSF.fits"
+                        Cur_Outpath="./Injected_Sources/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Run_Count)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_"+str(Run_Count)
+                        ##print("Cur_Outpath: ", Cur_Outpath)
+                        Cur_Source_Path="../Source_Generator/Marx_Sources/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Run_Count)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_"+str(Run_Count)+".fits"
+                        #../Synthetic_Background_Generator/Synthetic_Backgrounds/0/1/78/8E-2/0_1_78_8E-2_bkg.fits
+                        Cur_Synthetic_Background_Path="../Synthetic_Background_Generator/Synthetic_Backgrounds/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_bkg.fits"
+                        Cur_Reproject_Outpath=Cur_Outpath+"_Reprojected.fits"
                         Cur_Postage_Stamp_Coords=Postage_Stamp_Coords_L[Run_Index]
-                        Cur_Wavdetect_Outfile=Cur_Outpath+"_Wavdetect.fits"
-                        Cur_Run_L=[Cur_Outpath, Cur_Postage_Stamp_Outpath, Cur_PSF_Outpath, Cur_Wavdetect_Outfile, Cur_Postage_Stamp_Coords]
+                        Cur_Injected_Outpath=Cur_Outpath+"_Injected.fits"
+                        Cur_Postage_Stamp_Outpath=Cur_Outpath+"_Postage_Stamp.fits"
+                        #Cur_Run_L=[Cur_Phi, Cur_Theta, Cur_RA, Cur_Dec, Cur_Counts, Cur_Background, Run_Count, Cur_Outpath, Cur_Parameter_Outpath, Cur_Aspect_Parameter_Outpath, Cur_Postage_Stamp_Coords, Cur_Seed, Cur_Seed_Biased]
+                        Cur_Reproject_Parameter_Path=Cur_Outpath+"_reproject_events.par"
+                        Cur_Dmmerge_Parameter_Path=Cur_Outpath+"_dmmerge.par"
+                        Cur_Dmcopy_Parameter_Path=Cur_Outpath+"_dmcopy.par"
+                        Cur_Run_L=[Cur_RA, Cur_Dec, Cur_Outpath, Cur_Source_Path, Cur_Synthetic_Background_Path, Cur_Reproject_Outpath, Cur_Injected_Outpath, Cur_Postage_Stamp_Outpath, Cur_Postage_Stamp_Coords, Cur_Reproject_Parameter_Path, Cur_Dmmerge_Parameter_Path, Cur_Dmcopy_Parameter_Path]
                         Run_Input_L.append(Cur_Run_L)
     #print("Number_of_Sources: ", Number_of_Sources)
     print("Number_of_Runs: ", Number_of_Runs)
     return Run_Input_L
 
-def Source_Detect_Generator_Wrapper(Input_L):
-    Outpath=Input_L[0]
-    Postage_Stamp_Outpath=Input_L[1]
-    PSF_Outpath=Input_L[2]
-    Wavdetect_Outfile=Input_L[3]
-    Postage_Stamp_Coords=Input_L[4]
+def Source_Reproject_Generator_Wrapper(Input_L):
+    Outpath=Input_L[2]
+    Source_Path=Input_L[3]
+    Source_RA=float(Input_L[0])
+    Source_Dec=float(Input_L[1])
+    Postage_Stamp_Coords=Input_L[8]
+    Reproject_Outpath=Input_L[5]
+    Synthetic_Background_Path=Input_L[4]
+    Injected_Outpath=Input_L[6]
+    Postage_Stamp_Outpath=Input_L[7]
+    Reproject_Parameter_Path=Input_L[9]
+    Dmmerge_Parameter_Path=Input_L[10]
+    Dmcopy_Parameter_Path=Input_L[11]
     #Postage_Stamp_Coords[0]=[[0, 0], [80.0, 80.0], [4145.0, 4135.0], ['359.9933716666962', '0.005261666616669011']]
-    Target_Physical_Coords=Postage_Stamp_Coords[2]
-    Target_X=Target_Physical_Coords[0]
-    Target_Y=Target_Physical_Coords[1]
+    Physical_Coords=Postage_Stamp_Coords[2]
+    X=Physical_Coords[0]
+    Y=Physical_Coords[1]
+    Target_Cel_Coords=Postage_Stamp_Coords[3]
+    Target_RA=float(Target_Cel_Coords[0])
+    Target_Dec=float(Target_Cel_Coords[1])
     Make_Directory(Outpath)
-    Make_PSF_Map(Postage_Stamp_Outpath, PSF_Outpath, Outpath)
-    Wavdetect(Postage_Stamp_Outpath, Outpath, PSF_Outpath)
-    #Source_Detection_Bool_Calc(Wavdetect_Outfile, Target_RA, Target_Dec)
-    Save_Detection_Bool(Wavdetect_Outfile, Target_X, Target_Y, Outpath)
+    Source_Reproject(Source_Path, Source_RA, Source_Dec, Target_RA, Target_Dec, Reproject_Outpath, Reproject_Parameter_Path)
+    Source_Injection(Reproject_Outpath, Synthetic_Background_Path, Injected_Outpath, Dmmerge_Parameter_Path)
+    Crop_Image_Centered(X, Y, Injected_Outpath, Postage_Stamp_Outpath, Dmcopy_Parameter_Path)
 
 def Driver(Func, Array):
     if __name__ == '__main__':
         P = Pool()
         P.map(Func, Array)
 
-def Source_Detect_Generator_Driver():
-    Input_L=Source_Detect_Big_Input_Generator()
-    Driver(Source_Detect_Generator_Wrapper, Input_L)
+def Source_Reproject_Generator_Driver():
+    Input_L=Source_Reproject_Big_Input_Generator()
+    Driver(Source_Reproject_Generator_Wrapper, Input_L)
 
-
-
-
-
-#"../Synthetic_Background_Generator/Synthetic_Backgrounds/0/1/78/8E-2/1/0_1_78_8E-2_1_bkg_source_with_bkg.fits"
-
-##Fluximage("Test.fits", "Test_Outpath")
-#Fluximage("Cropped.fits", "Cropped_Outpath")
-#Make_PSF_Map("Test.fits", "Test_PSF.fits")
-#Wavdetect("Test.fits", "Test_Outpath")
-#Wavdetect("Cropped.fits", "Cropped_Outpath")
-##Make_PSF_Map("Cropped.fits", "Cropped_PSF.fits")
-##Crop_Image("Test2.fits","Cropped_2.fits")
-##Make_PSF_Map("Cropped_2.fits", "Cropped_2_PSF.fits")
-##Wavdetect("Cropped_2.fits", "./Outputs/Cropped_Wavdetect_Outfile.fits", "Cropped_2_PSF.fits", "./Outputs/Cropped.reg")
-#Crop_Image("Test.fits","Cropped.fits")
-#Make_PSF_Map("Cropped.fits", "Cropped_PSF.fits")
-#Wavdetect("Cropped.fits", "./Outputs/Cropped_Wavdetect_Outfile.fits", "Cropped_PSF.fits", "./Outputs/Cropped.reg")
-#Crop_Image_Centered(X=4218.666, X_Length=128.0, Y=4096.1666, Y_Length=128.0, Evt2_Fpath="Test.fits", Outfile="Cropped_Centered_Test.fits")
-#Make_PSF_Map("Cropped_Centered_Test.fits", "Cropped_Centered_Test_PSF.fits")
-#Wavdetect("Cropped_Centered_Test.fits", "./Outputs/Cropped_Centered_Test_Wavdetect_Outfile.fits", "Cropped_Centered_Test_PSF.fits", "./Outputs/Cropped_Centered_Test.reg")
-##Crop_Image_Centered(X=4218.666, X_Length=256.0, Y=4096.1666, Y_Length=256.0, Evt2_Fpath="Test.fits", Outfile="Cropped_Centered_Test_256.fits")
-##Make_PSF_Map("Cropped_Centered_Test_256.fits", "Cropped_Centered_Test_PSF_256.fits")
-##Wavdetect("Cropped_Centered_Test_256.fits", "./Outputs/Cropped_Centered_Test_256_Wavdetect_Outfile.fits", "Cropped_Centered_Test_PSF_256.fits", "./Outputs/Cropped_Centered_Test_256.reg")
-#Crop_Image_Centered(X=4218.666, X_Length=64.0, Y=4096.1666, Y_Length=64.0, Evt2_Fpath="Test.fits", Outfile="Cropped_Centered_Test_64.fits")
-#Make_PSF_Map("Cropped_Centered_Test_64.fits", "Cropped_Centered_Test_PSF_64.fits")
-#Wavdetect("Cropped_Centered_Test_64.fits", "./Outputs/Cropped_Centered_Test_64_Wavdetect_Outfile.fits", "Cropped_Centered_Test_PSF_64.fits", "./Outputs/Cropped_Centered_Test_64.reg")
 #print(Postage_Stamp_Coords_Calc())
-#Make_PSF_Map("0_1_78_8E-2_1_Postage_Stamp.fits", "0_1_78_8E-2_1_Postage_Stamp_PSF.fits")
-#Wavdetect("0_1_78_8E-2_1_Postage_Stamp.fits", "./Outputs/0_1_78_8E-2_1_Postage_Stamp_Wavdetect_Outfile.fits", "0_1_78_8E-2_1_Postage_Stamp_PSF.fits")
-#print(Source_Detection_Bool_Calc("./Test_Runs/Outputs/0_1_78_8E-2_1_Postage_Stamp_Wavdetect_Outfile.fits", 359.9833379, 0.0000078))
-#print(Source_Detection_Bool_Calc("./Test_Runs/Outputs/0_1_78_8E-2_1_Postage_Stamp_Wavdetect_Outfile.fits", 350.933379, 0.0000078))
-#print(Source_Detect_Big_Input_Generator())
-Source_Detect_Generator_Driver()
+#print(Postage_Stamp_Coords_L[0])
+#print(Source_Reproject_Big_Input_Generator())
+Source_Reproject_Generator_Driver()

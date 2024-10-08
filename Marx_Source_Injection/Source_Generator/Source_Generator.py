@@ -17,8 +17,7 @@ def Empty_Coords_Generator(Roll_Angle=0.0):
     os.system("bash Bash_Scripts/Empty_Generator.sh "+str(Roll_Angle))
 
 def Angle_Convert(Angle):
-    if(Angle<0):
-        Angle=Angle+360.0
+    Angle=Angle%360
     return Angle
 
 def On_Chip_Bool_Calc(Theta,Phi,Empty_Filepath="/opt/xray/anthony/Research_Git/Marx_Source_Injection/Source_Generator/Empty_Coords/empty.fits", Empty_Coords_Gen_Bool=False):
@@ -41,7 +40,7 @@ def MSC_to_CEL_Convert(Theta,Phi,Empty_Filepath="/opt/xray/anthony/Research_Git/
     Dec=dmcoords.dec
     return RA, Dec
 
-def Source_Generator(Counts,X,Y,Outpath="Source_Test", Parameter_Outpath="Source_Test_marx.par", Aspect_Parameter_Outpath="Source_Test_marxasp.par", Check_On_Chip_Bool=False, MSC_TO_CEL_Convert_Bool=True):
+def Source_Generator(Counts,X,Y,Seed,Outpath="Source_Test", Parameter_Outpath="Source_Test_marx.par", Aspect_Parameter_Outpath="Source_Test_marxasp.par", Check_On_Chip_Bool=False, MSC_TO_CEL_Convert_Bool=True):
     if(Check_On_Chip_Bool and MSC_TO_CEL_Convert_Bool):
         #On_Chip_Bool=On_Chip_Bool_Calc(Theta,Phi)
         On_Chip_Bool=On_Chip_Bool_Calc(X,Y)
@@ -59,12 +58,10 @@ def Source_Generator(Counts,X,Y,Outpath="Source_Test", Parameter_Outpath="Source
     directory = os.path.dirname(path)
     if not os.path.exists(directory):
         os.makedirs(directory)
-    #Insert parameter file copying code
     os.system("cp /opt/anaconda3/envs/ciao-4.14/share/marx/pfiles/marx.par "+Parameter_Outpath)
     os.system("cp /opt/anaconda3/envs/ciao-4.14/share/marx/pfiles/marxasp.par "+Aspect_Parameter_Outpath)
-    ##Bash_Command_Str="bash Bash_Scripts/Marx_Point_Source_Generator.sh "+str(RA)+" "+str(Dec)+" "+str(Roll_Angle)+" "+str(Counts)+" "+str(Outpath)
-    Bash_Command_Str="bash Bash_Scripts/Marx_Point_Source_Generator.sh "+str(RA)+" "+str(Dec)+" "+str(Roll_Angle)+" "+str(Counts)+" "+str(Outpath)+" "+str(Parameter_Outpath)+" "+str(Aspect_Parameter_Outpath)
-    #Bash_Command_Str="bash Bash_Scripts/Marx_Point_Source_Generator.sh "+str(RA)+" "+str(Dec)+" "+str(Roll_Angle)+" "+str(Counts)+" "+str(Outpath)+" "+str("/opt/anaconda3/envs/ciao-4.14/share/marx/pfiles/marx.par")+" "+str("/opt/anaconda3/envs/ciao-4.14/share/marx/pfiles/marxasp.par")
+    #Bash_Command_Str="bash Bash_Scripts/Marx_Point_Source_Generator.sh "+str(RA)+" "+str(Dec)+" "+str(Roll_Angle)+" "+str(Counts)+" "+str(Outpath)+" "+str(Parameter_Outpath)+" "+str(Aspect_Parameter_Outpath)
+    Bash_Command_Str="bash Bash_Scripts/Marx_Point_Source_Generator.sh "+str(RA)+" "+str(Dec)+" "+str(Roll_Angle)+" "+str(Counts)+" "+str(Outpath)+" "+str(Parameter_Outpath)+" "+str(Aspect_Parameter_Outpath)+" "+str(Seed)
     os.system(Bash_Command_Str)
 
 def Source_Coords_Generator(Phi_Step=15):
@@ -86,7 +83,8 @@ def Source_Coords_Generator(Phi_Step=15):
         Cur_Coords_HL=[Phi, Theta_On_Chip_L]
         Coords_HL.append(Cur_Coords_HL)
     return Coords_HL
-#'''
+
+'''
 def Source_Generator_Bulk(C_Min=3, C_Max=200, Count_Step=1, Number_of_Runs=50):
     #Source_Coords_HL=Source_Coords_Generator()
     Source_Coords_HL=[[0, [1, 2, 3, 4, 5, 6, 7, 8]], [15, [1, 2, 3, 4, 5, 6, 7, 8]], [30, [1, 2, 3, 4, 5, 6, 7, 8, 9]], [45, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]], [60, [1, 2, 3, 4, 5, 6, 7, 8, 9]], [75, [1, 2, 3, 4, 5, 6, 7, 8]], [90, [1, 2, 3, 4, 5, 6, 7, 8]], [105, [2, 3, 4, 5, 6, 7, 8]], [120, [1, 2, 3, 4, 5, 6, 7, 8, 9]], [135, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]], [150, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]], [165, [1, 2, 3, 4, 5, 6, 7, 8, 9]], [180, [1, 2, 3, 4, 5, 6, 7, 8]], [195, [1, 2, 3, 4, 5, 6, 7, 8, 9]], [210, [2, 3, 4, 5, 6, 7, 8, 9, 10]], [225, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]], [240, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]], [255, [2, 3, 4, 5, 6, 7, 8, 9]], [270, [1, 2, 3, 4, 5, 6, 7, 8]], [285, [1, 2, 3, 4, 5, 6, 7, 8, 9]], [300, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]], [315, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]], [330, [2, 3, 4, 5, 6, 7, 8, 9]], [345, [1, 3, 4, 5, 6, 7, 8]]]
@@ -117,7 +115,7 @@ def Source_Generator_Bulk(C_Min=3, C_Max=200, Count_Step=1, Number_of_Runs=50):
                     #(Cur_Counts,Cur_Theta,Cur_Phi,Outpath="Source_Test")
     print("Number_of_Sources: ", Number_of_Sources)
     print("Number_of_Runs: ", Number_of_Runs)
-#'''
+'''
 
 def Max_Counts_Calc(Theta, C_Low=3, C_High=150):
     return C_High
@@ -144,6 +142,22 @@ def Background_Str_List_Genertator():
         Background_Str_L.append(Background_Str)
     return Background_Str_L
 
+def Seed_Generator(Phi,Theta,Counts,Background_Str,Run_Count=None, Seed_Bias=1727923560): #Seed_Bias is unix time stamp for Thu Oct 03 2024 02:46:00 GMT+0000 (The maximum of the annular eclipse as seen from Wailuku, Maui).
+    Background_Str_L=Background_Str.split("E")
+    Backgorund_Factor_Str=Background_Str_L[0]
+    Backgorund_Power=int(Background_Str_L[-1])
+    if(Backgorund_Power<0):
+        Backgorund_Power=Backgorund_Power*-1
+    Backgorund_Power_Str=str(Backgorund_Power)
+    if(Run_Count==None):
+        Seed_Str="1"+str(int(Phi))+str(int(Theta))+str(int(Counts))+str(int(Backgorund_Factor_Str))+str(int(Backgorund_Power)) #Note: the leading "1" makes sure the Phi=0 degrees and Theta=0 arcmin are not removed during int conversion
+    else:
+        Seed_Str="1"+str(int(Phi))+str(int(Theta))+str(int(Counts))+str(int(Backgorund_Factor_Str))+str(int(Backgorund_Power))+str(int(Run_Count)) #Note: the leading "1" makes sure the Phi=0 degrees and Theta=0 arcmin are not removed during int conversion
+    Seed=int(Seed_Str)
+    Seed_Biased=Seed+int(Seed_Bias)
+    return Seed, Seed_Biased
+
+"""
 def Source_Generator_Big_Input(Source_Coords_L, Max_Runs=1):
     Phi=Source_Coords_L[0]
     Theta_L=Source_Coords_L[1]
@@ -174,6 +188,7 @@ def Source_Generator_Big_Input(Source_Coords_L, Max_Runs=1):
                     ###Source_Generator(Cur_Counts,Cur_RA,Cur_Dec,Outpath=Cur_Outpath,MSC_TO_CEL_Convert_Bool=False)
         #print("Number_of_Sources: ", Number_of_Sources)
         print("Number_of_Runs: ", Number_of_Runs)
+"""
 
 def Source_Generator_Big_Input_Generator(Max_Runs=1):
     #Source_Coords_HL=Source_Coords_Generator()
@@ -215,10 +230,12 @@ def Source_Generator_Big_Input_Generator(Max_Runs=1):
                         Cur_Parameter_Outpath="./Marx_Sources/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Run_Count)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_"+str(Run_Count)+"_marx.par"
                         #print("Cur_Parameter_Outpath: ", Cur_Parameter_Outpath)
                         Cur_Aspect_Parameter_Outpath="./Marx_Sources/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Run_Count)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_"+str(Run_Count)+"_marxasp.par"
+                        Cur_Seed,Cur_Seed_Biased=Seed_Generator(Cur_Phi,Cur_Theta,Cur_Counts,Cur_Background,Run_Count=Run_Count)
                         #print("Cur_Aspect_Parameter_Outpath: ", Cur_Aspect_Parameter_Outpath)
                         #Source_Generator(Cur_Counts,Cur_Theta,Phi,Outpath=Cur_Outpath)
                         ###Source_Generator(Cur_Counts,Cur_RA,Cur_Dec,Outpath=Cur_Outpath,MSC_TO_CEL_Convert_Bool=False)
-                        Cur_Run_L=[Cur_Phi, Cur_Theta, Cur_RA, Cur_Dec, Cur_Counts, Cur_Background, Run_Count, Cur_Outpath, Cur_Parameter_Outpath, Cur_Aspect_Parameter_Outpath]
+                        ##Cur_Run_L=[Cur_Phi, Cur_Theta, Cur_RA, Cur_Dec, Cur_Counts, Cur_Background, Run_Count, Cur_Outpath, Cur_Parameter_Outpath, Cur_Aspect_Parameter_Outpath]
+                        Cur_Run_L=[Cur_Phi, Cur_Theta, Cur_RA, Cur_Dec, Cur_Counts, Cur_Background, Run_Count, Cur_Outpath, Cur_Parameter_Outpath, Cur_Aspect_Parameter_Outpath, Cur_Seed, Cur_Seed_Biased]
                         Run_Input_L.append(Cur_Run_L)
     #print("Number_of_Sources: ", Number_of_Sources)
     print("Number_of_Runs: ", Number_of_Runs)
@@ -231,10 +248,12 @@ def Source_Generator_Input_Wrapper(Input_L):
     Cur_Outpath=Input_L[7]
     Cur_Parameter_Outpath=Input_L[8]
     Cur_Aspect_Parameter_Outpath=Input_L[9]
+    Seed_Biased=Input_L[11]
     #print("Cur Input: ", str((Cur_Counts, Cur_RA, Cur_Dec, Cur_Outpath)))
     #print("Cur Input: ", str((Cur_Counts, Cur_RA, Cur_Dec, Cur_Outpath, Cur_Parameter_Outpath, Cur_Aspect_Parameter_Outpath)))
     #Source_Generator(Cur_Counts,Cur_RA,Cur_Dec,Outpath=Cur_Outpath,MSC_TO_CEL_Convert_Bool=False)
-    Source_Generator(Cur_Counts, Cur_RA, Cur_Dec, Outpath=Cur_Outpath, Parameter_Outpath=Cur_Parameter_Outpath, Aspect_Parameter_Outpath=Cur_Aspect_Parameter_Outpath, MSC_TO_CEL_Convert_Bool=False)
+    ##Source_Generator(Cur_Counts, Cur_RA, Cur_Dec, Outpath=Cur_Outpath, Parameter_Outpath=Cur_Parameter_Outpath, Aspect_Parameter_Outpath=Cur_Aspect_Parameter_Outpath, MSC_TO_CEL_Convert_Bool=False)
+    Source_Generator(Cur_Counts, Cur_RA, Cur_Dec, Seed_Biased, Outpath=Cur_Outpath, Parameter_Outpath=Cur_Parameter_Outpath, Aspect_Parameter_Outpath=Cur_Aspect_Parameter_Outpath, MSC_TO_CEL_Convert_Bool=False)
 
 def Squared(x):
     return x**2.0
@@ -295,7 +314,7 @@ for Offaxis_Test in Offaxis_Test_A:
 #Source_Generator(200,1,90)
 #Source_Generator_Big_Input()
 #Driver(Squared, list(np.arange(0,1000000)))
-#Source_Generator_Driver()
+##Source_Generator_Driver()
 #Source_Generator_Bulk()
 #Source_Generator_Bulk(C_Max=150)
 #print(Source_Coords_Generator(Phi_Step=45))
