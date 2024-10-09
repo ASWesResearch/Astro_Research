@@ -9,11 +9,11 @@
 #+00:03:51.82 =0.0643944444444444
 #-0.0065597 = 359.927781967
 #0.0025008 =0.0668952444444444
-marx @@$3 SourceFlux=3. SpectrumType="FILE" SpectrumFile=../Background_Generator/Test_Example/bkgspec.tbl \
+marx @@$3 SourceFlux=3. SpectrumType="FILE" SpectrumFile=../Required_Files/bkgspec.tbl \
        ExposureTime=0 NumRays=-$1 OutputDir=$2 \
        DetectorType="ACIS-I" DitherModel="INTERNAL" RA_Nom=0 Dec_Nom=0 \
        Roll_Nom=0 SourceRA=359.927781967 SourceDEC=0.066895244 \
-       SourceType="IMAGE" S-ImageFile=../Reproject_Test/chip-shape_Centered_Full.fits GratingType=NONE RandomSeed=$4
+       SourceType="IMAGE" S-ImageFile=../Required_Files/chip-shape_Centered_Full.fits GratingType=NONE RandomSeed=$4
 #$5"_chip-shape.fits"
 #TStart=2012.5
 #marxcat diffuse bkg diffuse_with_bkg

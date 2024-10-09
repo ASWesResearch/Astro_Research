@@ -31,7 +31,7 @@ def Make_Directory(Outpath):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-def Postage_Stamp_Coords_Calc(n=3, N=49, d=1024.0, X_P_Start=4065.0, Y_P_Start=4055.0, Empty_Filepath="/opt/xray/anthony/Research_Git/Marx_Source_Injection/Source_Generator/Empty_Coords/empty.fits"):
+def Postage_Stamp_Coords_Calc(n=3, N=49, d=1024.0, X_P_Start=4065.0, Y_P_Start=4055.0, Empty_Filepath="../Required_Files_Generated/empty.fits"):
     n_s=int(np.sqrt(N))
     S=d/(2.0**n)
     W=d/(2.0**(n+1))
@@ -48,9 +48,11 @@ def Postage_Stamp_Coords_Calc(n=3, N=49, d=1024.0, X_P_Start=4065.0, Y_P_Start=4
             Cur_Index_L=[j,k]
             Cur_Positon=[X,Y]
             Cur_Physical_Postion=[X_P,Y_P]
-            dmcoords(infile=str(Empty_Filepath), x=float(X_P), y=float(Y_P), option='sky', verbose=0, celfmt='deg')
-            RA=dmcoords.ra
-            Dec=dmcoords.dec
+            with rt.new_pfiles_environment(ardlib=True):
+                Dmcoords=rt.make_tool("dmcoords")
+                Dmcoords(infile=str(Empty_Filepath), x=float(X_P), y=float(Y_P), option='sky', verbose=0, celfmt='deg')
+                RA=Dmcoords.ra
+                Dec=Dmcoords.dec
             Cur_Cel_Positon=[RA,Dec]
             Cur_Coords=[Cur_Index_L, Cur_Positon, Cur_Physical_Postion, Cur_Cel_Positon]
             Coords_L.append(Cur_Coords)
@@ -64,16 +66,17 @@ def Source_Reproject(Source_Path, Source_RA, Source_Dec, Target_RA, Target_Dec, 
     Transformed_RA=Source_RA-Target_RA
     Transformed_Dec=Source_Dec-Target_Dec
     Transformed_RA=Angle_Convert(Transformed_RA)
-    ##Command='reproject_events infile='+str(Source_Path)+' outfile='+str(Outpath)+' aspect=none match="'+str(Transformed_RA)+' '+str(Transformed_Dec)+'" random=-1 verbose=0 clobber=yes'
-    os.system("cp /Users/asantini/cxcds_param4/reproject_events.par "+Reproject_Parameter_Path)
+    #os.system("cp /Users/asantini/cxcds_param4/reproject_events.par "+Reproject_Parameter_Path)
+    os.system("cp ../Parameter_Files/cxcds_param4/reproject_events.par "+Reproject_Parameter_Path)
     Command='reproject_events @@'+str(Reproject_Parameter_Path)+' infile='+str(Source_Path)+' outfile='+str(Outpath)+' aspect=none match="'+str(Transformed_RA)+' '+str(Transformed_Dec)+'" random=-1 verbose=0 clobber=yes'
     os.system(Command)
 
 def Source_Injection(Source_Path, Background_Path, Outpath, Dmmerge_Parameter_Path):
     #dmmerge "Source.fits,Source_New_11.fits" merged.fits
-    os.system("cp /Users/asantini/cxcds_param4/dmmerge.par "+Dmmerge_Parameter_Path)
+    #os.system("cp /Users/asantini/cxcds_param4/dmmerge.par "+Dmmerge_Parameter_Path)
+    os.system("cp ../Parameter_Files/cxcds_param4/dmmerge.par "+Dmmerge_Parameter_Path)
     ##Command='dmmerge "'+str(Source_Path)+'[EVENTS][columns sky],'+str(Background_Path)+'[EVENTS][columns sky]" '+str(Outpath)+' lookupTab=dmmerge_header_lookup_Modified.txt clobber=yes verbose=0'
-    Command='dmmerge @@'+str(Dmmerge_Parameter_Path)+' "'+str(Source_Path)+'[EVENTS][columns sky],'+str(Background_Path)+'[EVENTS][columns sky]" '+str(Outpath)+' lookupTab=dmmerge_header_lookup_Modified.txt clobber=yes verbose=0'
+    Command='dmmerge @@'+str(Dmmerge_Parameter_Path)+' "'+str(Source_Path)+'[EVENTS][columns sky],'+str(Background_Path)+'[EVENTS][columns sky]" '+str(Outpath)+' lookupTab=../Required_Files/dmmerge_header_lookup_Modified.txt clobber=yes verbose=0'
     """
     File # 1 : column 0 is TIME
     File # 1 : column 1 is CCD_ID
@@ -102,8 +105,9 @@ def Source_Injection(Source_Path, Background_Path, Outpath, Dmmerge_Parameter_Pa
 
 def Crop_Image(X_Low, X_High, Y_Low, Y_High, Evt2_Fpath, Outfile, Dmcopy_Parameter_Path):
     ##Command='dmcopy "'+str(Evt2_Fpath)+'[EVENTS][bin x='+str(X_Low)+':'+str(X_High)+':1,y='+str(Y_Low)+':'+str(Y_High)+':1]" '+str(Outfile)+' clobber=yes'
-    print("Dmcopy_Parameter_Path: ", Dmcopy_Parameter_Path)
-    os.system("cp /Users/asantini/cxcds_param4/dmcopy.par "+Dmcopy_Parameter_Path)
+    #print("Dmcopy_Parameter_Path: ", Dmcopy_Parameter_Path)
+    #os.system("cp /Users/asantini/cxcds_param4/dmcopy.par "+Dmcopy_Parameter_Path)
+    os.system("cp ../Parameter_Files/cxcds_param4/dmcopy.par "+Dmcopy_Parameter_Path)
     Command='dmcopy @@'+str(Dmcopy_Parameter_Path)+' "'+str(Evt2_Fpath)+'[EVENTS][bin x='+str(X_Low)+':'+str(X_High)+':1,y='+str(Y_Low)+':'+str(Y_High)+':1]" '+str(Outfile)+' clobber=yes'
     #print("Command: ", Command)
     os.system(Command)
@@ -205,4 +209,4 @@ def Source_Reproject_Generator_Driver():
 #print(Postage_Stamp_Coords_Calc())
 #print(Postage_Stamp_Coords_L[0])
 #print(Source_Reproject_Big_Input_Generator())
-Source_Reproject_Generator_Driver()
+#Source_Reproject_Generator_Driver()

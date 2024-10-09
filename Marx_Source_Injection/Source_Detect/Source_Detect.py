@@ -32,7 +32,7 @@ def Make_Directory(Outpath):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-def Postage_Stamp_Coords_Calc(n=3, N=49, d=1024.0, X_P_Start=4065.0, Y_P_Start=4055.0, Empty_Filepath="/opt/xray/anthony/Research_Git/Marx_Source_Injection/Source_Generator/Empty_Coords/empty.fits"):
+def Postage_Stamp_Coords_Calc(n=3, N=49, d=1024.0, X_P_Start=4065.0, Y_P_Start=4055.0, Empty_Filepath="../Required_Files_Generated/empty.fits"):
     n_s=int(np.sqrt(N))
     S=d/(2.0**n)
     W=d/(2.0**(n+1))
@@ -49,14 +49,17 @@ def Postage_Stamp_Coords_Calc(n=3, N=49, d=1024.0, X_P_Start=4065.0, Y_P_Start=4
             Cur_Index_L=[j,k]
             Cur_Positon=[X,Y]
             Cur_Physical_Postion=[X_P,Y_P]
-            dmcoords(infile=str(Empty_Filepath), x=float(X_P), y=float(Y_P), option='sky', verbose=0, celfmt='deg')
-            RA=dmcoords.ra
-            Dec=dmcoords.dec
+            with rt.new_pfiles_environment(ardlib=True):
+                Dmcoords=rt.make_tool("dmcoords")
+                Dmcoords(infile=str(Empty_Filepath), x=float(X_P), y=float(Y_P), option='sky', verbose=0, celfmt='deg')
+                RA=Dmcoords.ra
+                Dec=Dmcoords.dec
             Cur_Cel_Positon=[RA,Dec]
             Cur_Coords=[Cur_Index_L, Cur_Positon, Cur_Physical_Postion, Cur_Cel_Positon]
             Coords_L.append(Cur_Coords)
     return Coords_L, S, g
-
+    
+'''
 def Fluximage(Filepath, Outpath):
     """
     with rt.new_pfiles_environment(ardlib=True):
@@ -64,6 +67,7 @@ def Fluximage(Filepath, Outpath):
     """
     #os.system("fluximage "+str(Filepath)+" "+str(Outpath)+" psfecf=0.9 binsize=1 clobber=yes verbose=1")
     os.system("fluximage "+str(Filepath)+" "+str(Outpath)+" psfecf=0.9 binsize=1 asolfile='0_1_78_8E-2_1_asol1.fits' badpixfile='NONE' maskfile='NONE' clobber=yes verbose=0")
+'''
 
 def Make_PSF_Map(Filepath, PSF_Outpath, Outpath):
     ##os.system("mkpsfmap "+str(Filepath)+" "+str(Outpath)+" 1.4 ecf=0.9 clobber=yes")

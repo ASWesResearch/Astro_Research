@@ -33,10 +33,12 @@ def Synthetic_Background_Generator(Outpath, Background_Counts, Parameter_Outpath
     print("Bash_Command: ", Bash_Command)
     os.system(Bash_Command)
 
+"""
 def Chip_ID_Calc(Theta,Phi,Empty_Filepath="/opt/xray/anthony/Research_Git/Marx_Source_Injection/Source_Generator/Empty_Coords/empty.fits"):
     dmcoords(infile=str(Empty_Filepath), theta=float(Theta), phi=float(Phi), option='msc', verbose=0, celfmt='deg')
     Chip_ID=dmcoords.chip_id
     return Chip_ID
+"""
 
 def Seed_Generator(Phi,Theta,Counts,Background_Str,Run_Count=None, Seed_Bias=1727923560): #Seed_Bias is unix time stamp for Thu Oct 03 2024 02:46:00 GMT+0000 (The maximum of the annular eclipse as seen from Wailuku, Maui).
     Background_Str_L=Background_Str.split("E")
@@ -67,8 +69,9 @@ def Synthetic_Background_Generator_Big_Input_Generator():
     #Max_Runs=Max_Runs+1
     Background_Str_L=Source_Generator.Background_Str_List_Genertator()
     #Background_Str_L=[Background_Str_L[1]] #For Testing
-    Background_Str_L=[Background_Str_L[25]] #For Testing
+    #Background_Str_L=[Background_Str_L[25]] #For Testing
     #Background_Str_L=[Background_Str_L[32]] #For Testing
+    Background_Str_L=[Background_Str_L[-1]] #For Testing
     #print("Background_Str_L: ", Background_Str_L)
     Number_of_Sources=0
     Number_of_Runs=0
@@ -79,7 +82,8 @@ def Synthetic_Background_Generator_Big_Input_Generator():
         for Cur_Theta in Cur_Theta_L:
             Cur_Coords=(Cur_Theta,Cur_Phi)
             Cur_Counts_L=Source_Generator.Counts_List_Genertator(Source_Generator.Max_Counts_Calc,Cur_Theta)
-            Cur_Counts_L=[Cur_Counts_L[3]] #For Testing
+            #Cur_Counts_L=[Cur_Counts_L[3]] #For Testing
+            Cur_Counts_L=[Cur_Counts_L[-1]] #For Testing
             for Cur_Counts in Cur_Counts_L:
                 #Number_of_Sources=Number_of_Sources+1
                 for Cur_Background in Background_Str_L:
@@ -122,7 +126,7 @@ def Synthetic_Background_Generator_Driver():
 
 #Synthetic_Background_Big_Input([0, [1, 2, 3, 4, 5, 6, 7, 8]], Max_Runs=1)
 #print(Synthetic_Background_Generator_Big_Input_Generator())
-##Synthetic_Background_Generator_Driver()
+#Synthetic_Background_Generator_Driver()
 #['../Source_Generator/Marx_Sources/0/1/153/8E-1/1/0_1_153_8E-1_1_asol1.fits', '../Source_Generator/Marx_Sources/0/1/153/8E-1/1/0_1_153_8E-1_1.fits', './Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_bkg', '359.9833303205489', '2.676250189553372e-06', 3, 838860.8, '../Source_Generator/Marx_Sources/0/1/153/8E-1/1/0_1_153_8E-1_1', './Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_marx.par', './Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_reproject_events.par'], ['../Source_Generator/Marx_Sources/0/1/153/9E-1/1/0_1_153_9E-1_1_asol1.fits', '../Source_Generator/Marx_Sources/0/1/153/9E-1/1/0_1_153_9E-1_1.fits', './Synthetic_Backgrounds/0/1/153/9E-1/1/0_1_153_9E-1_1_bkg', '359.9833303205489', '2.676250189553372e-06', 3, 943718.4, '../Source_Generator/Marx_Sources/0/1/153/9E-1/1/0_1_153_9E-1_1', './Synthetic_Backgrounds/0/1/153/9E-1/1/0_1_153_9E-1_1_marx.par', './Synthetic_Backgrounds/0/1/153/9E-1/1/0_1_153_9E-1_1_reproject_events.par']
 #Reproject_Background(Asolfile='../Source_Generator/Marx_Sources/0/1/153/8E-1/1/0_1_153_8E-1_1_asol1.fits', Source_Evtfile='../Source_Generator/Marx_Sources/0/1/153/8E-1/1/0_1_153_8E-1_1.fits', Outpath='./Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_bkg', Reproject_Parameter_Outpath='./Synthetic_Backgrounds/0/1/153/9E-1/1/0_1_153_9E-1_1_reproject_events.par', Background_Evtfile="/opt/anaconda3/envs/ciao-4.14/CALDB/data/chandra/acis/bkgrnd/acis5sD2009-09-21bkgrndN0002.fits")
 #['../Source_Generator/Marx_Sources/0/1/153/8E-1/1/0_1_153_8E-1_1_asol1.fits', '../Source_Generator/Marx_Sources/0/1/153/8E-1/1/0_1_153_8E-1_1.fits', './Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_bkg', '359.9833303205489', '2.676250189553372e-06', 3, 838860.8, '../Source_Generator/Marx_Sources/0/1/153/8E-1/1/0_1_153_8E-1_1', './Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_marx.par', './Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_reproject_events.par', './Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_dmkeypar.par', './Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_dmtcalc.par', './Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_dmsort.par'], ['../Source_Generator/Marx_Sources/0/1/153/9E-1/1/0_1_153_9E-1_1_asol1.fits', '../Source_Generator/Marx_Sources/0/1/153/9E-1/1/0_1_153_9E-1_1.fits', './Synthetic_Backgrounds/0/1/153/9E-1/1/0_1_153_9E-1_1_bkg', '359.9833303205489', '2.676250189553372e-06', 3, 943718.4, '../Source_Generator/Marx_Sources/0/1/153/9E-1/1/0_1_153_9E-1_1', './Synthetic_Backgrounds/0/1/153/9E-1/1/0_1_153_9E-1_1_marx.par', './Synthetic_Backgrounds/0/1/153/9E-1/1/0_1_153_9E-1_1_reproject_events.par', './Synthetic_Backgrounds/0/1/153/9E-1/1/0_1_153_9E-1_1_dmkeypar.par', './Synthetic_Backgrounds/0/1/153/9E-1/1/0_1_153_9E-1_1_dmtcalc.par', './Synthetic_Backgrounds/0/1/153/9E-1/1/0_1_153_9E-1_1_dmsort.par']
