@@ -36,25 +36,31 @@ def Background_to_Counts_Calc(Background):
     Counts=Background*1048576.0
     return Counts
 
-def Background_to_Background_String_Convert(Background):
+def Background_to_Background_String_Convert(Background, Include_Zero_Bool=True):
     Background_Str_Dict={0.0001:"1E-4",0.0002:"2E-4",0.0003:"3E-4",0.0004:"4E-4",0.0005:"5E-4",0.0006:"6E-4",0.0007:"7E-4",0.0008:"8E-4",0.0009:"9E-4",0.001:"1E-3",0.002:"2E-3",0.003:"3E-3",0.004:"4E-3",0.005:"5E-3",0.006:"6E-3",0.007:"7E-3",0.008:"8E-3",0.009:"9E-3",0.01:"1E-2",0.02:"2E-2",0.03:"3E-2",0.04:"4E-2",0.05:"5E-2",0.06:"6E-2",0.07:"7E-2",0.08:"8E-2",0.09:"9E-2",0.1:"1E-1",0.2:"2E-1",0.3:"3E-1",0.4:"4E-1",0.5:"5E-1",0.6:"6E-1",0.7:"7E-1",0.8:"8E-1",0.9:"9E-1"}
+    if(Include_Zero_Bool):
+        Background_Str_Dict={0.0:"0E-0",0.0001:"1E-4",0.0002:"2E-4",0.0003:"3E-4",0.0004:"4E-4",0.0005:"5E-4",0.0006:"6E-4",0.0007:"7E-4",0.0008:"8E-4",0.0009:"9E-4",0.001:"1E-3",0.002:"2E-3",0.003:"3E-3",0.004:"4E-3",0.005:"5E-3",0.006:"6E-3",0.007:"7E-3",0.008:"8E-3",0.009:"9E-3",0.01:"1E-2",0.02:"2E-2",0.03:"3E-2",0.04:"4E-2",0.05:"5E-2",0.06:"6E-2",0.07:"7E-2",0.08:"8E-2",0.09:"9E-2",0.1:"1E-1",0.2:"2E-1",0.3:"3E-1",0.4:"4E-1",0.5:"5E-1",0.6:"6E-1",0.7:"7E-1",0.8:"8E-1",0.9:"9E-1"}
     Background_Str=Background_Str_Dict[Background]
     return Background_Str
 
 def Background_Generator(Background, Key, Outpath="./Backgrounds/"):
     Background_Path=Background_File_Query(Key)
     Total_Counts=Background_to_Counts_Calc(Background)
+    if(Total_Counts==0):
+        return
     #OutFpath=str(Outpath)+"Background_"+str(Key)+"_"+str(Background)+".fits"
     OutFpath=str(Outpath)+"Background_"+str(Key)+"_"+str(Background_to_Background_String_Convert(Background))+".fits"
     ##Bash_Command_Str="bash Bash_Scripts/Generate_Background.sh "+str(Background_Path)+" "+str(Total_Counts)+" "+str(Outpath)+"BG_"+str(Key)+"_"+str(Background)+".fits"
     Bash_Command_Str="bash Bash_Scripts/Generate_Background.sh "+str(Background_Path)+" "+str(Total_Counts)+" "+str(OutFpath)
     os.system(Bash_Command_Str)
 
-def Background_Array_Calc():
+def Background_Array_Calc(Include_Zero_Bool=True):
     a2 = np.arange(1,10,1)
     a1 = 10.**(np.arange(-4,0))
     X=np.outer(a1, a2).flatten()
     X=np.round(X,4)
+    if(Include_Zero_Bool):
+        X=np.insert(X, 0, 0.0)
     #X=np.format_float_positional(X, precision=3)
     return X
 
@@ -104,3 +110,5 @@ def Background_Generator_Driver():
 #print(Max_Background_Check("7s"))
 ##Background_Generator_Driver()
 #print(Background_File_Query("5s"))
+#print(Background_to_Counts_Calc(0.0))
+#print(Background_Array_Calc())

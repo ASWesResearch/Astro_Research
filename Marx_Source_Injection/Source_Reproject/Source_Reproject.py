@@ -58,7 +58,10 @@ def Postage_Stamp_Coords_Calc(n=3, N=49, d=1024.0, X_P_Start=4065.0, Y_P_Start=4
             Coords_L.append(Cur_Coords)
     return Coords_L, S, g
 
-def Source_Reproject(Source_Path, Source_RA, Source_Dec, Target_RA, Target_Dec, Outpath, Reproject_Parameter_Path):
+def Source_Reproject(Source_Path, Source_RA, Source_Dec, Target_RA, Target_Dec, Outpath, Reproject_Parameter_Path, Counts=None):
+    if(Counts==0):
+        print("Source_Reproject 0 Counts Test")
+        return
     #print("Source_RA: ", Source_RA)
     #print("type(Source_RA): ", type(Source_RA))
     #print("Target_RA: ", Target_RA)
@@ -71,7 +74,18 @@ def Source_Reproject(Source_Path, Source_RA, Source_Dec, Target_RA, Target_Dec, 
     Command='reproject_events @@'+str(Reproject_Parameter_Path)+' infile='+str(Source_Path)+' outfile='+str(Outpath)+' aspect=none match="'+str(Transformed_RA)+' '+str(Transformed_Dec)+'" random=-1 verbose=0 clobber=yes'
     os.system(Command)
 
-def Source_Injection(Source_Path, Background_Path, Outpath, Dmmerge_Parameter_Path):
+def Source_Injection(Source_Path, Background_Path, Outpath, Dmmerge_Parameter_Path, Background_Float=None, Counts=None):
+    if((float(Background_Float)==0.0) and (int(Counts)==0)):
+        print("Source_Injection 0 Counts and Background Test")
+        return
+    if(Background_Float==0.0):
+        Command='cp '+str(Source_Path)+" "+str(Outpath)
+        os.system(Command)
+        return
+    if(Counts==0):
+        Command='cp '+str(Background_Path)+" "+str(Outpath)
+        os.system(Command)
+        return
     #dmmerge "Source.fits,Source_New_11.fits" merged.fits
     #os.system("cp /Users/asantini/cxcds_param4/dmmerge.par "+Dmmerge_Parameter_Path)
     os.system("cp ../Parameter_Files/cxcds_param4/dmmerge.par "+Dmmerge_Parameter_Path)
@@ -112,7 +126,10 @@ def Crop_Image(X_Low, X_High, Y_Low, Y_High, Evt2_Fpath, Outfile, Dmcopy_Paramet
     #print("Command: ", Command)
     os.system(Command)
 
-def Crop_Image_Centered(X, Y, Evt2_Fpath, Outfile, Dmcopy_Parameter_Path, X_Length=128.0, Y_Length=128.0):
+def Crop_Image_Centered(X, Y, Evt2_Fpath, Outfile, Dmcopy_Parameter_Path, Background_Float=None, Counts=None, X_Length=128.0, Y_Length=128.0):
+    if((Background_Float==0.0) and (Counts==0)):
+        print("Crop_Image_Centered 0 Counts and Background Test")
+        return
     X_Low=X-(X_Length/2.0)
     X_High=X+(X_Length/2.0)
     Y_Low=Y-(Y_Length/2.0)
@@ -132,6 +149,7 @@ def Source_Reproject_Big_Input_Generator(Max_Runs=1):
     #print("Run_Count_L: ", Run_Count_L)
     Background_Str_L=Source_Generator.Background_Str_List_Genertator()
     Background_Str_L=[Background_Str_L[25]] #For Testing
+    #Background_Str_L=[Background_Str_L[0]] #For Testing
     #print("Background_Str_L: ", Background_Str_L)
     Number_of_Sources=0
     Number_of_Runs=0
@@ -144,12 +162,14 @@ def Source_Reproject_Big_Input_Generator(Max_Runs=1):
             Cur_Counts_L=Source_Generator.Counts_List_Genertator(Source_Generator.Max_Counts_Calc,Cur_Theta)
             #Cur_Counts_L=Counts_List_Genertator(Max_Counts_Calc_Broken,Cur_Theta)
             Cur_Counts_L=[Cur_Counts_L[3]] #For Testing
+            #Cur_Counts_L=[Cur_Counts_L[0]] #For Testing
             #print("Cur_Counts_L: ", Cur_Counts_L)
             Cur_RA,Cur_Dec=Source_Generator.MSC_to_CEL_Convert(Cur_Theta,Cur_Phi)
             for Cur_Counts in Cur_Counts_L:
                 #Number_of_Sources=Number_of_Sources+1
                 for Cur_Background in Background_Str_L:
                     Number_of_Sources=Number_of_Sources+1
+                    Cur_Background_Float=float(Cur_Background)
                     for Run_Count in Run_Count_L:
                         Run_Index=int(Run_Count-1)
                         Number_of_Runs=Number_of_Runs+1
@@ -166,7 +186,7 @@ def Source_Reproject_Big_Input_Generator(Max_Runs=1):
                         Cur_Reproject_Parameter_Path=Cur_Outpath+"_reproject_events.par"
                         Cur_Dmmerge_Parameter_Path=Cur_Outpath+"_dmmerge.par"
                         Cur_Dmcopy_Parameter_Path=Cur_Outpath+"_dmcopy.par"
-                        Cur_Run_L=[Cur_RA, Cur_Dec, Cur_Outpath, Cur_Source_Path, Cur_Synthetic_Background_Path, Cur_Reproject_Outpath, Cur_Injected_Outpath, Cur_Postage_Stamp_Outpath, Cur_Postage_Stamp_Coords, Cur_Reproject_Parameter_Path, Cur_Dmmerge_Parameter_Path, Cur_Dmcopy_Parameter_Path]
+                        Cur_Run_L=[Cur_RA, Cur_Dec, Cur_Outpath, Cur_Source_Path, Cur_Synthetic_Background_Path, Cur_Reproject_Outpath, Cur_Injected_Outpath, Cur_Postage_Stamp_Outpath, Cur_Postage_Stamp_Coords, Cur_Reproject_Parameter_Path, Cur_Dmmerge_Parameter_Path, Cur_Dmcopy_Parameter_Path, Cur_Background_Float, Cur_Counts]
                         Run_Input_L.append(Cur_Run_L)
     #print("Number_of_Sources: ", Number_of_Sources)
     print("Number_of_Runs: ", Number_of_Runs)
@@ -185,6 +205,8 @@ def Source_Reproject_Generator_Wrapper(Input_L):
     Reproject_Parameter_Path=Input_L[9]
     Dmmerge_Parameter_Path=Input_L[10]
     Dmcopy_Parameter_Path=Input_L[11]
+    Background_Float=Input_L[12]
+    Counts=Input_L[13]
     #Postage_Stamp_Coords[0]=[[0, 0], [80.0, 80.0], [4145.0, 4135.0], ['359.9933716666962', '0.005261666616669011']]
     Physical_Coords=Postage_Stamp_Coords[2]
     X=Physical_Coords[0]
@@ -193,9 +215,9 @@ def Source_Reproject_Generator_Wrapper(Input_L):
     Target_RA=float(Target_Cel_Coords[0])
     Target_Dec=float(Target_Cel_Coords[1])
     Make_Directory(Outpath)
-    Source_Reproject(Source_Path, Source_RA, Source_Dec, Target_RA, Target_Dec, Reproject_Outpath, Reproject_Parameter_Path)
-    Source_Injection(Reproject_Outpath, Synthetic_Background_Path, Injected_Outpath, Dmmerge_Parameter_Path)
-    Crop_Image_Centered(X, Y, Injected_Outpath, Postage_Stamp_Outpath, Dmcopy_Parameter_Path)
+    Source_Reproject(Source_Path, Source_RA, Source_Dec, Target_RA, Target_Dec, Reproject_Outpath, Reproject_Parameter_Path, Counts)
+    Source_Injection(Reproject_Outpath, Synthetic_Background_Path, Injected_Outpath, Dmmerge_Parameter_Path, Background_Float, Counts)
+    Crop_Image_Centered(X, Y, Injected_Outpath, Postage_Stamp_Outpath, Dmcopy_Parameter_Path, Background_Float, Counts)
 
 def Driver(Func, Array):
     if __name__ == '__main__':
@@ -209,4 +231,4 @@ def Source_Reproject_Generator_Driver():
 #print(Postage_Stamp_Coords_Calc())
 #print(Postage_Stamp_Coords_L[0])
 #print(Source_Reproject_Big_Input_Generator())
-#Source_Reproject_Generator_Driver()
+##Source_Reproject_Generator_Driver()

@@ -46,6 +46,9 @@ def MSC_to_CEL_Convert(Theta,Phi,Empty_Filepath="../Required_Files_Generated/emp
     return RA, Dec
 
 def Source_Generator(Counts,X,Y,Seed,Outpath="Source_Test", Parameter_Outpath="Source_Test_marx.par", Aspect_Parameter_Outpath="Source_Test_marxasp.par", Check_On_Chip_Bool=False, MSC_TO_CEL_Convert_Bool=True):
+    print("Counts: ", Counts)
+    if(Counts==0):
+        return
     if(Check_On_Chip_Bool and MSC_TO_CEL_Convert_Bool):
         #On_Chip_Bool=On_Chip_Bool_Calc(Theta,Phi)
         On_Chip_Bool=On_Chip_Bool_Calc(X,Y)
@@ -101,10 +104,12 @@ def Max_Counts_Calc_Broken(Theta, C_Low=3, C_High=150, Theta_Break=2):
         C_Max=C_High
     return C_Max
 
-def Counts_List_Genertator(Max_Counts_Calc_Func,Theta, C_Min=3, Count_Step=25):
+def Counts_List_Genertator(Max_Counts_Calc_Func,Theta, C_Min=3, Count_Step=25, Include_Zero_Bool=True):
     C_Max=Max_Counts_Calc_Func(Theta)
     C_Max=C_Max+Count_Step
     Counts_L=np.arange(C_Min,C_Max,step=Count_Step)
+    if(Include_Zero_Bool):
+        Counts_L=np.insert(Counts_L, 0, 0)
     return Counts_L
 
 def Background_Str_List_Genertator():
@@ -210,6 +215,7 @@ def Source_Generator_Driver():
     #Source_Coords_HL=[[0, [1, 2, 3, 4, 5, 6, 7, 8]]]
     ##Source_Coords_HL=[[0, [1, 2, 3, 4, 5, 6, 7, 8]], [45, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]], [90, [1, 2, 3, 4, 5, 6, 7, 8]], [135, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]], [180, [1, 2, 3, 4, 5, 6, 7, 8]], [225, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]], [270, [1, 2, 3, 4, 5, 6, 7, 8]], [315, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]]]
     ##Driver(Source_Generator_Big_Input, Source_Coords_HL)
+    #Input_L=[Source_Generator_Big_Input_Generator()[0]] #For Testing
     Input_L=Source_Generator_Big_Input_Generator()
     Driver(Source_Generator_Input_Wrapper, Input_L)
 
@@ -260,3 +266,5 @@ for Offaxis_Test in Offaxis_Test_A:
 #Source_Generator_Bulk(C_Max=150)
 #print(Source_Coords_Generator(Phi_Step=45))
 #print(Source_Generator_Big_Input_Generator())
+#print(Background_Str_List_Genertator())
+#print(Source_Generator_Big_Input_Generator()[0])

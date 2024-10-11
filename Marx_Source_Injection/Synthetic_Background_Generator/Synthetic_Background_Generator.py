@@ -18,6 +18,8 @@ from Source_Generator import Source_Generator
 #def Synthetic_Background_Generator(Outpath, Background_Counts, RA, Dec, Source_Path, Parameter_Outpath, Background_Evtfile="/opt/anaconda3/envs/ciao-4.14/CALDB/data/chandra/acis/bkgrnd/acis5sD2009-09-21bkgrndN0002.fits"):
 def Synthetic_Background_Generator(Outpath, Background_Counts, Parameter_Outpath, Seed):
     #os.system("bash Background_Marx_Run.sh")
+    if(Background_Counts==0):
+        return
     path=os.path.realpath(Outpath)
     directory = os.path.dirname(path)
     if not os.path.exists(directory):
@@ -71,11 +73,14 @@ def Synthetic_Background_Generator_Big_Input_Generator():
     #Background_Str_L=[Background_Str_L[1]] #For Testing
     #Background_Str_L=[Background_Str_L[25]] #For Testing
     #Background_Str_L=[Background_Str_L[32]] #For Testing
-    Background_Str_L=[Background_Str_L[-1]] #For Testing
+    #Background_Str_L=[Background_Str_L[-1]] #For Testing
+    #Background_Str_L=[Background_Str_L[0]] #For Testing
+    Background_Str_L=[Background_Str_L[0],Background_Str_L[1]] #For Testing
     #print("Background_Str_L: ", Background_Str_L)
     Number_of_Sources=0
     Number_of_Runs=0
     Run_Input_L=[]
+    #Test_Seed_L=[]
     for Source_Coords_L in Source_Coords_HL:
         Cur_Phi=Source_Coords_L[0]
         Cur_Theta_L=Source_Coords_L[1]
@@ -83,7 +88,9 @@ def Synthetic_Background_Generator_Big_Input_Generator():
             Cur_Coords=(Cur_Theta,Cur_Phi)
             Cur_Counts_L=Source_Generator.Counts_List_Genertator(Source_Generator.Max_Counts_Calc,Cur_Theta)
             #Cur_Counts_L=[Cur_Counts_L[3]] #For Testing
-            Cur_Counts_L=[Cur_Counts_L[-1]] #For Testing
+            #Cur_Counts_L=[Cur_Counts_L[-1]] #For Testing
+            #Cur_Counts_L=[Cur_Counts_L[0]] #For Testing
+            Cur_Counts_L=[Cur_Counts_L[0], Cur_Counts_L[1]] #For Testing
             for Cur_Counts in Cur_Counts_L:
                 #Number_of_Sources=Number_of_Sources+1
                 for Cur_Background in Background_Str_L:
@@ -95,9 +102,12 @@ def Synthetic_Background_Generator_Big_Input_Generator():
                     Cur_Outpath="./Synthetic_Backgrounds/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_bkg"
                     Cur_Parameter_Outpath="./Synthetic_Backgrounds/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_marx.par"
                     Number_of_Runs=Number_of_Runs+1
+                    #Test_Seed_L.append(Cur_Seed_Biased)
                     Cur_Run_L=[Cur_Outpath, Cur_Background_Counts, Cur_Parameter_Outpath, Cur_Seed, Cur_Seed_Biased]
                     Run_Input_L.append(Cur_Run_L)
     print("Number_of_Runs: ", Number_of_Runs)
+    #Test_Number_of_Seed_Dups=len(Test_Seed_L)-len(list(set(Test_Seed_L)))
+    #print("Test_Number_of_Seed_Dups: ", Test_Number_of_Seed_Dups)
     return Run_Input_L
 
 def Synthetic_Background_Generator_Wrapper(Input_L):
@@ -126,7 +136,7 @@ def Synthetic_Background_Generator_Driver():
 
 #Synthetic_Background_Big_Input([0, [1, 2, 3, 4, 5, 6, 7, 8]], Max_Runs=1)
 #print(Synthetic_Background_Generator_Big_Input_Generator())
-#Synthetic_Background_Generator_Driver()
+##Synthetic_Background_Generator_Driver()
 #['../Source_Generator/Marx_Sources/0/1/153/8E-1/1/0_1_153_8E-1_1_asol1.fits', '../Source_Generator/Marx_Sources/0/1/153/8E-1/1/0_1_153_8E-1_1.fits', './Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_bkg', '359.9833303205489', '2.676250189553372e-06', 3, 838860.8, '../Source_Generator/Marx_Sources/0/1/153/8E-1/1/0_1_153_8E-1_1', './Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_marx.par', './Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_reproject_events.par'], ['../Source_Generator/Marx_Sources/0/1/153/9E-1/1/0_1_153_9E-1_1_asol1.fits', '../Source_Generator/Marx_Sources/0/1/153/9E-1/1/0_1_153_9E-1_1.fits', './Synthetic_Backgrounds/0/1/153/9E-1/1/0_1_153_9E-1_1_bkg', '359.9833303205489', '2.676250189553372e-06', 3, 943718.4, '../Source_Generator/Marx_Sources/0/1/153/9E-1/1/0_1_153_9E-1_1', './Synthetic_Backgrounds/0/1/153/9E-1/1/0_1_153_9E-1_1_marx.par', './Synthetic_Backgrounds/0/1/153/9E-1/1/0_1_153_9E-1_1_reproject_events.par']
 #Reproject_Background(Asolfile='../Source_Generator/Marx_Sources/0/1/153/8E-1/1/0_1_153_8E-1_1_asol1.fits', Source_Evtfile='../Source_Generator/Marx_Sources/0/1/153/8E-1/1/0_1_153_8E-1_1.fits', Outpath='./Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_bkg', Reproject_Parameter_Outpath='./Synthetic_Backgrounds/0/1/153/9E-1/1/0_1_153_9E-1_1_reproject_events.par', Background_Evtfile="/opt/anaconda3/envs/ciao-4.14/CALDB/data/chandra/acis/bkgrnd/acis5sD2009-09-21bkgrndN0002.fits")
 #['../Source_Generator/Marx_Sources/0/1/153/8E-1/1/0_1_153_8E-1_1_asol1.fits', '../Source_Generator/Marx_Sources/0/1/153/8E-1/1/0_1_153_8E-1_1.fits', './Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_bkg', '359.9833303205489', '2.676250189553372e-06', 3, 838860.8, '../Source_Generator/Marx_Sources/0/1/153/8E-1/1/0_1_153_8E-1_1', './Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_marx.par', './Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_reproject_events.par', './Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_dmkeypar.par', './Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_dmtcalc.par', './Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_dmsort.par'], ['../Source_Generator/Marx_Sources/0/1/153/9E-1/1/0_1_153_9E-1_1_asol1.fits', '../Source_Generator/Marx_Sources/0/1/153/9E-1/1/0_1_153_9E-1_1.fits', './Synthetic_Backgrounds/0/1/153/9E-1/1/0_1_153_9E-1_1_bkg', '359.9833303205489', '2.676250189553372e-06', 3, 943718.4, '../Source_Generator/Marx_Sources/0/1/153/9E-1/1/0_1_153_9E-1_1', './Synthetic_Backgrounds/0/1/153/9E-1/1/0_1_153_9E-1_1_marx.par', './Synthetic_Backgrounds/0/1/153/9E-1/1/0_1_153_9E-1_1_reproject_events.par', './Synthetic_Backgrounds/0/1/153/9E-1/1/0_1_153_9E-1_1_dmkeypar.par', './Synthetic_Backgrounds/0/1/153/9E-1/1/0_1_153_9E-1_1_dmtcalc.par', './Synthetic_Backgrounds/0/1/153/9E-1/1/0_1_153_9E-1_1_dmsort.par']

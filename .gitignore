@@ -79,3 +79,5 @@ Marx_Source_Injection/Synthetic_Background_Generator/Old_Files
 Marx_Source_Injection/Source_Reproject/Injected_Sources
 .backup_gitignore
 Marx_Source_Injection/Source_Detect/Old_Files
+Marx_Source_Injection/Main_Code/Wavdetect_Outputs
+Marx_Source_Injection/Source_Detect/Wavdetect_Outputs

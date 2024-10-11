@@ -38,7 +38,9 @@ def Main_Big_Input_Generator(Max_Runs=1):
     #print("Run_Count_L: ", Run_Count_L)
     Background_Str_L=Source_Generator.Background_Str_List_Genertator()
     #Background_Str_L=[Background_Str_L[25]] #For Testing
-    Background_Str_L=[Background_Str_L[-1]] #For Testing
+    #Background_Str_L=[Background_Str_L[-1]] #For Testing
+    #Background_Str_L=[Background_Str_L[0]] #For Testing
+    Background_Str_L=[Background_Str_L[0],Background_Str_L[1]] #For Testing
     #print("Background_Str_L: ", Background_Str_L)
     Number_of_Sources=0
     Number_of_Runs=0
@@ -51,12 +53,19 @@ def Main_Big_Input_Generator(Max_Runs=1):
             Cur_Counts_L=Source_Generator.Counts_List_Genertator(Source_Generator.Max_Counts_Calc,Cur_Theta)
             #Cur_Counts_L=Counts_List_Genertator(Max_Counts_Calc_Broken,Cur_Theta)
             #Cur_Counts_L=[Cur_Counts_L[3]] #For Testing
-            Cur_Counts_L=[Cur_Counts_L[-1]] #For Testing
+            #Cur_Counts_L=[Cur_Counts_L[-1]] #For Testing
+            #Cur_Counts_L=[Cur_Counts_L[2]] #For Testing
+            #Cur_Counts_L=[Cur_Counts_L[0]] #For Testing
+            Cur_Counts_L=[Cur_Counts_L[0], Cur_Counts_L[1]] #For Testing
             #print("Cur_Counts_L: ", Cur_Counts_L)
             Cur_RA,Cur_Dec=Source_Generator.MSC_to_CEL_Convert(Cur_Theta,Cur_Phi)
             for Cur_Counts in Cur_Counts_L:
                 #Number_of_Sources=Number_of_Sources+1
                 for Cur_Background in Background_Str_L:
+                    Cur_Background_Float=float(Cur_Background)
+                    if((float(Cur_Background_Float)==0.0) and (int(Cur_Counts)==0)):
+                        continue
+                        #pass
                     Number_of_Sources=Number_of_Sources+1
                     for Run_Count in Run_Count_L:
                         Cur_Run_HL=[]
@@ -93,7 +102,7 @@ def Main_Big_Input_Generator(Max_Runs=1):
                         Cur_Dmcopy_Parameter_Path=Cur_Outpath_Source_Reproject+"_dmcopy.par"
                         #Cur_Run_L=[Cur_RA, Cur_Dec, Cur_Outpath_Source_Reproject, Cur_Source_Path, Cur_Synthetic_Background_Path, Cur_Reproject_Outpath, Cur_Injected_Outpath, Cur_Postage_Stamp_Outpath, Cur_Postage_Stamp_Coords, Cur_Reproject_Parameter_Path, Cur_Dmmerge_Parameter_Path, Cur_Dmcopy_Parameter_Path]
                         #Run_Input_L.append(Cur_Run_L)
-                        Cur_Source_Reproject_Run_L=[Cur_RA, Cur_Dec, Cur_Outpath_Source_Reproject, Cur_Source_Path, Cur_Synthetic_Background_Path, Cur_Reproject_Outpath, Cur_Injected_Outpath, Cur_Postage_Stamp_Outpath, Cur_Postage_Stamp_Coords, Cur_Reproject_Parameter_Path, Cur_Dmmerge_Parameter_Path, Cur_Dmcopy_Parameter_Path]
+                        Cur_Source_Reproject_Run_L=[Cur_RA, Cur_Dec, Cur_Outpath_Source_Reproject, Cur_Source_Path, Cur_Synthetic_Background_Path, Cur_Reproject_Outpath, Cur_Injected_Outpath, Cur_Postage_Stamp_Outpath, Cur_Postage_Stamp_Coords, Cur_Reproject_Parameter_Path, Cur_Dmmerge_Parameter_Path, Cur_Dmcopy_Parameter_Path, Cur_Background_Float, Cur_Counts]
                         Cur_Run_HL.append(Cur_Source_Reproject_Run_L)
 
                         ###Source_Detect Inputs###
@@ -104,7 +113,8 @@ def Main_Big_Input_Generator(Max_Runs=1):
                         Cur_PSF_Outpath=Cur_Outpath_Source_Detect+"_PSF.fits"
                         Cur_Postage_Stamp_Coords=Postage_Stamp_Coords_L[Run_Index]
                         Cur_Wavdetect_Outfile=Cur_Outpath_Source_Detect+"_Wavdetect.fits"
-                        Cur_Source_Detect_Run_L=[Cur_Outpath_Source_Detect, Cur_Postage_Stamp_Outpath, Cur_PSF_Outpath, Cur_Wavdetect_Outfile, Cur_Postage_Stamp_Coords]
+                        ##Cur_Source_Detect_Run_L=[Cur_Outpath_Source_Detect, Cur_Postage_Stamp_Outpath, Cur_PSF_Outpath, Cur_Wavdetect_Outfile, Cur_Postage_Stamp_Coords]
+                        Cur_Source_Detect_Run_L=[Cur_Outpath_Source_Detect, Cur_Postage_Stamp_Outpath, Cur_PSF_Outpath, Cur_Wavdetect_Outfile, Cur_Postage_Stamp_Coords, Cur_Background_Float, Cur_Counts]
                         #Run_Input_L.append(Cur_Run_L)
                         Cur_Run_HL.append(Cur_Source_Detect_Run_L)
 
@@ -149,6 +159,8 @@ def Main_Wrapper(Input_HL):
     Reproject_Parameter_Path=Input_L[9]
     Dmmerge_Parameter_Path=Input_L[10]
     Dmcopy_Parameter_Path=Input_L[11]
+    Background_Float=Input_L[12]
+    Counts=Input_L[13]
     #Postage_Stamp_Coords[0]=[[0, 0], [80.0, 80.0], [4145.0, 4135.0], ['359.9933716666962', '0.005261666616669011']]
     Physical_Coords=Postage_Stamp_Coords[2]
     X=Physical_Coords[0]
@@ -157,9 +169,16 @@ def Main_Wrapper(Input_HL):
     Target_RA=float(Target_Cel_Coords[0])
     Target_Dec=float(Target_Cel_Coords[1])
     Make_Directory(Outpath)
-    Source_Reproject.Source_Reproject(Source_Path, Source_RA, Source_Dec, Target_RA, Target_Dec, Reproject_Outpath, Reproject_Parameter_Path)
-    Source_Reproject.Source_Injection(Reproject_Outpath, Synthetic_Background_Path, Injected_Outpath, Dmmerge_Parameter_Path)
-    Source_Reproject.Crop_Image_Centered(X, Y, Injected_Outpath, Postage_Stamp_Outpath, Dmcopy_Parameter_Path)
+    if(Counts==0):
+        Source_Reproject.Crop_Image_Centered(X, Y, Synthetic_Background_Path, Postage_Stamp_Outpath, Dmcopy_Parameter_Path, Background_Float, Counts)
+    if(Counts>0):
+        Source_Reproject.Source_Reproject(Source_Path, Source_RA, Source_Dec, Target_RA, Target_Dec, Reproject_Outpath, Reproject_Parameter_Path, Counts)
+    if(Background_Float==0.0):
+        #Source_Reproject.Source_Injection(Reproject_Outpath, Synthetic_Background_Path, Injected_Outpath, Dmmerge_Parameter_Path, Background_Float)
+        Source_Reproject.Crop_Image_Centered(X, Y, Reproject_Outpath, Postage_Stamp_Outpath, Dmcopy_Parameter_Path, Background_Float, Counts)
+    else:
+        Source_Reproject.Source_Injection(Reproject_Outpath, Synthetic_Background_Path, Injected_Outpath, Dmmerge_Parameter_Path, Background_Float, Counts)
+        Source_Reproject.Crop_Image_Centered(X, Y, Injected_Outpath, Postage_Stamp_Outpath, Dmcopy_Parameter_Path, Background_Float, Counts)
 
     ###Source_Detect###
 
@@ -169,14 +188,16 @@ def Main_Wrapper(Input_HL):
     PSF_Outpath=Input_L[2]
     Wavdetect_Outfile=Input_L[3]
     Postage_Stamp_Coords=Input_L[4]
+    Background_Float=Input_L[5]
+    Counts=Input_L[6]
     #Postage_Stamp_Coords[0]=[[0, 0], [80.0, 80.0], [4145.0, 4135.0], ['359.9933716666962', '0.005261666616669011']]
     Target_Physical_Coords=Postage_Stamp_Coords[2]
     Target_X=Target_Physical_Coords[0]
     Target_Y=Target_Physical_Coords[1]
     Make_Directory(Outpath)
-    Source_Detect.Make_PSF_Map(Postage_Stamp_Outpath, PSF_Outpath, Outpath)
-    Source_Detect.Wavdetect(Postage_Stamp_Outpath, Outpath, PSF_Outpath)
-    Source_Detect.Save_Detection_Bool(Wavdetect_Outfile, Target_X, Target_Y, Outpath)
+    Source_Detect.Make_PSF_Map(Postage_Stamp_Outpath, PSF_Outpath, Outpath, Background_Float, Counts)
+    Source_Detect.Wavdetect(Postage_Stamp_Outpath, Outpath, PSF_Outpath, Background_Float, Counts)
+    Source_Detect.Save_Detection_Bool(Wavdetect_Outfile, Target_X, Target_Y, Outpath, Background_Float, Counts)
     print("--- %s seconds ---" % (time.time() - start_time))
 
 def Synthetic_Background_Generator_Driver():
@@ -192,9 +213,10 @@ def Main_Driver():
     Driver(Main_Wrapper, Input_L)
 
 def Main():
-    #Synthetic_Background_Generator_Driver()
+    Synthetic_Background_Generator_Driver()
     Empty_Coords_Generator_Main()
     Main_Driver()
 
 Main()
+#Main_Big_Input_Generator()
 #print(Main_Big_Input_Generator())

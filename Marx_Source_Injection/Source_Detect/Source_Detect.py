@@ -31,7 +31,7 @@ def Make_Directory(Outpath):
     directory = os.path.dirname(path)
     if not os.path.exists(directory):
         os.makedirs(directory)
-
+"""
 def Postage_Stamp_Coords_Calc(n=3, N=49, d=1024.0, X_P_Start=4065.0, Y_P_Start=4055.0, Empty_Filepath="../Required_Files_Generated/empty.fits"):
     n_s=int(np.sqrt(N))
     S=d/(2.0**n)
@@ -58,7 +58,8 @@ def Postage_Stamp_Coords_Calc(n=3, N=49, d=1024.0, X_P_Start=4065.0, Y_P_Start=4
             Cur_Coords=[Cur_Index_L, Cur_Positon, Cur_Physical_Postion, Cur_Cel_Positon]
             Coords_L.append(Cur_Coords)
     return Coords_L, S, g
-    
+"""
+
 '''
 def Fluximage(Filepath, Outpath):
     """
@@ -69,19 +70,27 @@ def Fluximage(Filepath, Outpath):
     os.system("fluximage "+str(Filepath)+" "+str(Outpath)+" psfecf=0.9 binsize=1 asolfile='0_1_78_8E-2_1_asol1.fits' badpixfile='NONE' maskfile='NONE' clobber=yes verbose=0")
 '''
 
-def Make_PSF_Map(Filepath, PSF_Outpath, Outpath):
+def Make_PSF_Map(Filepath, PSF_Outpath, Outpath, Background_Float, Counts):
+    if((float(Background_Float)==0.0) and (int(Counts)==0)):
+        print("Make_PSF_Map 0 Counts and Background Test")
+        return
     ##os.system("mkpsfmap "+str(Filepath)+" "+str(Outpath)+" 1.4 ecf=0.9 clobber=yes")
     Bash_Command="bash Bash_Scripts/Make_PSF_Map.sh "+str(Filepath)+" "+str(PSF_Outpath)+" "+Outpath
     #print(Bash_Command)
     os.system(Bash_Command)
 
-def Wavdetect(Filepath, Outpath, PSF_Map_Path):
+def Wavdetect(Filepath, Outpath, PSF_Map_Path, Background_Float, Counts):
+    if((float(Background_Float)==0.0) and (int(Counts)==0)):
+        print("Wavdetect 0 Counts and Background Test")
+        return
     ##Wavdetect_Command="wavdetect "+str(Filepath)+" outfile="+str(Outpath)+" scellfile=source_cell.fits imagefile=image.fits defnbkgfile=background.fits regfile="+str(Regfile)+" scales='1 2 4 8' psffile="+str(PSF_Map_Path)+" clobber=yes verbose=1"
     Outfile=Outpath+"_Wavdetect.fits"
     Scellfile=Outpath+"_source_cell.fits"
     Imagefile=Outpath+"_image.fits"
     Defnbkgfile=Outpath+"_background.fits"
-    Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)
+    Regfile=Outpath+".reg"
+    ###Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)
+    Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)+" "+str(Regfile)
     #print(Bash_Command)
     os.system(Bash_Command)
 
@@ -108,7 +117,10 @@ def Source_Detection_Bool_Calc(Filepath, X_Expected, Y_Expected, Tolarance=17):
     ##return False
     return (False,len(X))
 
-def Save_Detection_Bool(Filepath, X_Expected, Y_Expected, Outpath, Tolarance=17):
+def Save_Detection_Bool(Filepath, X_Expected, Y_Expected, Outpath, Background_Float, Counts, Tolarance=17):
+    if((float(Background_Float)==0.0) and (int(Counts)==0)):
+        print("Save_Detection_Bool 0 Counts and Background Test")
+        return
     Outfile=Outpath+"_Detection_Bool.txt"
     Outfile_Amount=Outpath+"_Detection_Amount.txt"
     Source_Detection_Bool=Source_Detection_Bool_Calc(Filepath, X_Expected, Y_Expected, Tolarance=Tolarance)[0]
@@ -132,6 +144,7 @@ def Source_Detect_Big_Input_Generator(Max_Runs=1):
     #print("Run_Count_L: ", Run_Count_L)
     Background_Str_L=Source_Generator.Background_Str_List_Genertator()
     Background_Str_L=[Background_Str_L[25]] #For Testing
+    #Background_Str_L=[Background_Str_L[0]] #For Testing
     #print("Background_Str_L: ", Background_Str_L)
     Number_of_Sources=0
     Number_of_Runs=0
@@ -144,11 +157,13 @@ def Source_Detect_Big_Input_Generator(Max_Runs=1):
             Cur_Counts_L=Source_Generator.Counts_List_Genertator(Source_Generator.Max_Counts_Calc,Cur_Theta)
             #Cur_Counts_L=Counts_List_Genertator(Max_Counts_Calc_Broken,Cur_Theta)
             Cur_Counts_L=[Cur_Counts_L[3]] #For Testing
+            #Cur_Counts_L=[Cur_Counts_L[0]] #For Testing
             #print("Cur_Counts_L: ", Cur_Counts_L)
             Cur_RA,Cur_Dec=Source_Generator.MSC_to_CEL_Convert(Cur_Theta,Cur_Phi)
             for Cur_Counts in Cur_Counts_L:
                 #Number_of_Sources=Number_of_Sources+1
                 for Cur_Background in Background_Str_L:
+                    Cur_Background_Float=float(Cur_Background)
                     Number_of_Sources=Number_of_Sources+1
                     for Run_Count in Run_Count_L:
                         Run_Index=int(Run_Count-1)
@@ -158,7 +173,7 @@ def Source_Detect_Big_Input_Generator(Max_Runs=1):
                         Cur_PSF_Outpath=Cur_Outpath+"_PSF.fits"
                         Cur_Postage_Stamp_Coords=Postage_Stamp_Coords_L[Run_Index]
                         Cur_Wavdetect_Outfile=Cur_Outpath+"_Wavdetect.fits"
-                        Cur_Run_L=[Cur_Outpath, Cur_Postage_Stamp_Outpath, Cur_PSF_Outpath, Cur_Wavdetect_Outfile, Cur_Postage_Stamp_Coords]
+                        Cur_Run_L=[Cur_Outpath, Cur_Postage_Stamp_Outpath, Cur_PSF_Outpath, Cur_Wavdetect_Outfile, Cur_Postage_Stamp_Coords, Cur_Background_Float, Cur_Counts]
                         Run_Input_L.append(Cur_Run_L)
     #print("Number_of_Sources: ", Number_of_Sources)
     print("Number_of_Runs: ", Number_of_Runs)
@@ -170,15 +185,17 @@ def Source_Detect_Generator_Wrapper(Input_L):
     PSF_Outpath=Input_L[2]
     Wavdetect_Outfile=Input_L[3]
     Postage_Stamp_Coords=Input_L[4]
+    Background_Float=Input_L[5]
+    Counts=Input_L[6]
     #Postage_Stamp_Coords[0]=[[0, 0], [80.0, 80.0], [4145.0, 4135.0], ['359.9933716666962', '0.005261666616669011']]
     Target_Physical_Coords=Postage_Stamp_Coords[2]
     Target_X=Target_Physical_Coords[0]
     Target_Y=Target_Physical_Coords[1]
     Make_Directory(Outpath)
-    Make_PSF_Map(Postage_Stamp_Outpath, PSF_Outpath, Outpath)
-    Wavdetect(Postage_Stamp_Outpath, Outpath, PSF_Outpath)
+    Make_PSF_Map(Postage_Stamp_Outpath, PSF_Outpath, Outpath, Background_Float, Counts)
+    Wavdetect(Postage_Stamp_Outpath, Outpath, PSF_Outpath, Background_Float, Counts)
     #Source_Detection_Bool_Calc(Wavdetect_Outfile, Target_RA, Target_Dec)
-    Save_Detection_Bool(Wavdetect_Outfile, Target_X, Target_Y, Outpath)
+    Save_Detection_Bool(Wavdetect_Outfile, Target_X, Target_Y, Outpath, Background_Float, Counts)
 
 def Driver(Func, Array):
     if __name__ == '__main__':
@@ -222,4 +239,4 @@ def Source_Detect_Generator_Driver():
 #print(Source_Detection_Bool_Calc("./Test_Runs/Outputs/0_1_78_8E-2_1_Postage_Stamp_Wavdetect_Outfile.fits", 359.9833379, 0.0000078))
 #print(Source_Detection_Bool_Calc("./Test_Runs/Outputs/0_1_78_8E-2_1_Postage_Stamp_Wavdetect_Outfile.fits", 350.933379, 0.0000078))
 #print(Source_Detect_Big_Input_Generator())
-Source_Detect_Generator_Driver()
+##Source_Detect_Generator_Driver()
