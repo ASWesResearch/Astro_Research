@@ -59,6 +59,7 @@ def Main_Big_Input_Generator(Max_Runs=1):
             Cur_Counts_L=[Cur_Counts_L[0], Cur_Counts_L[1]] #For Testing
             #print("Cur_Counts_L: ", Cur_Counts_L)
             Cur_RA,Cur_Dec=Source_Generator.MSC_to_CEL_Convert(Cur_Theta,Cur_Phi)
+            Cur_Chip_X, Cur_Chip_Y, Cur_Chip_ID=Source_Generator.MSC_to_Chip_Convert(Cur_Theta,Cur_Phi)
             for Cur_Counts in Cur_Counts_L:
                 #Number_of_Sources=Number_of_Sources+1
                 for Cur_Background in Background_Str_L:
@@ -97,16 +98,20 @@ def Main_Big_Input_Generator(Max_Runs=1):
                         Cur_Postage_Stamp_Coords=Postage_Stamp_Coords_L[Run_Index]
                         Cur_Injected_Outpath=Cur_Outpath_Source_Reproject+"_Injected.fits"
                         Cur_Postage_Stamp_Outpath=Cur_Outpath_Source_Reproject+"_Postage_Stamp.fits"
+                        Cur_Postage_Stamp_No_Background_Outpath=Cur_Outpath_Source_Reproject+"_No_Background_Postage_Stamp.fits"
+                        Cur_Postage_Stamp_No_Source_Outpath=Cur_Outpath_Source_Reproject+"_No_Source_Postage_Stamp.fits"
                         Cur_Reproject_Parameter_Path=Cur_Outpath_Source_Reproject+"_reproject_events.par"
                         Cur_Dmmerge_Parameter_Path=Cur_Outpath_Source_Reproject+"_dmmerge.par"
                         Cur_Dmcopy_Parameter_Path=Cur_Outpath_Source_Reproject+"_dmcopy.par"
                         #Cur_Run_L=[Cur_RA, Cur_Dec, Cur_Outpath_Source_Reproject, Cur_Source_Path, Cur_Synthetic_Background_Path, Cur_Reproject_Outpath, Cur_Injected_Outpath, Cur_Postage_Stamp_Outpath, Cur_Postage_Stamp_Coords, Cur_Reproject_Parameter_Path, Cur_Dmmerge_Parameter_Path, Cur_Dmcopy_Parameter_Path]
                         #Run_Input_L.append(Cur_Run_L)
-                        Cur_Source_Reproject_Run_L=[Cur_RA, Cur_Dec, Cur_Outpath_Source_Reproject, Cur_Source_Path, Cur_Synthetic_Background_Path, Cur_Reproject_Outpath, Cur_Injected_Outpath, Cur_Postage_Stamp_Outpath, Cur_Postage_Stamp_Coords, Cur_Reproject_Parameter_Path, Cur_Dmmerge_Parameter_Path, Cur_Dmcopy_Parameter_Path, Cur_Background_Float, Cur_Counts]
+                        ##Cur_Source_Reproject_Run_L=[Cur_RA, Cur_Dec, Cur_Outpath_Source_Reproject, Cur_Source_Path, Cur_Synthetic_Background_Path, Cur_Reproject_Outpath, Cur_Injected_Outpath, Cur_Postage_Stamp_Outpath, Cur_Postage_Stamp_Coords, Cur_Reproject_Parameter_Path, Cur_Dmmerge_Parameter_Path, Cur_Dmcopy_Parameter_Path, Cur_Background_Float, Cur_Counts]
+                        Cur_Source_Reproject_Run_L=[Cur_RA, Cur_Dec, Cur_Outpath_Source_Reproject, Cur_Source_Path, Cur_Synthetic_Background_Path, Cur_Reproject_Outpath, Cur_Injected_Outpath, Cur_Postage_Stamp_Outpath, Cur_Postage_Stamp_Coords, Cur_Reproject_Parameter_Path, Cur_Dmmerge_Parameter_Path, Cur_Dmcopy_Parameter_Path, Cur_Background_Float, Cur_Counts,  Cur_Postage_Stamp_No_Background_Outpath, Cur_Postage_Stamp_No_Source_Outpath]
                         Cur_Run_HL.append(Cur_Source_Reproject_Run_L)
 
                         ###Source_Detect Inputs###
 
+                        """
                         Run_Index=int(Run_Count-1)
                         Cur_Outpath_Source_Detect="./Wavdetect_Outputs/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Run_Count)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_"+str(Run_Count)
                         Cur_Postage_Stamp_Outpath="./Injected_Sources/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Run_Count)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_"+str(Run_Count)+"_Postage_Stamp.fits"
@@ -116,6 +121,23 @@ def Main_Big_Input_Generator(Max_Runs=1):
                         ##Cur_Source_Detect_Run_L=[Cur_Outpath_Source_Detect, Cur_Postage_Stamp_Outpath, Cur_PSF_Outpath, Cur_Wavdetect_Outfile, Cur_Postage_Stamp_Coords]
                         Cur_Source_Detect_Run_L=[Cur_Outpath_Source_Detect, Cur_Postage_Stamp_Outpath, Cur_PSF_Outpath, Cur_Wavdetect_Outfile, Cur_Postage_Stamp_Coords, Cur_Background_Float, Cur_Counts]
                         #Run_Input_L.append(Cur_Run_L)
+                        """
+                        Run_Index=int(Run_Count-1)
+                        Number_of_Runs=Number_of_Runs+1
+                        Cur_Outpath_Source_Detect="./Wavdetect_Outputs/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Run_Count)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_"+str(Run_Count)
+                        Cur_Postage_Stamp_Outpath="./Injected_Sources/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Run_Count)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_"+str(Run_Count)+"_Postage_Stamp.fits"
+                        Cur_Postage_Stamp_No_Background_Outpath="./Injected_Sources/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Run_Count)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_"+str(Run_Count)+"_No_Background_Postage_Stamp.fits"
+                        Cur_Postage_Stamp_No_Source_Outpath="./Injected_Sources/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Run_Count)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_"+str(Run_Count)+"_No_Source_Postage_Stamp.fits"
+                        Cur_Postage_Stamp_Original_Source_Outpath="./Injected_Sources/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Run_Count)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_"+str(Run_Count)+"_Original_Source_Postage_Stamp.fits"
+                        Cur_PSF_Outpath=Cur_Outpath_Source_Detect+"_PSF.fits"
+                        Cur_Postage_Stamp_Coords=Postage_Stamp_Coords_L[Run_Index]
+                        Cur_Wavdetect_Outfile=Cur_Outpath_Source_Detect+"_Wavdetect.fits"
+                        Cur_Wavdetect_No_Background_Outfile=Cur_Outpath_Source_Detect+"_No_Background_Wavdetect.fits"
+                        Cur_Wavdetect_No_Source_Outfile=Cur_Outpath_Source_Detect+"_No_Source_Wavdetect.fits"
+                        Cur_Reproject_Outpath="./Injected_Sources/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Run_Count)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_"+str(Run_Count)+"_Reprojected.fits"
+                        Cur_Source_Aspect_Path="./Marx_Sources/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Run_Count)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_"+str(Run_Count)+"_asol1.fits"
+                        Cur_Source_Path="./Marx_Sources/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Run_Count)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_"+str(Run_Count)+".fits"
+                        Cur_Source_Detect_Run_L=[Cur_Outpath_Source_Detect, Cur_Postage_Stamp_Outpath, Cur_PSF_Outpath, Cur_Wavdetect_Outfile, Cur_Postage_Stamp_Coords, Cur_Background_Float, Cur_Counts, Cur_Postage_Stamp_No_Background_Outpath, Cur_Postage_Stamp_No_Source_Outpath, Cur_Wavdetect_No_Background_Outfile, Cur_Wavdetect_No_Source_Outfile, Cur_Postage_Stamp_Original_Source_Outpath, Cur_Reproject_Outpath, Cur_Source_Aspect_Path, Cur_Source_Path, Cur_Chip_ID]
                         Cur_Run_HL.append(Cur_Source_Detect_Run_L)
 
                         Run_Input_L.append(Cur_Run_HL)
@@ -161,6 +183,8 @@ def Main_Wrapper(Input_HL):
     Dmcopy_Parameter_Path=Input_L[11]
     Background_Float=Input_L[12]
     Counts=Input_L[13]
+    Postage_Stamp_No_Background_Outpath=Input_L[14]
+    Postage_Stamp_No_Source_Outpath=Input_L[15]
     #Postage_Stamp_Coords[0]=[[0, 0], [80.0, 80.0], [4145.0, 4135.0], ['359.9933716666962', '0.005261666616669011']]
     Physical_Coords=Postage_Stamp_Coords[2]
     X=Physical_Coords[0]
@@ -174,14 +198,18 @@ def Main_Wrapper(Input_HL):
     if(Counts>0):
         Source_Reproject.Source_Reproject(Source_Path, Source_RA, Source_Dec, Target_RA, Target_Dec, Reproject_Outpath, Reproject_Parameter_Path, Counts)
     if(Background_Float==0.0):
-        #Source_Reproject.Source_Injection(Reproject_Outpath, Synthetic_Background_Path, Injected_Outpath, Dmmerge_Parameter_Path, Background_Float)
         Source_Reproject.Crop_Image_Centered(X, Y, Reproject_Outpath, Postage_Stamp_Outpath, Dmcopy_Parameter_Path, Background_Float, Counts)
     else:
         Source_Reproject.Source_Injection(Reproject_Outpath, Synthetic_Background_Path, Injected_Outpath, Dmmerge_Parameter_Path, Background_Float, Counts)
         Source_Reproject.Crop_Image_Centered(X, Y, Injected_Outpath, Postage_Stamp_Outpath, Dmcopy_Parameter_Path, Background_Float, Counts)
+        ####No Background####
+        Source_Reproject.Crop_Image_Centered(X, Y, Reproject_Outpath, Postage_Stamp_No_Background_Outpath, Dmcopy_Parameter_Path, Background_Float, Counts)
+        ####No Source####
+        Source_Reproject.Crop_Image_Centered(X, Y, Synthetic_Background_Path, Postage_Stamp_No_Source_Outpath, Dmcopy_Parameter_Path, Background_Float, Counts)
 
     ###Source_Detect###
 
+    """
     Input_L=Input_HL[2]
     Outpath=Input_L[0]
     Postage_Stamp_Outpath=Input_L[1]
@@ -198,6 +226,45 @@ def Main_Wrapper(Input_HL):
     Source_Detect.Make_PSF_Map(Postage_Stamp_Outpath, PSF_Outpath, Outpath, Background_Float, Counts)
     Source_Detect.Wavdetect(Postage_Stamp_Outpath, Outpath, PSF_Outpath, Background_Float, Counts)
     Source_Detect.Save_Detection_Bool(Wavdetect_Outfile, Target_X, Target_Y, Outpath, Background_Float, Counts)
+    """
+    Input_L=Input_HL[2]
+    Outpath=Input_L[0]
+    Postage_Stamp_Outpath=Input_L[1]
+    PSF_Outpath=Input_L[2]
+    Wavdetect_Outfile=Input_L[3]
+    Postage_Stamp_Coords=Input_L[4]
+    Background_Float=Input_L[5]
+    Counts=Input_L[6]
+    Postage_Stamp_No_Background_Outpath=Input_L[7]
+    Postage_Stamp_No_Source_Outpath=Input_L[8]
+    Wavdetect_No_Background_Outfile=Input_L[9]
+    Wavdetect_No_Source_Outfile=Input_L[10]
+    Postage_Stamp_Original_Source_Outpath=Input_L[11]
+    Reproject_Outpath=Input_L[12]
+    Source_Aspect_Path=Input_L[13]
+    Source_Path=Input_L[14]
+    Chip_ID=Input_L[15]
+    #Postage_Stamp_Coords[0]=[[0, 0], [80.0, 80.0], [4145.0, 4135.0], ['359.9933716666962', '0.005261666616669011']]
+    Target_Chip_Coords=Postage_Stamp_Coords[1]
+    Chip_X=Target_Chip_Coords[0]
+    Chip_Y=Target_Chip_Coords[1]
+    Target_Physical_Coords=Postage_Stamp_Coords[2]
+    Target_X=Target_Physical_Coords[0]
+    Target_Y=Target_Physical_Coords[1]
+
+    Make_Directory(Outpath)
+    Source_Detect.Make_PSF_Map(Postage_Stamp_Original_Source_Outpath, PSF_Outpath, Outpath, Background_Float, Counts)
+    Source_Detect.Make_Expsoure_Map(Outpath, Source_Path, Reproject_Outpath, Source_Aspect_Path, Chip_X, Chip_Y, Chip_ID, Target_X, Target_Y)
+    #Fluximage(Outpath, Source_Path, Reproject_Outpath, Source_Aspect_Path, Postage_Stamp_Outpath)
+    Source_Detect.Wavdetect(Postage_Stamp_Outpath, Outpath, PSF_Outpath, Background_Float, Counts)
+    Source_Detect.Save_Detection_Bool(Wavdetect_Outfile, Target_X, Target_Y, Outpath, Background_Float, Counts)
+    if((float(Background_Float)>0) and (int(Counts)>0)):
+        ####No Background####
+        Source_Detect.Wavdetect(Postage_Stamp_No_Background_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Background")
+        Source_Detect.Save_Detection_Bool(Wavdetect_No_Background_Outfile, Target_X, Target_Y, Outpath, Background_Float, Counts, Key="_No_Background")
+        ####No Source####
+        Source_Detect.Wavdetect(Postage_Stamp_No_Source_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Source")
+        Source_Detect.Save_Detection_Bool(Wavdetect_No_Source_Outfile, Target_X, Target_Y, Outpath, Background_Float, Counts, Key="_No_Source")
     print("--- %s seconds ---" % (time.time() - start_time))
 
 def Synthetic_Background_Generator_Driver():
@@ -219,4 +286,4 @@ def Main():
 
 Main()
 #Main_Big_Input_Generator()
-#print(Main_Big_Input_Generator())
+##print(Main_Big_Input_Generator())

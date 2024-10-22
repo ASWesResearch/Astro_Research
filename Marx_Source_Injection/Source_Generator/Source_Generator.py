@@ -21,16 +21,20 @@ def Angle_Convert(Angle):
     Angle=Angle%360
     return Angle
 
-def On_Chip_Bool_Calc(Theta,Phi,Empty_Filepath="../Required_Files_Generated/empty.fits", Empty_Coords_Gen_Bool=False):
-    On_Chip_Bool=False
+def MSC_to_Chip_Convert(Theta,Phi,Empty_Filepath="../Required_Files_Generated/empty.fits", Empty_Coords_Gen_Bool=False):
     if(Empty_Coords_Gen_Bool):
         Empty_Coords_Generator()
     with rt.new_pfiles_environment(ardlib=True):
         Dmcoords=rt.make_tool("dmcoords")
         Dmcoords(infile=str(Empty_Filepath), theta=float(Theta), phi=float(Phi), option='msc', verbose=0, celfmt='deg')
-        Chip_ID=Dmcoords.chip_id
         Chip_X=Dmcoords.chipx
         Chip_Y=Dmcoords.chipy
+        Chip_ID=Dmcoords.chip_id
+        return Chip_X, Chip_Y, Chip_ID
+
+def On_Chip_Bool_Calc(Theta,Phi,Empty_Filepath="../Required_Files_Generated/empty.fits", Empty_Coords_Gen_Bool=False):
+    On_Chip_Bool=False
+    Chip_X, Chip_Y, Chip_ID=MSC_to_Chip_Convert(Theta,Phi,Empty_Filepath=Empty_Filepath, Empty_Coords_Gen_Bool=Empty_Coords_Gen_Bool)
     if((Chip_X>=1.0) and (Chip_X<=1024.0) and (Chip_Y>=1.0) and (Chip_Y<=1024.0)):
         On_Chip_Bool=True
     return On_Chip_Bool

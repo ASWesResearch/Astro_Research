@@ -414,9 +414,12 @@ def XRB_Calc(Data, SN_Fpath="/opt/xray/anthony/Research_Git/SQL_Standard_File/Th
 
 def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standard_File/Source_Flux_All_Modified_6.csv"):
     #Data=pd.read_csv(Standard_File_Fpath)
-    Data=pd.read_csv(Standard_File_Fpath, low_memory=False)
+    ###Data=pd.read_csv(Standard_File_Fpath, low_memory=False)
+    Data=pd.read_csv(Standard_File_Fpath, low_memory=False, parse_dates=['Start_Date'])
     Data_ObsIDs=Data.drop_duplicates(subset=['ObsID'])
     ##Data=Data[Data["NET_COUNTS_0.3-8.0"]> 25.0]
+    ##Data=Data[Data["NET_COUNTS_0.3-8.0"]> 50.0]
+    Data=Data[Data["NET_COUNTS_0.3-8.0"]> 100.0]
     ##Data=Data[Data["Source_Detection_Probability"]> 0.90]
     Data=Data.sort_values(by=['Start_Date_Timestamp'])
     Data_ObsIDs=Data_ObsIDs.sort_values(by=['Start_Date_Timestamp'])
@@ -428,9 +431,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     Data_Inside_D25=Data[Data["Outside_D25_Bool"]==False]
     Data_Outside_Elliptical_D25=Data[Data["Outside_Elliptical_D25_Bool"]]
     Data_Inside_Elliptical_D25=Data[Data["Outside_Elliptical_D25_Bool"]==False]
-    #Data_Count_Cut=Data[Data["NET_COUNTS_0.3-8.0"]> 25.0]
+    Data_Count_Cut=Data[Data["NET_COUNTS_0.3-8.0"]> 25.0]
     #Data=Data[Data["NET_COUNTS_0.3-8.0"]> 25.0]
-    Data=Data[Data["NET_COUNTS_0.3-8.0"]> 30.0]
+    ##Data=Data[Data["NET_COUNTS_0.3-8.0"]> 30.0]
     Data_Near_Chip_Edge=Data[Data["NEAR_CHIP_EDGE"]]
     Data_Away_Chip_Edge=Data[Data["NEAR_CHIP_EDGE"]==False]
     Data_Spiral_Projected=Data[(Data["Galaxy_Morph_Simple"]=="S") & (Data["Circular_D25_Bool"]==False)]
@@ -2284,8 +2287,6 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.ylim(-1.0, 1.0)
     plt.savefig("Color_Color_Beta_Start_Date_With_SN_Effective_Area_Corrected.pdf")
     #plt.savefig("Color_Color_Beta_Distance_With_SN_Zoomed_2.pdf")
-    #'''
-    '''
     plt.cla()
     plt.clf()
     Limiting_Flux_A=Data["Limiting_Flux"]
@@ -2707,7 +2708,6 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.savefig("Gamma_csc_hard_vs_Offaxis_Angle.pdf")
     plt.cla()
     plt.clf()
-    '''
     plt.cla()
     plt.clf()
     Hist=plt.hist(Data["Source_Background_0.3-8.0"], bins=np.logspace(start=np.log10(1E-4), stop=np.log10(100), num=100))
@@ -2718,6 +2718,160 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.clf()
     print("Data_ObsIDs:\n", Data_ObsIDs)
     print("Start_Dates:\n", Data_ObsIDs["Start_Date"])
+    '''
+    plt.cla()
+    plt.clf()
+    Data_Date_Parsed=Data
+    Data_Date_Parsed=Data_Date_Parsed.sort_values(by=['Start_Date_Timestamp'])
+    Soft_Flux_Data_Binned = Data_Date_Parsed.set_index('Start_Date').resample('Y')["NET_FLUX_APER_0.3-1.0"].mean()
+    Year_A=Soft_Flux_Data_Binned.index.values
+    print("Soft_Flux_Data_Binned:\n", Soft_Flux_Data_Binned)
+    print("type(Soft_Flux_Data_Binned): ", type(Soft_Flux_Data_Binned))
+    print("Year_A: ", Year_A)
+    """
+    Soft_Flux_Binned=Data_Binned["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux_Binned=Data_Binned["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux_Binned=Data_Binned["NET_FLUX_APER_2.1-7.5"]
+    Start_Date_Binned=Data_Binned["Start_Date"]
+    #df.resample('3H', on='datetime').sum()
+    plt.plot(Start_Date_Binned, Soft_Flux_Binned, '.', alpha=0.2)
+    """
+    #plt.plot(Year_A, Soft_Flux_Data_Binned, '.', alpha=1.0)
+    ##plt.semilogy(Year_A, Soft_Flux_Data_Binned, '.', alpha=1.0)
+    plt.semilogy(Year_A, Soft_Flux_Data_Binned, marker='o', alpha=1.0)
+    #plt.ylim(10E-15, 10E-14)
+    plt.ylim(10E-16, 10E-7)
+    plt.xlabel("Observation Year")
+    plt.ylabel("Soft Independent Flux [NET_FLUX_APER_0.3-1.0] (erg/s*cm^2)")
+    plt.savefig("Soft_Flux_vs_Start_Date_Binned.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Data_Date_Parsed=Data_Date_Parsed.sort_values(by=['Start_Date_Timestamp'])
+    Medium_Flux_Data_Binned = Data_Date_Parsed.set_index('Start_Date').resample('Y')["NET_FLUX_APER_1.0-2.1"].mean()
+    Year_A=Medium_Flux_Data_Binned.index.values
+    print("Medium_Flux_Data_Binned:\n", Medium_Flux_Data_Binned)
+    print("type(Medium_Flux_Data_Binned): ", type(Medium_Flux_Data_Binned))
+    print("Year_A: ", Year_A)
+    """
+    Soft_Flux_Binned=Data_Binned["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux_Binned=Data_Binned["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux_Binned=Data_Binned["NET_FLUX_APER_2.1-7.5"]
+    Start_Date_Binned=Data_Binned["Start_Date"]
+    #df.resample('3H', on='datetime').sum()
+    plt.plot(Start_Date_Binned, Soft_Flux_Binned, '.', alpha=0.2)
+    """
+    #plt.plot(Year_A, Medium_Flux_Data_Binned, '.', alpha=1.0)
+    ##plt.semilogy(Year_A, Medium_Flux_Data_Binned, '.', alpha=1.0)
+    plt.semilogy(Year_A, Medium_Flux_Data_Binned, marker='o', alpha=1.0)
+    #plt.ylim(10E-15, 10E-14)
+    plt.ylim(10E-16, 10E-7)
+    plt.xlabel("Observation Year")
+    plt.ylabel("Medium Independent Flux [NET_FLUX_APER_1.0-2.1] (erg/s*cm^2)")
+    plt.savefig("Medium_Flux_vs_Start_Date_Binned.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Data_Date_Parsed=Data_Date_Parsed.sort_values(by=['Start_Date_Timestamp'])
+    Hard_Flux_Data_Binned = Data_Date_Parsed.set_index('Start_Date').resample('Y')["NET_FLUX_APER_2.1-7.5"].mean()
+    Year_A=Hard_Flux_Data_Binned.index.values
+    print("Hard_Flux_Data_Binned:\n", Hard_Flux_Data_Binned)
+    print("type(Hard_Flux_Data_Binned): ", type(Hard_Flux_Data_Binned))
+    print("Year_A: ", Year_A)
+    """
+    Soft_Flux_Binned=Data_Binned["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux_Binned=Data_Binned["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux_Binned=Data_Binned["NET_FLUX_APER_2.1-7.5"]
+    Start_Date_Binned=Data_Binned["Start_Date"]
+    #df.resample('3H', on='datetime').sum()
+    plt.plot(Start_Date_Binned, Soft_Flux_Binned, '.', alpha=0.2)
+    """
+    #plt.plot(Year_A, Hard_Flux_Data_Binned, '.', alpha=1.0)
+    ##plt.semilogy(Year_A, Hard_Flux_Data_Binned, '.', alpha=1.0)
+    plt.semilogy(Year_A, Hard_Flux_Data_Binned, marker='o', alpha=1.0, label="Soft Flux [NET_FLUX_APER_0.3-1.0]")
+    #plt.ylim(10E-15, 10E-14)
+    plt.ylim(10E-16, 10E-7)
+    plt.xlabel("Observation Year")
+    plt.ylabel("Hard Independent Flux [NET_FLUX_APER_2.1-7.5] (erg/s*cm^2)")
+    plt.savefig("Hard_Flux_vs_Start_Date_Binned.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Data_Date_Parsed=Data_Date_Parsed.sort_values(by=['Start_Date_Timestamp'])
+    Soft_Flux_Data_Binned = Data_Date_Parsed.set_index('Start_Date').resample('Y')["NET_FLUX_APER_0.3-1.0"].mean()
+    Medium_Flux_Data_Binned = Data_Date_Parsed.set_index('Start_Date').resample('Y')["NET_FLUX_APER_1.0-2.1"].mean()
+    Hard_Flux_Data_Binned = Data_Date_Parsed.set_index('Start_Date').resample('Y')["NET_FLUX_APER_2.1-7.5"].mean()
+    Year_A=Soft_Flux_Data_Binned.index.values
+    print("Soft_Flux_Data_Binned:\n", Soft_Flux_Data_Binned)
+    print("type(Soft_Flux_Data_Binned): ", type(Soft_Flux_Data_Binned))
+    print("Year_A: ", Year_A)
+    """
+    Soft_Flux_Binned=Data_Binned["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux_Binned=Data_Binned["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux_Binned=Data_Binned["NET_FLUX_APER_2.1-7.5"]
+    Start_Date_Binned=Data_Binned["Start_Date"]
+    #df.resample('3H', on='datetime').sum()
+    plt.plot(Start_Date_Binned, Soft_Flux_Binned, '.', alpha=0.2)
+    """
+    #plt.plot(Year_A, Soft_Flux_Data_Binned, '.', alpha=1.0)
+    ##plt.semilogy(Year_A, Soft_Flux_Data_Binned, '.', alpha=1.0)
+    plt.semilogy(Year_A, Soft_Flux_Data_Binned, marker='o', alpha=1.0, label="Soft Flux [NET_FLUX_APER_0.3-1.0]")
+    plt.semilogy(Year_A, Medium_Flux_Data_Binned, marker='o', alpha=0.5, label="Medium Flux [NET_FLUX_APER_1.0-2.1]")
+    plt.semilogy(Year_A, Hard_Flux_Data_Binned, marker='o', alpha=0.5, label="Hard Flux [NET_FLUX_APER_2.1-7.5]")
+    #plt.ylim(10E-15, 10E-14)
+    plt.ylim(10E-16, 10E-7)
+    plt.xlabel("Observation Year")
+    plt.ylabel("Model Independent Flux (erg/s*cm^2)")
+    plt.title("Annual Mean Independent Flux vs Observation Year")
+    plt.legend()
+    plt.savefig("Model_Independent_Flux_vs_Start_Date_Binned.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Data_Date_Parsed=Data_Date_Parsed.sort_values(by=['Start_Date_Timestamp'])
+    Soft_Flux_Data_Binned = Data_Date_Parsed.set_index('Start_Date').resample('Y')["NET_MFLUX_APER_0.3-1.0"].mean()
+    Medium_Flux_Data_Binned = Data_Date_Parsed.set_index('Start_Date').resample('Y')["NET_MFLUX_APER_1.0-2.1"].mean()
+    Hard_Flux_Data_Binned = Data_Date_Parsed.set_index('Start_Date').resample('Y')["NET_MFLUX_APER_2.1-7.5"].mean()
+    Year_A=Soft_Flux_Data_Binned.index.values
+    print("Soft_Flux_Data_Binned:\n", Soft_Flux_Data_Binned)
+    print("type(Soft_Flux_Data_Binned): ", type(Soft_Flux_Data_Binned))
+    print("Year_A: ", Year_A)
+    """
+    Soft_Flux_Binned=Data_Binned["NET_FLUX_APER_0.3-1.0"]
+    Medium_Flux_Binned=Data_Binned["NET_FLUX_APER_1.0-2.1"]
+    Hard_Flux_Binned=Data_Binned["NET_FLUX_APER_2.1-7.5"]
+    Start_Date_Binned=Data_Binned["Start_Date"]
+    #df.resample('3H', on='datetime').sum()
+    plt.plot(Start_Date_Binned, Soft_Flux_Binned, '.', alpha=0.2)
+    """
+    #plt.plot(Year_A, Soft_Flux_Data_Binned, '.', alpha=1.0)
+    ##plt.semilogy(Year_A, Soft_Flux_Data_Binned, '.', alpha=1.0)
+    plt.semilogy(Year_A, Soft_Flux_Data_Binned, marker='o', alpha=1.0, label="Soft Flux [NET_MFLUX_APER_0.3-1.0]")
+    plt.semilogy(Year_A, Medium_Flux_Data_Binned, marker='o', alpha=0.5, label="Medium Flux [NET_MFLUX_APER_1.0-2.1]")
+    plt.semilogy(Year_A, Hard_Flux_Data_Binned, marker='o', alpha=0.5, label="Hard Flux [NET_MFLUX_APER_2.1-7.5]")
+    #plt.ylim(10E-15, 10E-14)
+    plt.ylim(10E-16, 10E-7)
+    plt.xlabel("Observation Year")
+    plt.ylabel("Model Dependent Flux (erg/s*cm^2)")
+    plt.title("Annual Mean Model Dependent Flux vs Observation Year")
+    plt.legend()
+    plt.savefig("Model_Dependent_Flux_vs_Start_Date_Binned.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
 Flux_Plotting()
 #print(Morph_Check("SAB(s)bc"))
 #print(Morph_Check("E3"))

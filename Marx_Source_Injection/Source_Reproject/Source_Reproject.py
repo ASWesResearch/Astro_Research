@@ -58,6 +58,16 @@ def Postage_Stamp_Coords_Calc(n=3, N=49, d=1024.0, X_P_Start=4065.0, Y_P_Start=4
             Coords_L.append(Cur_Coords)
     return Coords_L, S, g
 
+def MSC_to_Physical_Convert(Theta,Phi,Empty_Filepath="../Required_Files_Generated/empty.fits", Empty_Coords_Gen_Bool=False):
+    if(Empty_Coords_Gen_Bool):
+        Empty_Coords_Generator()
+    with rt.new_pfiles_environment(ardlib=True):
+        Dmcoords=rt.make_tool("dmcoords")
+        Dmcoords(infile=str(Empty_Filepath), theta=float(Theta), phi=float(Phi), option='msc', verbose=0, celfmt='deg')
+        X=Dmcoords.x
+        Y=Dmcoords.y
+    return X, Y
+
 def Source_Reproject(Source_Path, Source_RA, Source_Dec, Target_RA, Target_Dec, Outpath, Reproject_Parameter_Path, Counts=None):
     if(Counts==0):
         print("Source_Reproject 0 Counts Test")
@@ -165,6 +175,8 @@ def Source_Reproject_Big_Input_Generator(Max_Runs=1):
             #Cur_Counts_L=[Cur_Counts_L[0]] #For Testing
             #print("Cur_Counts_L: ", Cur_Counts_L)
             Cur_RA,Cur_Dec=Source_Generator.MSC_to_CEL_Convert(Cur_Theta,Cur_Phi)
+            Cur_X,Cur_Y=MSC_to_Physical_Convert(Cur_Theta,Cur_Phi)
+            #Need to convert source RA and Dec to Physical Coordinates
             for Cur_Counts in Cur_Counts_L:
                 #Number_of_Sources=Number_of_Sources+1
                 for Cur_Background in Background_Str_L:
@@ -182,11 +194,15 @@ def Source_Reproject_Big_Input_Generator(Max_Runs=1):
                         Cur_Postage_Stamp_Coords=Postage_Stamp_Coords_L[Run_Index]
                         Cur_Injected_Outpath=Cur_Outpath+"_Injected.fits"
                         Cur_Postage_Stamp_Outpath=Cur_Outpath+"_Postage_Stamp.fits"
+                        Cur_Postage_Stamp_No_Background_Outpath=Cur_Outpath+"_No_Background_Postage_Stamp.fits"
+                        Cur_Postage_Stamp_No_Source_Outpath=Cur_Outpath+"_No_Source_Postage_Stamp.fits"
+                        Cur_Postage_Stamp_Original_Source_Outpath=Cur_Outpath+"_Original_Source_Postage_Stamp.fits"
                         #Cur_Run_L=[Cur_Phi, Cur_Theta, Cur_RA, Cur_Dec, Cur_Counts, Cur_Background, Run_Count, Cur_Outpath, Cur_Parameter_Outpath, Cur_Aspect_Parameter_Outpath, Cur_Postage_Stamp_Coords, Cur_Seed, Cur_Seed_Biased]
                         Cur_Reproject_Parameter_Path=Cur_Outpath+"_reproject_events.par"
                         Cur_Dmmerge_Parameter_Path=Cur_Outpath+"_dmmerge.par"
                         Cur_Dmcopy_Parameter_Path=Cur_Outpath+"_dmcopy.par"
-                        Cur_Run_L=[Cur_RA, Cur_Dec, Cur_Outpath, Cur_Source_Path, Cur_Synthetic_Background_Path, Cur_Reproject_Outpath, Cur_Injected_Outpath, Cur_Postage_Stamp_Outpath, Cur_Postage_Stamp_Coords, Cur_Reproject_Parameter_Path, Cur_Dmmerge_Parameter_Path, Cur_Dmcopy_Parameter_Path, Cur_Background_Float, Cur_Counts]
+                        ##Cur_Run_L=[Cur_RA, Cur_Dec, Cur_Outpath, Cur_Source_Path, Cur_Synthetic_Background_Path, Cur_Reproject_Outpath, Cur_Injected_Outpath, Cur_Postage_Stamp_Outpath, Cur_Postage_Stamp_Coords, Cur_Reproject_Parameter_Path, Cur_Dmmerge_Parameter_Path, Cur_Dmcopy_Parameter_Path, Cur_Background_Float, Cur_Counts]
+                        Cur_Run_L=[Cur_RA, Cur_Dec, Cur_Outpath, Cur_Source_Path, Cur_Synthetic_Background_Path, Cur_Reproject_Outpath, Cur_Injected_Outpath, Cur_Postage_Stamp_Outpath, Cur_Postage_Stamp_Coords, Cur_Reproject_Parameter_Path, Cur_Dmmerge_Parameter_Path, Cur_Dmcopy_Parameter_Path, Cur_Background_Float, Cur_Counts, Cur_Postage_Stamp_No_Background_Outpath, Cur_Postage_Stamp_No_Source_Outpath, Cur_X, Cur_Y, Cur_Postage_Stamp_Original_Source_Outpath]
                         Run_Input_L.append(Cur_Run_L)
     #print("Number_of_Sources: ", Number_of_Sources)
     print("Number_of_Runs: ", Number_of_Runs)
@@ -207,6 +223,11 @@ def Source_Reproject_Generator_Wrapper(Input_L):
     Dmcopy_Parameter_Path=Input_L[11]
     Background_Float=Input_L[12]
     Counts=Input_L[13]
+    Postage_Stamp_No_Background_Outpath=Input_L[14]
+    Postage_Stamp_No_Source_Outpath=Input_L[15]
+    X_Original_Source=Input_L[16]
+    Y_Original_Source=Input_L[17]
+    Postage_Stamp_Original_Source_Outpath=Input_L[18]
     #Postage_Stamp_Coords[0]=[[0, 0], [80.0, 80.0], [4145.0, 4135.0], ['359.9933716666962', '0.005261666616669011']]
     Physical_Coords=Postage_Stamp_Coords[2]
     X=Physical_Coords[0]
@@ -215,9 +236,26 @@ def Source_Reproject_Generator_Wrapper(Input_L):
     Target_RA=float(Target_Cel_Coords[0])
     Target_Dec=float(Target_Cel_Coords[1])
     Make_Directory(Outpath)
+    """
     Source_Reproject(Source_Path, Source_RA, Source_Dec, Target_RA, Target_Dec, Reproject_Outpath, Reproject_Parameter_Path, Counts)
     Source_Injection(Reproject_Outpath, Synthetic_Background_Path, Injected_Outpath, Dmmerge_Parameter_Path, Background_Float, Counts)
     Crop_Image_Centered(X, Y, Injected_Outpath, Postage_Stamp_Outpath, Dmcopy_Parameter_Path, Background_Float, Counts)
+    """
+    Crop_Image_Centered(X_Original_Source, Y_Original_Source, Source_Path, Postage_Stamp_Original_Source_Outpath, Dmcopy_Parameter_Path, Background_Float, Counts)
+    if(Counts==0):
+        Crop_Image_Centered(X, Y, Synthetic_Background_Path, Postage_Stamp_Outpath, Dmcopy_Parameter_Path, Background_Float, Counts)
+    if(Counts>0):
+        Source_Reproject(Source_Path, Source_RA, Source_Dec, Target_RA, Target_Dec, Reproject_Outpath, Reproject_Parameter_Path, Counts)
+    if(Background_Float==0.0):
+        Crop_Image_Centered(X, Y, Reproject_Outpath, Postage_Stamp_Outpath, Dmcopy_Parameter_Path, Background_Float, Counts)
+    else:
+        Source_Injection(Reproject_Outpath, Synthetic_Background_Path, Injected_Outpath, Dmmerge_Parameter_Path, Background_Float, Counts)
+        Crop_Image_Centered(X, Y, Injected_Outpath, Postage_Stamp_Outpath, Dmcopy_Parameter_Path, Background_Float, Counts)
+        ####No Background####
+        Crop_Image_Centered(X, Y, Reproject_Outpath, Postage_Stamp_No_Background_Outpath, Dmcopy_Parameter_Path, Background_Float, Counts)
+        ####No Source####
+        Crop_Image_Centered(X, Y, Synthetic_Background_Path, Postage_Stamp_No_Source_Outpath, Dmcopy_Parameter_Path, Background_Float, Counts)
+
 
 def Driver(Func, Array):
     if __name__ == '__main__':
@@ -232,3 +270,4 @@ def Source_Reproject_Generator_Driver():
 #print(Postage_Stamp_Coords_L[0])
 #print(Source_Reproject_Big_Input_Generator())
 ##Source_Reproject_Generator_Driver()
+#print(MSC_to_Physical_Convert(0,1))
