@@ -234,6 +234,16 @@ def Empirical_Type_I_Parameters_Calc(Evtfpath, Phi, Theta, Target_X, Target_Y):
     B=int(B)
     return S,B,BACKSCAL
 
+def Empirical_Isolated_Counts_Calc(Evtfpath, Phi, Theta, Target_X, Target_Y):
+    PSF_Radius_Pix=PSF_Size_Calc.Calc_PSF_Pixel_Size(Phi, Theta, energy=2.3, ecf=0.90)
+    with rt.new_pfiles_environment(ardlib=True):
+        Dmcoords=rt.make_tool("dmlist")
+        Dm_Out=dmlist(infile=str(Evtfpath)+"[sky=circle("+str(Target_X)+","+str(Target_Y)+","+str(PSF_Radius_Pix)+")]", opt='counts', outfile="", verbose=0)
+        Num_Counts_S=Dm_Out
+        S=float(Num_Counts_S)
+    S=int(S)
+    return S
+
 
 def Type_I_Calc(S,B,BACKSCAL=4.0):
     N=S+B
@@ -276,8 +286,9 @@ def Save_Type_II_Detection_Bool(P_B, Outpath, P_B_Thresh=0.007,Key="Type_II"):
     #print(Command)
     os.system(Command)
 
-def Save_Parameter(Input, Outpath, Key=""):
-    Outfile=Outpath+Key+".txt"
+def Save_Parameter(Input, Outpath, Key="", Suffix=".txt"):
+    #Outfile=Outpath+Key+".txt"
+    Outfile=Outpath+Key+Suffix
     Command='echo "'+str(Input)+'" > '+str(Outfile)
     #print(Command)
     os.system(Command)
@@ -376,35 +387,78 @@ def Source_Detect_Generator_Wrapper(Input_L):
     Make_Expsoure_Map(Outpath, Source_Path, Reproject_Outpath, Source_Aspect_Path, Chip_X, Chip_Y, Chip_ID, Target_X, Target_Y)
     #Fluximage(Outpath, Source_Path, Reproject_Outpath, Source_Aspect_Path, Postage_Stamp_Outpath)
     Wavdetect(Postage_Stamp_Outpath, Outpath, PSF_Outpath, Background_Float, Counts)
-    Save_Detection_Bool(Wavdetect_Outfile, Target_X, Target_Y, Outpath, Background_Float, Counts)
+    ##Save_Detection_Bool(Wavdetect_Outfile, Target_X, Target_Y, Outpath, Background_Float, Counts)
+    Source_Detection_Bool, Source_Detection_Amount=Source_Detection_Bool_Calc(Wavdetect_Outfile, Target_X, Target_Y)
+
+
     M,BACKSCAL=BACKSCAL_Calc(Phi, Theta)
-    Save_Parameter(M, Outpath, Key="_Background_Radius_Multiplier")
-    Save_Parameter(BACKSCAL, Outpath, Key="_BACKSCAL")
+
+    ##Save_Parameter(M, Outpath, Key="_Background_Radius_Multiplier")
+    ##Save_Parameter(BACKSCAL, Outpath, Key="_BACKSCAL")
     Ideal_Parameter_Tuple=Ideal_Type_I_Parameters_Calc(Phi, Theta, Background_Float, Counts)
     Background_Area=Ideal_Parameter_Tuple[3]
-    P_B_Ideal=(Ideal_Parameter_Tuple[0],Ideal_Parameter_Tuple[1],Ideal_Parameter_Tuple[2])
+    #Ideal_Parameter_Tuple=(Ideal_Parameter_Tuple[0],Ideal_Parameter_Tuple[1],Ideal_Parameter_Tuple[2])
     P_B_Ideal=Ideal_Type_I_Calc(Phi, Theta, Background_Float, Counts, Parameter_Tuple=Ideal_Parameter_Tuple)
-    Save_Type_II_Detection_Bool(P_B_Ideal, Outpath ,Key="_Type_II_Ideal")
+
+    ##Save_Parameter(P_B_Ideal, Outpath, Key="_P_B_Ideal")
+
+    ##Save_Type_II_Detection_Bool(P_B_Ideal, Outpath ,Key="_Type_II_Ideal")
+    Ideal_Type_II_Source_Detection_Bool=Type_II_Calc(P_B_Ideal)
+
+
     Empirical_Parameter_Tuple=Empirical_Type_I_Parameters_Calc(Injected_Outpath, Phi, Theta, Target_X, Target_Y)
-    Save_Parameter(Empirical_Parameter_Tuple[0], Outpath, Key="_Empirical_Raw_Counts")
-    Save_Parameter(Empirical_Parameter_Tuple[1], Outpath, Key="_Empirical_Background_Counts")
-    Empirical_Enclosed_Source_Counts=Empirical_Type_I_Parameters_Calc(Reproject_Outpath, Phi, Theta, Target_X, Target_Y)[0]
-    Save_Parameter(Empirical_Enclosed_Source_Counts, Outpath, Key="_Empirical_Enclosed_Source_Counts")
+
+    ##Save_Parameter(Empirical_Parameter_Tuple[0], Outpath, Key="_Empirical_Raw_Counts")
+    ##Save_Parameter(Empirical_Parameter_Tuple[1], Outpath, Key="_Empirical_Background_Counts")
+
+    #Empirical_Enclosed_Source_Counts=Empirical_Type_I_Parameters_Calc(Reproject_Outpath, Phi, Theta, Target_X, Target_Y)[0]
+    Empirical_Enclosed_Source_Counts=Empirical_Isolated_Counts_Calc(Reproject_Outpath, Phi, Theta, Target_X, Target_Y)
+
+    ##Save_Parameter(Empirical_Enclosed_Source_Counts, Outpath, Key="_Empirical_Enclosed_Source_Counts")
+
     Empirical_Background_Counts=Empirical_Parameter_Tuple[1]
     Empirical_Background=float(Empirical_Background_Counts)/float(Background_Area)
-    Save_Parameter(Empirical_Background, Outpath, Key="_Empirical_Background")
+
+    ##Save_Parameter(Empirical_Background, Outpath, Key="_Empirical_Background")
+
+
     P_B_Empirical=Empirical_Type_I_Calc(Postage_Stamp_Outpath, Phi, Theta, Target_X, Target_Y, Background_Float, Counts, Parameter_Tuple=Empirical_Parameter_Tuple)
-    Save_Type_II_Detection_Bool(P_B_Empirical, Outpath ,Key="_Type_II_Empirical")
+
+    ##Save_Parameter(P_B_Empirical, Outpath, Key="_P_B_Empirical")
+
+    ##Save_Type_II_Detection_Bool(P_B_Empirical, Outpath ,Key="_Type_II_Empirical")
+    Empirical_Type_II_Source_Detection_Bool=Type_II_Calc(P_B_Empirical)
+
+
     if((float(Background_Float)>0) and (int(Counts)>0)):
         ####No Background####
         Wavdetect(Postage_Stamp_No_Background_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Background")
-        Save_Detection_Bool(Wavdetect_No_Background_Outfile, Target_X, Target_Y, Outpath, Background_Float, Counts, Key="_No_Background")
+        ##Save_Detection_Bool(Wavdetect_No_Background_Outfile, Target_X, Target_Y, Outpath, Background_Float, Counts, Key="_No_Background")
+        Source_Detection_Bool_No_Background, Source_Detection_Amount_No_Background=Source_Detection_Bool_Calc(Wavdetect_No_Background_Outfile, Target_X, Target_Y)
+
         Wavdetect(Postage_Stamp_No_Background_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Background_Fixed", Input_Background_Bool=True)
-        Save_Detection_Bool(Wavdetect_No_Background_Fixed_Outfile, Target_X, Target_Y, Outpath, Background_Float, Counts, Key="_No_Background_Fixed")
+        ##Save_Detection_Bool(Wavdetect_No_Background_Fixed_Outfile, Target_X, Target_Y, Outpath, Background_Float, Counts, Key="_No_Background_Fixed")
+        Source_Detection_Bool_No_Background_Fixed, Source_Detection_Amount_No_Background_Fixed=Source_Detection_Bool_Calc(Wavdetect_No_Background_Fixed_Outfile, Target_X, Target_Y)
+
         ####No Source####
         ##Wavdetect(Postage_Stamp_No_Source_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Source")
         Wavdetect(Postage_Stamp_No_Source_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Source", Input_Background_Bool=True)
-        Save_Detection_Bool(Wavdetect_No_Source_Outfile, Target_X, Target_Y, Outpath, Background_Float, Counts, Key="_No_Source")
+        ##Save_Detection_Bool(Wavdetect_No_Source_Outfile, Target_X, Target_Y, Outpath, Background_Float, Counts, Key="_No_Source")
+        Source_Detection_Bool_No_Source, Source_Detection_Amount_No_Source=Source_Detection_Bool_Calc(Wavdetect_No_Source_Outfile, Target_X, Target_Y)
+
+
+        #Outfile_Str=str(Source_Detection_Bool)+","+str(Source_Detection_Amount)+","+str(Source_Detection_Bool_No_Background)+","+str(Source_Detection_Amount_No_Background)+","+str(Source_Detection_Bool_No_Background_Fixed)+","+str(Source_Detection_Amount_No_Background_Fixed)+","+str(Source_Detection_Bool_No_Source)+","+str(Source_Detection_Amount_No_Source)+","+str(M)+","+str(BACKSCAL)+","+str(Background_Area)+","+str(P_B_Ideal)+","+str(Ideal_Type_II_Source_Detection_Bool)+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(Empirical_Background)+","+str(P_B_Empirical)+","+str(Empirical_Type_II_Source_Detection_Bool)
+        Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+str(int(Source_Detection_Bool_No_Background))+","+str(Source_Detection_Amount_No_Background)+","+str(int(Source_Detection_Bool_No_Background_Fixed))+","+str(Source_Detection_Amount_No_Background_Fixed)+","+str(int(Source_Detection_Bool_No_Source))+","+str(Source_Detection_Amount_No_Source)+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(np.round(P_B_Ideal,5))+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(np.round(P_B_Empirical,5))+","+str(int(Empirical_Type_II_Source_Detection_Bool))
+    else:
+        #Outfile_Str=str(Source_Detection_Bool)+","+str(Source_Detection_Amount)+","+","+","+","+","+","+","+str(M)+","+str(BACKSCAL)+","+str(Background_Area)+","+str(P_B_Ideal)+","+str(Ideal_Type_II_Source_Detection_Bool)+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(Empirical_Background)+","+str(P_B_Empirical)+","+str(Empirical_Type_II_Source_Detection_Bool)
+        Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+","+","+","+","+","+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(np.round(P_B_Ideal,5))+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(np.round(P_B_Empirical,5))+","+str(int(Empirical_Type_II_Source_Detection_Bool))
+
+    #Save_Parameter(P_B_Ideal, Outpath, Key="_P_B_Ideal")
+    Outfile_Header="SDB,SDA,SDBNB,SDANB,SDBNBF,SDANBF,SDBNS,SDANS,M,BACKSCAL,BA,PBI,T2I,EEC,EEBC,EB,PBE,T2E\n"
+    Outfile_Str_Merged=Outfile_Header+Outfile_Str
+    Save_Parameter(Outfile_Str_Merged, Outpath, Key="_Standard_Outputs", Suffix=".csv")
+
+
 
 
 def Driver(Func, Array):
