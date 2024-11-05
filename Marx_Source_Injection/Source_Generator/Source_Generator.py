@@ -108,16 +108,21 @@ def Max_Counts_Calc_Broken(Theta, C_Low=3, C_High=150, Theta_Break=2):
         C_Max=C_High
     return C_Max
 
-def Counts_List_Genertator(Max_Counts_Calc_Func,Theta, C_Min=3, Count_Step=25, Include_Zero_Bool=True):
+def Counts_List_Genertator(Max_Counts_Calc_Func, Theta, C_Min=3, Count_Step=15, Include_Zero_Bool=False, Adjust_Start_Bool=True):
     C_Max=Max_Counts_Calc_Func(Theta)
     C_Max=C_Max+Count_Step
-    Counts_L=np.arange(C_Min,C_Max,step=Count_Step)
+    if(Adjust_Start_Bool):
+        Counts_L=np.arange(Count_Step,C_Max,step=Count_Step)
+        Counts_L=np.insert(Counts_L, 0, C_Min)
+    else:
+        Counts_L=np.arange(C_Min,C_Max,step=Count_Step)
     if(Include_Zero_Bool):
         Counts_L=np.insert(Counts_L, 0, 0)
     return Counts_L
 
-def Background_Str_List_Genertator():
-    Background_A=Background_Generator.Background_Array_Calc()
+def Background_Str_List_Genertator(Factor_Low=1, Factor_High=10, Factor_Step=1, Mag_Low=-4, Mag_High=0, Include_Zero_Bool=False, Custom_Array=None, Append_End=None):
+    ##Background_A=Background_Generator.Background_Array_Calc(Include_Zero_Bool=Include_Zero_Bool)
+    Background_A=Background_Generator.Background_Array_Calc(Factor_Low=Factor_Low, Factor_High=Factor_High, Factor_Step=Factor_Step, Mag_Low=Mag_Low, Mag_High=Mag_High, Include_Zero_Bool=Include_Zero_Bool, Custom_Array=Custom_Array, Append_End=Append_End)
     Background_L=list(Background_A)
     Background_Str_L=[]
     for Background in Background_L:

@@ -9,6 +9,7 @@ import ciao_contrib.runtool as rt
 import time
 import logging
 from multiprocessing import Pool
+from astropy.io import fits
 
 dir = os.path.dirname(__file__)
 path=os.path.realpath('../')
@@ -99,8 +100,9 @@ def Source_Injection(Source_Path, Background_Path, Outpath, Dmmerge_Parameter_Pa
     #dmmerge "Source.fits,Source_New_11.fits" merged.fits
     #os.system("cp /Users/asantini/cxcds_param4/dmmerge.par "+Dmmerge_Parameter_Path)
     os.system("cp ../Parameter_Files/cxcds_param4/dmmerge.par "+Dmmerge_Parameter_Path)
-    ##Command='dmmerge "'+str(Source_Path)+'[EVENTS][columns sky],'+str(Background_Path)+'[EVENTS][columns sky]" '+str(Outpath)+' lookupTab=dmmerge_header_lookup_Modified.txt clobber=yes verbose=0'
+    #Command='dmmerge "'+str(Source_Path)+'[EVENTS][columns sky],'+str(Background_Path)+'[EVENTS][columns sky]" '+str(Outpath)+' lookupTab=dmmerge_header_lookup_Modified.txt clobber=yes verbose=0'
     Command='dmmerge @@'+str(Dmmerge_Parameter_Path)+' "'+str(Source_Path)+'[EVENTS][columns sky],'+str(Background_Path)+'[EVENTS][columns sky]" '+str(Outpath)+' lookupTab=../Required_Files/dmmerge_header_lookup_Modified.txt clobber=yes verbose=0'
+    #Command='dmmerge @@'+str(Dmmerge_Parameter_Path)+' "'+str(Source_Path)+','+str(Background_Path)+'" '+str(Outpath)+' lookupTab=../Required_Files/dmmerge_header_lookup_Modified.txt clobber=yes verbose=0'
     """
     File # 1 : column 0 is TIME
     File # 1 : column 1 is CCD_ID
@@ -126,6 +128,11 @@ def Source_Injection(Source_Path, Background_Path, Outpath, Dmmerge_Parameter_Pa
     File # 1 : column 21 is MARX_ENERGY
     """
     os.system(Command)
+
+def Swap_Header(Dmmerge_Parameter_Path, Background_Path):
+    Background_Data, Background_Header = fits.getdata(Background_Path, header=True)
+    Injected_Data, Injected_Header = fits.getdata(Dmmerge_Parameter_Path, header=True)
+    fits.writeto(Dmmerge_Parameter_Path, Injected_Data, Background_Header, overwrite=True)
 
 def Crop_Image(X_Low, X_High, Y_Low, Y_High, Evt2_Fpath, Outfile, Dmcopy_Parameter_Path):
     ##Command='dmcopy "'+str(Evt2_Fpath)+'[EVENTS][bin x='+str(X_Low)+':'+str(X_High)+':1,y='+str(Y_Low)+':'+str(Y_High)+':1]" '+str(Outfile)+' clobber=yes'
@@ -250,7 +257,9 @@ def Source_Reproject_Generator_Wrapper(Input_L):
         Crop_Image_Centered(X, Y, Reproject_Outpath, Postage_Stamp_Outpath, Dmcopy_Parameter_Path, Background_Float, Counts)
     else:
         Source_Injection(Reproject_Outpath, Synthetic_Background_Path, Injected_Outpath, Dmmerge_Parameter_Path, Background_Float, Counts)
+        #Swap_Header(Injected_Outpath, Synthetic_Background_Path)
         Crop_Image_Centered(X, Y, Injected_Outpath, Postage_Stamp_Outpath, Dmcopy_Parameter_Path, Background_Float, Counts)
+        #Swap_Header(Postage_Stamp_Outpath, Synthetic_Background_Path)
         ####No Background####
         Crop_Image_Centered(X, Y, Reproject_Outpath, Postage_Stamp_No_Background_Outpath, Dmcopy_Parameter_Path, Background_Float, Counts)
         ####No Source####

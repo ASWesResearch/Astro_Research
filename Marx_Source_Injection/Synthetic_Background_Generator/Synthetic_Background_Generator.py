@@ -66,16 +66,22 @@ def Synthetic_Background_Generator_Big_Input_Generator():
     #Source_Coords_HL=[[0, [1, 2, 3, 4, 5, 6, 7, 8]],[15, [1, 2, 3, 4, 5, 6, 7, 8]]]
     #Source_Coords_HL=[[0, [1, 2, 3, 4, 5, 6, 7, 8]]]
     #Source_Coords_HL=[[0, [1, 2]]]
-    Source_Coords_HL=[[0, [1]]]
+    ##Source_Coords_HL=[[0, [1]]]
+    #Source_Coords_HL=[[45, [10]]]
+    #Source_Coords_HL=[[225, [10]]]
     #Source_Coords_HL=[[135, [2]]]
+    ##Source_Coords_HL=[[45, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]]]
+    #Source_Coords_HL=[[45, [9, 10]]]
+    Source_Coords_HL=[[0, [0]]]
     #Max_Runs=Max_Runs+1
-    Background_Str_L=Source_Generator.Background_Str_List_Genertator()
+    ###Background_Str_L=Source_Generator.Background_Str_List_Genertator()
     #Background_Str_L=[Background_Str_L[1]] #For Testing
+    Background_Str_L=Source_Generator.Background_Str_List_Genertator(Factor_High=2, Append_End=9E-1)
     #Background_Str_L=[Background_Str_L[25]] #For Testing
     #Background_Str_L=[Background_Str_L[32]] #For Testing
     #Background_Str_L=[Background_Str_L[-1]] #For Testing
     #Background_Str_L=[Background_Str_L[0]] #For Testing
-    Background_Str_L=[Background_Str_L[0],Background_Str_L[1]] #For Testing
+    ##=[Background_Str_L[0],Background_Str_L[1]] #For Testing
     #print("Background_Str_L: ", Background_Str_L)
     Number_of_Sources=0
     Number_of_Runs=0
@@ -88,9 +94,13 @@ def Synthetic_Background_Generator_Big_Input_Generator():
             Cur_Coords=(Cur_Theta,Cur_Phi)
             Cur_Counts_L=Source_Generator.Counts_List_Genertator(Source_Generator.Max_Counts_Calc,Cur_Theta)
             #Cur_Counts_L=[Cur_Counts_L[3]] #For Testing
+            #Cur_Counts_L=[Cur_Counts_L[4]] #For Testing
             #Cur_Counts_L=[Cur_Counts_L[-1]] #For Testing
             #Cur_Counts_L=[Cur_Counts_L[0]] #For Testing
-            Cur_Counts_L=[Cur_Counts_L[0], Cur_Counts_L[1]] #For Testing
+            ##Cur_Counts_L=[Cur_Counts_L[0], Cur_Counts_L[1]] #For Testing
+            #Cur_Counts_L=[1] #For Testing
+            #Cur_Counts_L=[165,180,195,210] #For Testing
+            Cur_Counts_L=[Cur_Counts_L[0], Cur_Counts_L[1], Cur_Counts_L[2]] #For Testing
             for Cur_Counts in Cur_Counts_L:
                 #Number_of_Sources=Number_of_Sources+1
                 for Cur_Background in Background_Str_L:
@@ -99,8 +109,11 @@ def Synthetic_Background_Generator_Big_Input_Generator():
                     Cur_Background_Float=float(Cur_Background)
                     #print("Cur_Background_Float: ", Cur_Background+"="+str(Cur_Background_Float))
                     Cur_Background_Counts=int(Background_Generator.Background_to_Counts_Calc(Cur_Background_Float))
-                    Cur_Outpath="./Synthetic_Backgrounds/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_bkg"
-                    Cur_Parameter_Outpath="./Synthetic_Backgrounds/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_marx.par"
+                    ###Cur_Outpath="./Synthetic_Backgrounds/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_bkg"
+                    ###Cur_Parameter_Outpath="./Synthetic_Backgrounds/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_marx.par"
+                    #/Volumes/expansion/Marx_Testing/Synthetic_Backgrounds
+                    Cur_Outpath="/Volumes/expansion/Marx_Testing/Synthetic_Backgrounds/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_bkg" #For Testing
+                    Cur_Parameter_Outpath="/Volumes/expansion/Marx_Testing/Synthetic_Backgrounds/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_marx.par" #For Testing
                     Number_of_Runs=Number_of_Runs+1
                     #Test_Seed_L.append(Cur_Seed_Biased)
                     Cur_Run_L=[Cur_Outpath, Cur_Background_Counts, Cur_Parameter_Outpath, Cur_Seed, Cur_Seed_Biased]
@@ -143,3 +156,4 @@ def Synthetic_Background_Generator_Driver():
 #Reproject_Background(Asolfile='../Source_Generator/Marx_Sources/0/1/153/8E-1/1/0_1_153_8E-1_1_asol1.fits', Source_Evtfile='../Source_Generator/Marx_Sources/0/1/153/8E-1/1/0_1_153_8E-1_1.fits', Outpath='./Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_bkg', Reproject_Parameter_Outpath='./Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_reproject_events.par', Dmkeypar_Parameter_Outpath='./Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_dmkeypar.par', Dmtcalc_Parameter_Outpath='./Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_dmtcalc.par', Dmsort_Parameter_Outpath='./Synthetic_Backgrounds/0/1/153/8E-1/1/0_1_153_8E-1_1_dmsort.par', Background_Evtfile="/opt/anaconda3/envs/ciao-4.14/CALDB/data/chandra/acis/bkgrnd/acis5sD2009-09-21bkgrndN0002.fits")
 #print(Postage_Stamp_Coords_Calc(3,d=1024.0))
 #print(Synthetic_Background_Generator_Big_Input_Generator())
+#Synthetic_Background_Generator_Big_Input_Generator()

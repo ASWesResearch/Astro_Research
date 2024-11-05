@@ -57,8 +57,12 @@ def Fluximage(Filepath, Outpath):
 
 def Make_Expsoure_Map(Outpath, Source_Path, Source_Reprojected_Path, Aspect_Path, Chip_X, Chip_Y, Chip_ID, X, Y, S=128):
 
+    """
     Pixel_X=1024-Chip_X
     Pixel_Y=1024-Chip_Y
+    """
+    Pixel_Y=1024-Chip_X #This works!!!
+    Pixel_X=1024-Chip_Y #This works!!!
 
     Pixel_X_Low=int(Pixel_X-(S/2.0))
     Pixel_X_High=int(Pixel_X+(S/2.0))
@@ -70,46 +74,27 @@ def Make_Expsoure_Map(Outpath, Source_Path, Source_Reprojected_Path, Aspect_Path
     Pixel_X_High=int(Pixel_X_High+16)
     Pixel_Y_Low=int(Pixel_Y_Low-16)
     Pixel_Y_High=int(Pixel_Y_High+16)
-
-    """
-    Chip_X_Low=int(Chip_X-(S/2.0)-16) #Note: 16 pixel buffer added
-    Chip_X_High=int(Chip_X+(S/2.0)+16) #Note: 16 pixel buffer added
-    Chip_Y_Low=int(Chip_Y-(S/2.0)-16) #Note: 16 pixel buffer added
-    Chip_Y_High=int(Chip_Y+(S/2.0)+16) #Note: 16 pixel buffer added
-    """
-
-    #"x0:x1:#nx,y0:y1:#n2"
-    #pixelgrid="1:1024:#1024,1:1024:#1024"
-    ##Pixelgrid_Str=str(Chip_X_Low)+":"+str(Chip_X_High)+":#"+str(int(S))+","+str(Chip_Y_Low)+":"+str(Chip_Y_High)+":#"+str(int(S))
-    #Pixelgrid_Str="1:1024:#1024,1:1024:#1024"
-    #Pixelgrid_Str="256:512:#512,256:512:#512"
-    ##Pixelgrid_Str="56:968:#912,56:968:#912" #Note: Corner visible!
-    ##Pixelgrid_Str="56:998:#942,56:968:#912" #Note: Corner moved down
-    ##Pixelgrid_Str="56:968:#912,56:998:#942" #Note: Corner moved left
-    ##Pixelgrid_Str="56:938:#882,56:968:#912" #Note: Coner moved up?
-    ##Pixelgrid_Str="938:968:#30,968:998:#30" #Note: Square visible on left side
-    ##Pixelgrid_Str="880:1008:#128,880:1008:#128" #Note: Square almost covers whole 128x128 image
-    ##Pixelgrid_Str="890:998:#108,890:998:#108"  #Note: Square is almost centered (slightly top left) and smaller
-    ##Pixelgrid_Str="864:1024:#160,864:1024:#160" #Note: Square covers the whole 128x128 image!!!
-    ##Pixelgrid_Str=str(Pixel_X_Low)+":"+str(Pixel_X_High)+":#"+str(int(S))+","+str(Pixel_Y_Low)+":"+str(Pixel_Y_High)+":#"+str(int(S)) #Note: This works for the [80,80] case! Maybe all of them!
-    Pixelgrid_Str=str(Pixel_X_Low)+":"+str(Pixel_X_High)+":#"+str(int(S+32))+","+str(Pixel_Y_Low)+":"+str(Pixel_Y_High)+":#"+str(int(S+32)) #Note: 16 pixel buffer added #Bug Here! The expsosure map is inncorrect if the insturment map is larger than the exposure map!!! #None: This isn't a bug.
+    Pixelgrid_Str=str(Pixel_X_Low)+":"+str(Pixel_X_High)+":#"+str(int(S+32))+","+str(Pixel_Y_Low)+":"+str(Pixel_Y_High)+":#"+str(int(S+32)) #Note: 16 pixel buffer added #Bug Here! The expsosure map is inncorrect if the insturment map is larger than the exposure map!!! #Note: This isn't a bug. This is the expected behavior.
     ##print("Pixelgrid_Str: ", Pixelgrid_Str)
+
     X_Low=float(X-(S/2.0))
     X_High=float(X+(S/2.0))
     Y_Low=float(Y-(S/2.0))
     Y_High=float(Y+(S/2.0))
+
+    """
+    X2=Y #This works!!!
+    Y2=X #This works!!!
+    X_Low=float(X2-(S/2.0))
+    X_High=float(X2+(S/2.0))
+    Y_Low=float(Y2-(S/2.0))
+    Y_High=float(Y2+(S/2.0))
+    """
     #xygrid="3094.5:5050.3:#256,2042.0:5320.0:#512"
     XYgrid_Str=str(X_Low)+":"+str(X_High)+":#"+str(int(S))+","+str(Y_Low)+":"+str(Y_High)+":#"+str(int(S))
-    #XYgrid_Str=str(2800)+":"+str(5000)+":#"+str(int(2200))+","+str(3000)+":"+str(5200)+":#"+str(int(2200))
-    ##XYgrid_Str="4081.0:4209.0:#128,4071.0:4199.0:#128"
-    #XYgrid_Str=str(X_Low)+":"+str(X_High)+":#"+str(int(S/2))+","+str(Y_Low)+":"+str(Y_High)+":#"+str(int(S/2))
-    ##print("XYgrid_Str: ", XYgrid_Str)
-    ##print("X,Y: ", X,Y)
     Bash_Command="bash Bash_Scripts/Make_Expsoure_Map.sh "+str(Outpath)+" "+str(Pixelgrid_Str)+" "+str(Source_Reprojected_Path)+" "+str(Aspect_Path)+" "+str(XYgrid_Str)+" "+str(Source_Path)+" "+str(Chip_ID)
     #Bash_Command="bash -x Bash_Scripts/Make_Expsoure_Map.sh "+str(Outpath)+" "+str(Pixelgrid_Str)+" "+str(Source_Reprojected_Path)+" "+str(Aspect_Path)+" "+str(XYgrid_Str)+" "+str(Source_Path)+" "+str(Chip_ID)
     ##print("Bash_Command: ", Bash_Command)
-    #mkarf detsubsys="ACIS-7;uniform;bpmask=0"
-    ##asphist infile=$4 outfile=$1_blank_sky.asphist evtfile="$3[ccd_id=3]" clobber=yes
     os.system(Bash_Command)
 
 def Fluximage(Outpath, Source_Path, Source_Reprojected_Path, Aspect_Path, Cur_Postage_Stamp_Outpath):
@@ -129,7 +114,12 @@ def Make_PSF_Map(Filepath, PSF_Outpath, Outpath, Background_Float, Counts):
     #print(Bash_Command)
     os.system(Bash_Command)
 
-def Wavdetect(Filepath, Outpath, PSF_Map_Path, Background_Float, Counts, Key="", Input_Background_Bool=False):
+def Query_Fits_Header_Value(Fits_Fpath, Key):
+    hdul = fits.open(Fits_Fpath)
+    Value=hdul[0].header[Key]
+    return Value
+
+def Wavdetect(Filepath, Outpath, PSF_Map_Path, Background_Float, Counts, Key="", Input_Background_Bool=False, Scales="'1 2 4 8'"):
     if((float(Background_Float)==0.0) and (int(Counts)==0)):
         print("Wavdetect 0 Counts and Background Test")
         return
@@ -139,13 +129,22 @@ def Wavdetect(Filepath, Outpath, PSF_Map_Path, Background_Float, Counts, Key="",
     Imagefile=Outpath+Key+"_image.fits"
     Defnbkgfile=Outpath+Key+"_background.fits"
     Regfile=Outpath+Key+".reg"
-    #Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)
-    ##Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)+" "+str(Regfile)
+    Exposure_Time=int(Query_Fits_Header_Value(PSF_Map_Path, "EXPOSURE"))
+    #print("Exposure_Time: ", Exposure_Time)
+    #print("type(Exposure_Time): ", type(Exposure_Time))
     if(Input_Background_Bool):
+        #print("Input_Background_Bool: ", Input_Background_Bool)
         Input_Background_File=Outpath+"_background.fits"
         Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)+" "+str(Regfile)+" "+str(Scellfile)+" "+str(Imagefile)+" "+str(Defnbkgfile)+" "+str(Input_Background_File)
+        #Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)+" "+str(Regfile)+" "+str(Scellfile)+" "+str(Imagefile)+" "+str(Defnbkgfile)+" "+str(Input_Background_File)+" "+str("yes")
+        #Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)+" "+str(Regfile)+" "+str(Scellfile)+" "+str(Imagefile)+" "+str(Defnbkgfile)+" "+str(Input_Background_File)+" "+str(Exposure_Time)+" "+str(Exposure_Time)
+        #Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)+" "+str(Regfile)+" "+str(Scellfile)+" "+str(Imagefile)+" "+str(Defnbkgfile)+" "+str(Input_Background_File)+" "+str(Exposure_Time)+" "+str(Exposure_Time)+" "+str(Scales)
     else:
+        #print("Input_Background_Bool: ", Input_Background_Bool)
         Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)+" "+str(Regfile)+" "+str(Scellfile)+" "+str(Imagefile)+" "+str(Defnbkgfile)+" "+str("NONE")
+        #Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)+" "+str(Regfile)+" "+str(Scellfile)+" "+str(Imagefile)+" "+str(Defnbkgfile)+" "+str("NONE")+" "+str("no")
+        #Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)+" "+str(Regfile)+" "+str(Scellfile)+" "+str(Imagefile)+" "+str(Defnbkgfile)+" "+str("NONE")+" "+str(Exposure_Time)+" "+str(0)
+        #Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)+" "+str(Regfile)+" "+str(Scellfile)+" "+str(Imagefile)+" "+str(Defnbkgfile)+" "+str("NONE")+" "+str(Exposure_Time)+" "+str(0)+" "+str(Scales)
     #print(Bash_Command)
     os.system(Bash_Command)
 
@@ -159,6 +158,7 @@ def Source_Detection_Bool_Calc(Filepath, X_Expected, Y_Expected, Tolarance=17):
     if(len(X)<1):
         ##return False
         return (False,0)
+    Detection_Count=0
     for i in range(0,len(X)):
         Cur_Test_X=X[i]
         Cur_Test_Y=Y[i]
@@ -167,10 +167,12 @@ def Source_Detection_Bool_Calc(Filepath, X_Expected, Y_Expected, Tolarance=17):
         Y_Diff=np.abs(Y_Expected-Cur_Test_Y)
         #print("(X_Diff,Y_Diff): ", (X_Diff,Y_Diff))
         if((X_Diff<=Tolarance) and (Y_Diff<=Tolarance)):
-            ##return True
-            return (True,len(X))
-    ##return False
-    return (False,len(X))
+            #return True
+            ##return (True,len(X))
+            Detection_Count=Detection_Count+1
+    #return False
+    ##return (False,len(X))
+    return (Detection_Count,len(X))
 
 def Save_Detection_Bool(Filepath, X_Expected, Y_Expected, Outpath, Background_Float, Counts, Tolarance=17, Key=""):
     if((float(Background_Float)==0.0) and (int(Counts)==0)):
@@ -187,8 +189,9 @@ def Save_Detection_Bool(Filepath, X_Expected, Y_Expected, Outpath, Background_Fl
     #print(Command_Amount)
     os.system(Command_Amount)
 
-def Fac(n):
-    return scipy.special.factorial(n)
+def Fac(n, Exact_Bool=True):
+    #return scipy.special.factorial(n)
+    return scipy.special.factorial(n, exact=Exact_Bool)
 
 def BACKSCAL_Calc(Phi, Theta, S=128, PSF_Radius=None): #Bug Here! This is not the correct way to calculate BACKSCAL!!! #Bug Fixed!
     R_Max=S/2.0
@@ -246,12 +249,15 @@ def Empirical_Isolated_Counts_Calc(Evtfpath, Phi, Theta, Target_X, Target_Y):
 
 
 def Type_I_Calc(S,B,BACKSCAL=4.0):
-    N=S+B
-    p=(1.0/(1.0+BACKSCAL))
-    P_B=0
-    for X in range(S,N):
-        Cur=(Fac(N)/(Fac(X)*Fac(N-X)))*(p**X)*((1-p)**(N-X))
-        P_B=P_B+Cur
+    try:
+        N=S+B
+        p=(1.0/(1.0+BACKSCAL))
+        P_B=0
+        for X in range(S,N):
+            Cur=(Fac(N)/(Fac(X)*Fac(N-X)))*(p**X)*((1-p)**(N-X))
+            P_B=P_B+Cur
+    except OverflowError:
+        return np.nan
     return P_B
 
 def Ideal_Type_I_Calc(Phi, Theta, Background_Float, Counts, Parameter_Tuple=None):
@@ -292,6 +298,7 @@ def Save_Parameter(Input, Outpath, Key="", Suffix=".txt"):
     Command='echo "'+str(Input)+'" > '+str(Outfile)
     #print(Command)
     os.system(Command)
+
 
 def Source_Detect_Big_Input_Generator(Max_Runs=1):
     #Source_Coords_HL=Source_Coords_Generator()
@@ -345,8 +352,11 @@ def Source_Detect_Big_Input_Generator(Max_Runs=1):
                         Cur_Source_Aspect_Path="../Source_Generator/Marx_Sources/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Run_Count)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_"+str(Run_Count)+"_asol1.fits"
                         Cur_Source_Path="../Source_Generator/Marx_Sources/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Run_Count)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_"+str(Run_Count)+".fits"
                         Cur_Injected_Outpath="../Source_Reproject/Injected_Sources/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Run_Count)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_"+str(Run_Count)+"_Injected.fits"
-                        ##Cur_Run_L=[Cur_Outpath, Cur_Postage_Stamp_Outpath, Cur_PSF_Outpath, Cur_Wavdetect_Outfile, Cur_Postage_Stamp_Coords, Cur_Background_Float, Cur_Counts, Cur_Postage_Stamp_No_Background_Outpath, Cur_Postage_Stamp_No_Source_Outpath, Cur_Wavdetect_No_Background_Outfile, Cur_Wavdetect_No_Source_Outfile, Cur_Postage_Stamp_Original_Source_Outpath, Cur_Reproject_Outpath, Cur_Source_Aspect_Path, Cur_Source_Path, Cur_Chip_ID]
-                        Cur_Run_L=[Cur_Outpath, Cur_Postage_Stamp_Outpath, Cur_PSF_Outpath, Cur_Wavdetect_Outfile, Cur_Postage_Stamp_Coords, Cur_Background_Float, Cur_Counts, Cur_Postage_Stamp_No_Background_Outpath, Cur_Postage_Stamp_No_Source_Outpath, Cur_Wavdetect_No_Background_Outfile, Cur_Wavdetect_No_Background_Fixed_Outfile, Cur_Wavdetect_No_Source_Outfile, Cur_Postage_Stamp_Original_Source_Outpath, Cur_Reproject_Outpath, Cur_Source_Aspect_Path, Cur_Source_Path, Cur_Chip_ID, Cur_Phi, Cur_Theta, Cur_Injected_Outpath]
+                        #Cur_Run_L=[Cur_Outpath, Cur_Postage_Stamp_Outpath, Cur_PSF_Outpath, Cur_Wavdetect_Outfile, Cur_Postage_Stamp_Coords, Cur_Background_Float, Cur_Counts, Cur_Postage_Stamp_No_Background_Outpath, Cur_Postage_Stamp_No_Source_Outpath, Cur_Wavdetect_No_Background_Outfile, Cur_Wavdetect_No_Source_Outfile, Cur_Postage_Stamp_Original_Source_Outpath, Cur_Reproject_Outpath, Cur_Source_Aspect_Path, Cur_Source_Path, Cur_Chip_ID]
+                        Cur_Wavdetect_Scale_16_Outfile=Cur_Outpath+"_Scale_16_Wavdetect.fits"
+                        ##Cur_Run_L=[Cur_Outpath, Cur_Postage_Stamp_Outpath, Cur_PSF_Outpath, Cur_Wavdetect_Outfile, Cur_Postage_Stamp_Coords, Cur_Background_Float, Cur_Counts, Cur_Postage_Stamp_No_Background_Outpath, Cur_Postage_Stamp_No_Source_Outpath, Cur_Wavdetect_No_Background_Outfile, Cur_Wavdetect_No_Background_Fixed_Outfile, Cur_Wavdetect_No_Source_Outfile, Cur_Postage_Stamp_Original_Source_Outpath, Cur_Reproject_Outpath, Cur_Source_Aspect_Path, Cur_Source_Path, Cur_Chip_ID, Cur_Phi, Cur_Theta, Cur_Injected_Outpath]
+                        Cur_Run_L=[Cur_Outpath, Cur_Postage_Stamp_Outpath, Cur_PSF_Outpath, Cur_Wavdetect_Outfile, Cur_Postage_Stamp_Coords, Cur_Background_Float, Cur_Counts, Cur_Postage_Stamp_No_Background_Outpath, Cur_Postage_Stamp_No_Source_Outpath, Cur_Wavdetect_No_Background_Outfile, Cur_Wavdetect_No_Background_Fixed_Outfile, Cur_Wavdetect_No_Source_Outfile, Cur_Postage_Stamp_Original_Source_Outpath, Cur_Reproject_Outpath, Cur_Source_Aspect_Path, Cur_Source_Path, Cur_Chip_ID, Cur_Phi, Cur_Theta, Cur_Injected_Outpath, Cur_Wavdetect_Scale_16_Outfile]
+
                         Run_Input_L.append(Cur_Run_L)
     #print("Number_of_Sources: ", Number_of_Sources)
     print("Number_of_Runs: ", Number_of_Runs)
@@ -373,6 +383,7 @@ def Source_Detect_Generator_Wrapper(Input_L):
     Phi=Input_L[17]
     Theta=Input_L[18]
     Injected_Outpath=Input_L[19]
+    Wavdetect_Scale_16_Outfile=Input_L[20]
     #Postage_Stamp_Coords[0]=[[0, 0], [80.0, 80.0], [4145.0, 4135.0], ['359.9933716666962', '0.005261666616669011']]
     Target_Chip_Coords=Postage_Stamp_Coords[1]
     Chip_X=Target_Chip_Coords[0]
@@ -386,74 +397,40 @@ def Source_Detect_Generator_Wrapper(Input_L):
     Make_PSF_Map(Postage_Stamp_Original_Source_Outpath, PSF_Outpath, Outpath, Background_Float, Counts)
     Make_Expsoure_Map(Outpath, Source_Path, Reproject_Outpath, Source_Aspect_Path, Chip_X, Chip_Y, Chip_ID, Target_X, Target_Y)
     #Fluximage(Outpath, Source_Path, Reproject_Outpath, Source_Aspect_Path, Postage_Stamp_Outpath)
-    Wavdetect(Postage_Stamp_Outpath, Outpath, PSF_Outpath, Background_Float, Counts)
-    ##Save_Detection_Bool(Wavdetect_Outfile, Target_X, Target_Y, Outpath, Background_Float, Counts)
+    #Query_Fits_Header_Value(Fits_Fpath, Key)
+    ###Wavdetect(Postage_Stamp_Outpath, Outpath, PSF_Outpath, Background_Float, Counts)
+    Wavdetect(Postage_Stamp_No_Source_Outpath, Outpath, PSF_Outpath, Background_Float, Counts)
     Source_Detection_Bool, Source_Detection_Amount=Source_Detection_Bool_Calc(Wavdetect_Outfile, Target_X, Target_Y)
-
-
+    ##Wavdetect(Postage_Stamp_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Scales="'1 2 4 8 16'", Key="_Scale_16")
+    ##Source_Detection_Bool, Source_Detection_Amount=Source_Detection_Bool_Calc(Wavdetect_Scale_16_Outfile, Target_X, Target_Y)
     M,BACKSCAL=BACKSCAL_Calc(Phi, Theta)
-
-    ##Save_Parameter(M, Outpath, Key="_Background_Radius_Multiplier")
-    ##Save_Parameter(BACKSCAL, Outpath, Key="_BACKSCAL")
     Ideal_Parameter_Tuple=Ideal_Type_I_Parameters_Calc(Phi, Theta, Background_Float, Counts)
     Background_Area=Ideal_Parameter_Tuple[3]
-    #Ideal_Parameter_Tuple=(Ideal_Parameter_Tuple[0],Ideal_Parameter_Tuple[1],Ideal_Parameter_Tuple[2])
     P_B_Ideal=Ideal_Type_I_Calc(Phi, Theta, Background_Float, Counts, Parameter_Tuple=Ideal_Parameter_Tuple)
-
-    ##Save_Parameter(P_B_Ideal, Outpath, Key="_P_B_Ideal")
-
-    ##Save_Type_II_Detection_Bool(P_B_Ideal, Outpath ,Key="_Type_II_Ideal")
     Ideal_Type_II_Source_Detection_Bool=Type_II_Calc(P_B_Ideal)
-
-
     Empirical_Parameter_Tuple=Empirical_Type_I_Parameters_Calc(Injected_Outpath, Phi, Theta, Target_X, Target_Y)
-
-    ##Save_Parameter(Empirical_Parameter_Tuple[0], Outpath, Key="_Empirical_Raw_Counts")
-    ##Save_Parameter(Empirical_Parameter_Tuple[1], Outpath, Key="_Empirical_Background_Counts")
-
-    #Empirical_Enclosed_Source_Counts=Empirical_Type_I_Parameters_Calc(Reproject_Outpath, Phi, Theta, Target_X, Target_Y)[0]
     Empirical_Enclosed_Source_Counts=Empirical_Isolated_Counts_Calc(Reproject_Outpath, Phi, Theta, Target_X, Target_Y)
-
-    ##Save_Parameter(Empirical_Enclosed_Source_Counts, Outpath, Key="_Empirical_Enclosed_Source_Counts")
-
     Empirical_Background_Counts=Empirical_Parameter_Tuple[1]
     Empirical_Background=float(Empirical_Background_Counts)/float(Background_Area)
-
-    ##Save_Parameter(Empirical_Background, Outpath, Key="_Empirical_Background")
-
-
     P_B_Empirical=Empirical_Type_I_Calc(Postage_Stamp_Outpath, Phi, Theta, Target_X, Target_Y, Background_Float, Counts, Parameter_Tuple=Empirical_Parameter_Tuple)
-
-    ##Save_Parameter(P_B_Empirical, Outpath, Key="_P_B_Empirical")
-
-    ##Save_Type_II_Detection_Bool(P_B_Empirical, Outpath ,Key="_Type_II_Empirical")
     Empirical_Type_II_Source_Detection_Bool=Type_II_Calc(P_B_Empirical)
-
-
     if((float(Background_Float)>0) and (int(Counts)>0)):
         ####No Background####
         Wavdetect(Postage_Stamp_No_Background_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Background")
-        ##Save_Detection_Bool(Wavdetect_No_Background_Outfile, Target_X, Target_Y, Outpath, Background_Float, Counts, Key="_No_Background")
         Source_Detection_Bool_No_Background, Source_Detection_Amount_No_Background=Source_Detection_Bool_Calc(Wavdetect_No_Background_Outfile, Target_X, Target_Y)
-
         Wavdetect(Postage_Stamp_No_Background_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Background_Fixed", Input_Background_Bool=True)
-        ##Save_Detection_Bool(Wavdetect_No_Background_Fixed_Outfile, Target_X, Target_Y, Outpath, Background_Float, Counts, Key="_No_Background_Fixed")
         Source_Detection_Bool_No_Background_Fixed, Source_Detection_Amount_No_Background_Fixed=Source_Detection_Bool_Calc(Wavdetect_No_Background_Fixed_Outfile, Target_X, Target_Y)
-
         ####No Source####
-        ##Wavdetect(Postage_Stamp_No_Source_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Source")
-        Wavdetect(Postage_Stamp_No_Source_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Source", Input_Background_Bool=True)
-        ##Save_Detection_Bool(Wavdetect_No_Source_Outfile, Target_X, Target_Y, Outpath, Background_Float, Counts, Key="_No_Source")
+        ###Wavdetect(Postage_Stamp_No_Source_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Source", Input_Background_Bool=True)
+        Wavdetect(Postage_Stamp_No_Source_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Source")
         Source_Detection_Bool_No_Source, Source_Detection_Amount_No_Source=Source_Detection_Bool_Calc(Wavdetect_No_Source_Outfile, Target_X, Target_Y)
-
-
         #Outfile_Str=str(Source_Detection_Bool)+","+str(Source_Detection_Amount)+","+str(Source_Detection_Bool_No_Background)+","+str(Source_Detection_Amount_No_Background)+","+str(Source_Detection_Bool_No_Background_Fixed)+","+str(Source_Detection_Amount_No_Background_Fixed)+","+str(Source_Detection_Bool_No_Source)+","+str(Source_Detection_Amount_No_Source)+","+str(M)+","+str(BACKSCAL)+","+str(Background_Area)+","+str(P_B_Ideal)+","+str(Ideal_Type_II_Source_Detection_Bool)+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(Empirical_Background)+","+str(P_B_Empirical)+","+str(Empirical_Type_II_Source_Detection_Bool)
-        Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+str(int(Source_Detection_Bool_No_Background))+","+str(Source_Detection_Amount_No_Background)+","+str(int(Source_Detection_Bool_No_Background_Fixed))+","+str(Source_Detection_Amount_No_Background_Fixed)+","+str(int(Source_Detection_Bool_No_Source))+","+str(Source_Detection_Amount_No_Source)+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(np.round(P_B_Ideal,5))+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(np.round(P_B_Empirical,5))+","+str(int(Empirical_Type_II_Source_Detection_Bool))
+        ##Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+str(int(Source_Detection_Bool_No_Background))+","+str(Source_Detection_Amount_No_Background)+","+str(int(Source_Detection_Bool_No_Background_Fixed))+","+str(Source_Detection_Amount_No_Background_Fixed)+","+str(int(Source_Detection_Bool_No_Source))+","+str(Source_Detection_Amount_No_Source)+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(np.round(P_B_Ideal,5))+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(np.round(P_B_Empirical,5))+","+str(int(Empirical_Type_II_Source_Detection_Bool))
+        Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+str(int(Source_Detection_Bool_No_Background))+","+str(Source_Detection_Amount_No_Background)+","+str(int(Source_Detection_Bool_No_Background_Fixed))+","+str(Source_Detection_Amount_No_Background_Fixed)+","+str(int(Source_Detection_Bool_No_Source))+","+str(Source_Detection_Amount_No_Source)+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(P_B_Ideal)+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(P_B_Empirical)+","+str(int(Empirical_Type_II_Source_Detection_Bool))
     else:
         #Outfile_Str=str(Source_Detection_Bool)+","+str(Source_Detection_Amount)+","+","+","+","+","+","+","+str(M)+","+str(BACKSCAL)+","+str(Background_Area)+","+str(P_B_Ideal)+","+str(Ideal_Type_II_Source_Detection_Bool)+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(Empirical_Background)+","+str(P_B_Empirical)+","+str(Empirical_Type_II_Source_Detection_Bool)
-        Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+","+","+","+","+","+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(np.round(P_B_Ideal,5))+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(np.round(P_B_Empirical,5))+","+str(int(Empirical_Type_II_Source_Detection_Bool))
-
-    #Save_Parameter(P_B_Ideal, Outpath, Key="_P_B_Ideal")
+        ##Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+","+","+","+","+","+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(np.round(P_B_Ideal,5))+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(np.round(P_B_Empirical,5))+","+str(int(Empirical_Type_II_Source_Detection_Bool))
+        Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+","+","+","+","+","+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(P_B_Ideal)+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(P_B_Empirical)+","+str(int(Empirical_Type_II_Source_Detection_Bool))
     Outfile_Header="SDB,SDA,SDBNB,SDANB,SDBNBF,SDANBF,SDBNS,SDANS,M,BACKSCAL,BA,PBI,T2I,EEC,EEBC,EB,PBE,T2E\n"
     Outfile_Str_Merged=Outfile_Header+Outfile_Str
     Save_Parameter(Outfile_Str_Merged, Outpath, Key="_Standard_Outputs", Suffix=".csv")
@@ -510,4 +487,7 @@ def Source_Detect_Generator_Driver():
 #print(Ideal_Type_I_Calc(0, 5, 0.03, 3, BACKSCAL=4.0))
 #print(BACKSCAL_Calc(0, 0))
 #print(BACKSCAL_Calc(0, 10))
-Source_Detect_Generator_Driver()
+##Source_Detect_Generator_Driver()
+#print(Fac(673))
+#print(Fac(673,Exact_Bool=True))
+#print(Fac(100000,Exact_Bool=True))

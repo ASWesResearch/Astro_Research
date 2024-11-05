@@ -54,13 +54,21 @@ def Background_Generator(Background, Key, Outpath="./Backgrounds/"):
     Bash_Command_Str="bash Bash_Scripts/Generate_Background.sh "+str(Background_Path)+" "+str(Total_Counts)+" "+str(OutFpath)
     os.system(Bash_Command_Str)
 
-def Background_Array_Calc(Include_Zero_Bool=True):
-    a2 = np.arange(1,10,1)
-    a1 = 10.**(np.arange(-4,0))
+def Background_Array_Calc(Factor_Low=1, Factor_High=10, Factor_Step=1, Mag_Low=-4, Mag_High=0, Include_Zero_Bool=False, Custom_Array=None, Append_End=None):
+    #a2 = np.arange(1,10,1)
+    if(Custom_Array!=None):
+        a2=np.array(Custom_Array)
+    else:
+        a2 = np.arange(Factor_Low,Factor_High,Factor_Step)
+    #a1 = 10.**(np.arange(-4,0))
+    a1 = 10.**(np.arange(Mag_Low,Mag_High))
     X=np.outer(a1, a2).flatten()
     X=np.round(X,4)
     if(Include_Zero_Bool):
         X=np.insert(X, 0, 0.0)
+    if(Append_End!=None):
+        End_Index=len(list(X))
+        X=np.insert(X, End_Index, Append_End)
     #X=np.format_float_positional(X, precision=3)
     return X
 
@@ -112,3 +120,8 @@ def Background_Generator_Driver():
 #print(Background_File_Query("5s"))
 #print(Background_to_Counts_Calc(0.0))
 #print(Background_Array_Calc())
+#print(Background_Array_Calc(Factor_High=2))
+#print(Background_Array_Calc(Factor_High=11,Factor_Step=10))
+#print(Background_Array_Calc(Custom_Array=[1,9]))
+#print(Background_Array_Calc(Factor_High=2, Mag_High=1))
+#print(Background_Array_Calc(Factor_High=2, Append_End=9E-1))

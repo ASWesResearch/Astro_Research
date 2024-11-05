@@ -6,7 +6,7 @@ import astropy.io.ascii as ascii
 import os
 from os import system
 import glob
-def Detection_Probability_Calc_3(B,C,OFF,fname_L_H=[['Graph 1 3.0 counts.csv','Graph 1 8.4 counts.csv','Graph 1 22 counts.csv'],['Graph 2 2.8 counts.csv','Graph 2 8.3 counts.csv','Graph 2 22 counts.csv'],['Graph 3 2.4 counts.csv','Graph 3 7.0 counts.csv','Graph 3 18 counts.csv','Graph 3 23 counts.csv','Graph 3 91 counts.csv'],['Graph 4 3.7 counts.csv','Graph 4 11 counts.csv','Graph 4 29 counts.csv','Graph 4 36 counts.csv','Graph 4 110 counts.csv']]):
+def Detection_Probability_Calc_3(B,C,OFF,fname_L_H=[['Graph 1 3.0 counts.csv','Graph 1 8.4 counts.csv','Graph 1 22 counts.csv'],['Graph 2 2.8 counts.csv','Graph 2 8.3 counts.csv','Graph 2 22 counts.csv'],['Graph 3 2.4 counts.csv','Graph 3 7.0 counts.csv','Graph 3 18 counts.csv','Graph 3 23 counts.csv','Graph 3 91 counts.csv'],['Graph 4 3.7 counts.csv','Graph 4 11 counts.csv','Graph 4 29 counts.csv','Graph 4 36 counts.csv','Graph 4 110 counts.csv']], Main_Path="../"):
     """
     fname_L_H:-hlist, Filename High List, a high list of the filenames of the files contianing the data from the 4D dectection probablity plot, The filenames must in in the form of 'Graph 1 3.0 counts.csv'
     B:-float, Background, The background of the observation
@@ -41,7 +41,8 @@ def Detection_Probability_Calc_3(B,C,OFF,fname_L_H=[['Graph 1 3.0 counts.csv','G
             #print "Filepath =",filepath
             #path= os.path.join(dir,'~','Desktop','SQL_Standard_File',)
             #path=os.path.realpath('~/Desktop/SQL_Standard_File/SQL_Sandard_File.csv')
-            path=os.path.realpath('../Background_Graph_Data_2/' + str(fname))
+            ##path=os.path.realpath(Main_Path+'Background_Graph_Data_2/' + str(fname))
+            path=os.path.realpath('/opt/xray/anthony/Research_Git/Background_Graph_Data_2/' + str(fname))
             #print "Path=",path
             #os.chdir(path)
             #os.chdir('~/Desktop/SQL_Standard_File/')
@@ -586,5 +587,5 @@ def Detection_Probability_Plot(F):
 #print(Offaxis_Detection_Threshold_Calc([0.0005],30))
 #print(Offaxis_Detection_Threshold_Calc([0.0005],8))
 #print(Offaxis_Detection_Threshold_Calc([0.0005],28))
-print(Offaxis_Detection_Threshold_Calc([0.001],28))
-print(Offaxis_Detection_Threshold_Calc([0.001],40))
+#print(Offaxis_Detection_Threshold_Calc([0.001],28))
+#print(Offaxis_Detection_Threshold_Calc([0.001],40))

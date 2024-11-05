@@ -419,8 +419,8 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     Data_ObsIDs=Data.drop_duplicates(subset=['ObsID'])
     ##Data=Data[Data["NET_COUNTS_0.3-8.0"]> 25.0]
     ##Data=Data[Data["NET_COUNTS_0.3-8.0"]> 50.0]
-    Data=Data[Data["NET_COUNTS_0.3-8.0"]> 100.0]
-    ##Data=Data[Data["Source_Detection_Probability"]> 0.90]
+    #Data=Data[Data["NET_COUNTS_0.3-8.0"]> 100.0]
+    Data=Data[Data["Source_Detection_Probability"]> 0.90]
     Data=Data.sort_values(by=['Start_Date_Timestamp'])
     Data_ObsIDs=Data_ObsIDs.sort_values(by=['Start_Date_Timestamp'])
     #Flux issue cutoff time: 2012-09-26T05:12:47, 1348650767
@@ -2871,6 +2871,62 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     #plt.show()
     plt.cla()
     plt.clf()
+
+
+
+
+    plt.cla()
+    plt.clf()
+    Data_Date_Parsed=Data_Date_Parsed.sort_values(by=['Start_Date_Timestamp'])
+    Soft_Flux_Data_Binned = Data_Date_Parsed.set_index('Start_Date').resample('Y')["NET_FLUX_APER_soft"].mean()
+    Medium_Flux_Data_Binned = Data_Date_Parsed.set_index('Start_Date').resample('Y')["NET_FLUX_APER_medium"].mean()
+    Hard_Flux_Data_Binned = Data_Date_Parsed.set_index('Start_Date').resample('Y')["NET_FLUX_APER_hard"].mean()
+    Year_A=Soft_Flux_Data_Binned.index.values
+    print("Soft_Flux_Data_Binned:\n", Soft_Flux_Data_Binned)
+    print("type(Soft_Flux_Data_Binned): ", type(Soft_Flux_Data_Binned))
+    print("Year_A: ", Year_A)
+    #plt.plot(Year_A, Soft_Flux_Data_Binned, '.', alpha=1.0)
+    ##plt.semilogy(Year_A, Soft_Flux_Data_Binned, '.', alpha=1.0)
+    plt.semilogy(Year_A, Soft_Flux_Data_Binned, marker='o', alpha=1.0, label="Soft Flux [NET_FLUX_APER_soft]")
+    plt.semilogy(Year_A, Medium_Flux_Data_Binned, marker='o', alpha=0.5, label="Medium Flux [NET_FLUX_APER_medium]")
+    plt.semilogy(Year_A, Hard_Flux_Data_Binned, marker='o', alpha=0.5, label="Hard Flux [NET_FLUX_APER_hard]")
+    #plt.ylim(10E-15, 10E-14)
+    plt.ylim(10E-16, 10E-7)
+    plt.xlabel("Observation Year")
+    plt.ylabel("Model Independent Flux (erg/s*cm^2)")
+    plt.title("Annual Mean Independent Flux vs Observation Year")
+    plt.legend()
+    plt.savefig("Model_Independent_Flux_CSC_Bands_vs_Start_Date_Binned.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    Data_Date_Parsed=Data_Date_Parsed.sort_values(by=['Start_Date_Timestamp'])
+    Soft_Flux_Data_Binned = Data_Date_Parsed.set_index('Start_Date').resample('Y')["NET_MFLUX_APER_soft"].mean()
+    Medium_Flux_Data_Binned = Data_Date_Parsed.set_index('Start_Date').resample('Y')["NET_MFLUX_APER_medium"].mean()
+    Hard_Flux_Data_Binned = Data_Date_Parsed.set_index('Start_Date').resample('Y')["NET_MFLUX_APER_hard"].mean()
+    Year_A=Soft_Flux_Data_Binned.index.values
+    print("Soft_Flux_Data_Binned:\n", Soft_Flux_Data_Binned)
+    print("type(Soft_Flux_Data_Binned): ", type(Soft_Flux_Data_Binned))
+    print("Year_A: ", Year_A)
+    #plt.plot(Year_A, Soft_Flux_Data_Binned, '.', alpha=1.0)
+    ##plt.semilogy(Year_A, Soft_Flux_Data_Binned, '.', alpha=1.0)
+    plt.semilogy(Year_A, Soft_Flux_Data_Binned, marker='o', alpha=1.0, label="Soft Flux [NET_MFLUX_APER_soft]")
+    plt.semilogy(Year_A, Medium_Flux_Data_Binned, marker='o', alpha=0.5, label="Medium Flux [NET_MFLUX_APER_medium]")
+    plt.semilogy(Year_A, Hard_Flux_Data_Binned, marker='o', alpha=0.5, label="Hard Flux [NET_MFLUX_APER_hard]")
+    #plt.ylim(10E-15, 10E-14)
+    plt.ylim(10E-16, 10E-7)
+    plt.xlabel("Observation Year")
+    plt.ylabel("Model Dependent Flux (erg/s*cm^2)")
+    plt.title("Annual Mean Model Dependent Flux vs Observation Year")
+    plt.legend()
+    plt.savefig("Model_Dependent_Flux_CSC_Bands_vs_Start_Date_Binned.pdf")
+    #plt.show()
+    plt.cla()
+    plt.clf()
+
 
 Flux_Plotting()
 #print(Morph_Check("SAB(s)bc"))
