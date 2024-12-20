@@ -84,3 +84,8 @@ Marx_Source_Injection/Source_Detect/Wavdetect_Outputs
 Marx_Source_Injection/Old_Files
 CSC_Downloader/CSC_Testing/635.csv
 Marx_Source_Injection/Source_Detection_Analysis/Marx_Source_Detection_Data*.csv
+Marx_Source_Injection/Source_Detection_Analysis/Count_Limits.csv
+Log_N_Log_S_Calc/*.csv
+Marx_Source_Injection/Main_Code/Wavdetect_Outputs_Backup/
+Marx_Source_Injection/Source_Detection_Analysis/Backups/
+Marx_Source_Injection/Parameter_Files/

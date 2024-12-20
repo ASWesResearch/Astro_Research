@@ -1,6 +1,7 @@
 from sherpa.astro.ui import *
 from matplotlib import pyplot as plt
 import numpy as np
+import pandas as pd
 import os
 from os import system
 import sys
@@ -64,19 +65,30 @@ def Main_Big_Input_Generator(Max_Runs=49):
     #Source_Coords_HL=[[45, [10]]]
     #Source_Coords_HL=[[225, [10]]]
     ##Source_Coords_HL=[[45, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]]]
+    #Source_Coords_HL=[[60, [1]]]
+    #Source_Coords_HL=[[60, [2]]]
     #Source_Coords_HL=[[45, [9, 10]]]
-    Source_Coords_HL=[[0, [0]]]
+    #Source_Coords_HL=[[0, [0]]]
+    Source_Coords_HL=[[0, [0]],[45, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]]]
+    #9016,45,4,3,9E-1,1,1454391,0,2,1,1,0,0,0,2,0,0,0,2,0,0,4.0,15.0,1572.52338,,0,3,1483,0.94307,,0
+    #Source_Coords_HL=[[45, [4]]]
+    #Source_Coords_HL=[[45, [10]]]
+    #Source_Coords_HL=[[45, [5]]]
+
+
+
     Max_Runs=Max_Runs+1
     Run_Count_L=list(np.arange(1,Max_Runs))
     #Run_Count_L=[Run_Count_L[16]] #For Testing
     #print("Run_Count_L: ", Run_Count_L)
-    ###Background_Str_L=Source_Generator.Background_Str_List_Genertator()
+    Background_Str_L=Source_Generator.Background_Str_List_Genertator()
     #Background_Str_L=Source_Generator.Background_Str_List_Genertator(Include_Zero_Bool=False)
-    Background_Str_L=Source_Generator.Background_Str_List_Genertator(Factor_High=2, Append_End=9E-1)
+    ##Background_Str_L=Source_Generator.Background_Str_List_Genertator(Factor_High=2, Append_End=9E-1)
     #Background_Str_L=[Background_Str_L[25]] #For Testing
     #Background_Str_L=[Background_Str_L[-1]] #For Testing
     #Background_Str_L=[Background_Str_L[0]] #For Testing
     ##Background_Str_L=[Background_Str_L[0],Background_Str_L[1]] #For Testing
+    #Background_Str_L=["2E-2"] #For Testing
     #print("Background_Str_L: ", Background_Str_L)
     Number_of_Sources=0
     Number_of_Runs=0
@@ -84,9 +96,10 @@ def Main_Big_Input_Generator(Max_Runs=49):
     for Source_Coords_L in Source_Coords_HL:
         Cur_Phi=Source_Coords_L[0]
         Cur_Theta_L=Source_Coords_L[1]
+        Detection_90_Count_Limits=pd.read_csv("../Source_Detection_Analysis/Count_Limits.csv")
         for Cur_Theta in Cur_Theta_L:
             Cur_Coords=(Cur_Theta,Cur_Phi)
-            Cur_Counts_L=Source_Generator.Counts_List_Genertator(Source_Generator.Max_Counts_Calc,Cur_Theta)
+            ###Cur_Counts_L=Source_Generator.Counts_List_Genertator(Source_Generator.Max_Counts_Calc,Cur_Theta)
             #Cur_Counts_L=Source_Generator.Counts_List_Genertator(Source_Generator.Max_Counts_Calc,Cur_Theta, Include_Zero_Bool=False)
             #Cur_Counts_L=Counts_List_Genertator(Max_Counts_Calc_Broken,Cur_Theta)
             #Cur_Counts_L=[Cur_Counts_L[3]] #For Testing
@@ -97,19 +110,40 @@ def Main_Big_Input_Generator(Max_Runs=49):
             #Cur_Counts_L=[Cur_Counts_L[0], Cur_Counts_L[1]] #For Testing
             #Cur_Counts_L=[1] #For Testing
             #Cur_Counts_L=[165,180,195,210] #For Testing
-            Cur_Counts_L=[Cur_Counts_L[0], Cur_Counts_L[1], Cur_Counts_L[2]] #For Testing
+            #Cur_Counts_L=[Cur_Counts_L[0], Cur_Counts_L[1], Cur_Counts_L[2]] #For Testing
             #print("Cur_Counts_L: ", Cur_Counts_L)
             Cur_RA,Cur_Dec=Source_Generator.MSC_to_CEL_Convert(Cur_Theta,Cur_Phi)
             Cur_X,Cur_Y=Source_Reproject.MSC_to_Physical_Convert(Cur_Theta,Cur_Phi)
             Cur_Chip_X, Cur_Chip_Y, Cur_Chip_ID=Source_Generator.MSC_to_Chip_Convert(Cur_Theta,Cur_Phi)
-            for Cur_Counts in Cur_Counts_L:
-                #print("Cur_Counts: ", Cur_Counts)
-                #Number_of_Sources=Number_of_Sources+1
-                for Cur_Background in Background_Str_L:
-                    Cur_Background_Float=float(Cur_Background)
-                    if((float(Cur_Background_Float)==0.0) and (int(Cur_Counts)==0)):
-                        continue
-                        #pass
+            for Cur_Background in Background_Str_L:
+                #print("Cur_Background: ", Cur_Background)
+                Cur_Background_Float=float(Cur_Background)
+                if((float(Cur_Background_Float)==0.0) and (int(Cur_Counts)==0)):
+                    continue
+                    #pass
+                Cur_Count_Limits=Detection_90_Count_Limits.loc[(Detection_90_Count_Limits['Theta'] == Cur_Theta) & (Detection_90_Count_Limits['Background'] <= Cur_Background_Float)]
+                Cur_Count_Limits = Cur_Count_Limits.iloc[-1:]
+                #print("Cur_Count_Limits: ", Cur_Count_Limits)
+                ###Cur_Counts_L=Source_Generator.Counts_List_Genertator(Source_Generator.Max_Counts_Calc,Cur_Theta)
+                if(Cur_Count_Limits.empty):
+                    continue
+                Counts_Low=int(Cur_Count_Limits.iloc[0]['Counts_Low'])
+                #print("Counts_Low", Counts_Low)
+                Counts_High=int(Cur_Count_Limits.iloc[0]['Counts_High'])
+                #print("Counts_High", Counts_High)
+                if(Counts_Low==3):
+                    Cur_Counts_L=Source_Generator.Counts_List_Genertator(Cur_Theta, C_Min=Counts_Low, C_Max=Counts_High, Count_Step=1)
+                else:
+                    Cur_Counts_L=Source_Generator.Counts_List_Genertator(Cur_Theta, C_Min=Counts_Low, C_Max=Counts_High, Count_Step=1, Adjust_Start_Bool=False)
+                ##Cur_Counts_L=[Cur_Counts_L[0], Cur_Counts_L[1], Cur_Counts_L[2]] #For Testing
+                #print("Cur_Counts_L: ", Cur_Counts_L)
+                #Cur_Counts_L=[Cur_Counts_L[0]] #For Testing
+                #Cur_Counts_L=[3] #For Testing
+                #Cur_Counts_L=[38] #For Testing
+                #print("Cur_Counts_L: ", Cur_Counts_L)
+                for Cur_Counts in Cur_Counts_L:
+                    #print("Cur_Counts: ", Cur_Counts)
+                    #Number_of_Sources=Number_of_Sources+1
                     Number_of_Sources=Number_of_Sources+1
                     for Run_Count in Run_Count_L:
                         Cur_Run_HL=[]
@@ -227,9 +261,11 @@ def Main_Big_Input_Generator(Max_Runs=49):
                         Cur_Source_Path="./Marx_Sources/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Run_Count)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_"+str(Run_Count)+".fits"
                         Cur_Injected_Outpath="./Injected_Sources/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Run_Count)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_"+str(Run_Count)+"_Injected.fits"
                         Cur_Wavdetect_Scale_16_Outfile=Cur_Outpath_Source_Detect+"_Scale_16_Wavdetect.fits"
+                        ###Cur_Synthetic_Background_Path="./Synthetic_Backgrounds/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_bkg.fits"
+                        Cur_Synthetic_Background_Path="/Volumes/expansion/Marx_Testing/Synthetic_Backgrounds/"+str(Cur_Phi)+"/"+str(Cur_Theta)+"/"+str(Cur_Counts)+"/"+str(Cur_Background)+"/"+str(Cur_Phi)+"_"+str(Cur_Theta)+"_"+str(Cur_Counts)+"_"+str(Cur_Background)+"_bkg.fits"
                         #Cur_Run_L=[Cur_Outpath_Source_Detect, Cur_Postage_Stamp_Outpath, Cur_PSF_Outpath, Cur_Wavdetect_Outfile, Cur_Postage_Stamp_Coords, Cur_Background_Float, Cur_Counts, Cur_Postage_Stamp_No_Background_Outpath, Cur_Postage_Stamp_No_Source_Outpath, Cur_Wavdetect_No_Background_Outfile, Cur_Wavdetect_No_Source_Outfile, Cur_Postage_Stamp_Original_Source_Outpath, Cur_Reproject_Outpath, Cur_Source_Aspect_Path, Cur_Source_Path, Cur_Chip_ID]
                         ##Cur_Source_Detect_Run_L=[Cur_Outpath_Source_Detect, Cur_Postage_Stamp_Outpath, Cur_PSF_Outpath, Cur_Wavdetect_Outfile, Cur_Postage_Stamp_Coords, Cur_Background_Float, Cur_Counts, Cur_Postage_Stamp_No_Background_Outpath, Cur_Postage_Stamp_No_Source_Outpath, Cur_Wavdetect_No_Background_Outfile, Cur_Wavdetect_No_Background_Fixed_Outfile, Cur_Wavdetect_No_Source_Outfile, Cur_Postage_Stamp_Original_Source_Outpath, Cur_Reproject_Outpath, Cur_Source_Aspect_Path, Cur_Source_Path, Cur_Chip_ID, Cur_Phi, Cur_Theta, Cur_Injected_Outpath]
-                        Cur_Source_Detect_Run_L=[Cur_Outpath_Source_Detect, Cur_Postage_Stamp_Outpath, Cur_PSF_Outpath, Cur_Wavdetect_Outfile, Cur_Postage_Stamp_Coords, Cur_Background_Float, Cur_Counts, Cur_Postage_Stamp_No_Background_Outpath, Cur_Postage_Stamp_No_Source_Outpath, Cur_Wavdetect_No_Background_Outfile, Cur_Wavdetect_No_Background_Fixed_Outfile, Cur_Wavdetect_No_Source_Outfile, Cur_Postage_Stamp_Original_Source_Outpath, Cur_Reproject_Outpath, Cur_Source_Aspect_Path, Cur_Source_Path, Cur_Chip_ID, Cur_Phi, Cur_Theta, Cur_Injected_Outpath, Cur_Wavdetect_Scale_16_Outfile, Cur_Wavdetect_No_Source_Fixed_Outfile, Cur_Wavdetect_No_Source_Control_Outfile, Cur_Wavdetect_No_Source_Control_Fixed_Outfile]
+                        Cur_Source_Detect_Run_L=[Cur_Outpath_Source_Detect, Cur_Postage_Stamp_Outpath, Cur_PSF_Outpath, Cur_Wavdetect_Outfile, Cur_Postage_Stamp_Coords, Cur_Background_Float, Cur_Counts, Cur_Postage_Stamp_No_Background_Outpath, Cur_Postage_Stamp_No_Source_Outpath, Cur_Wavdetect_No_Background_Outfile, Cur_Wavdetect_No_Background_Fixed_Outfile, Cur_Wavdetect_No_Source_Outfile, Cur_Postage_Stamp_Original_Source_Outpath, Cur_Reproject_Outpath, Cur_Source_Aspect_Path, Cur_Source_Path, Cur_Chip_ID, Cur_Phi, Cur_Theta, Cur_Injected_Outpath, Cur_Wavdetect_Scale_16_Outfile, Cur_Wavdetect_No_Source_Fixed_Outfile, Cur_Wavdetect_No_Source_Control_Outfile, Cur_Wavdetect_No_Source_Control_Fixed_Outfile, Cur_Synthetic_Background_Path]
 
                         Cur_Run_HL.append(Cur_Source_Detect_Run_L)
 
@@ -255,10 +291,11 @@ def Cleanup_Files(Phi, Theta, Counts, Background, Run_Count):
         Wavdetect_Outputs_Directory="./Wavdetect_Outputs/"+Base_Directory_String+"/"
         Wavdetect_Parameters_Directory=Wavdetect_Outputs_Directory+Base_File_String+"/"
         Wavdetect_Parameters_Directory_Cxcds_Param4=Wavdetect_Parameters_Directory+"cxcds_param4/"
+        Wavdetect_Parameters_Directory_Param=Wavdetect_Parameters_Directory+"param/"
         Wavdetect_Tempdir_Directory=Wavdetect_Parameters_Directory+"tmpdir/"
         #Path_L=[Sources_Directory, Sources_Marx_Parameters_Directory, Injected_Sources_Directory, Wavdetect_Outputs_Directory, Wavdetect_Parameters_Directory]
         #Path_L=[Sources_Marx_Parameters_Directory, Sources_Directory, Injected_Sources_Directory, Wavdetect_Parameters_Directory, Wavdetect_Outputs_Directory]
-        Path_L=[Sources_Marx_Parameters_Directory, Sources_Directory, Injected_Sources_Directory, Wavdetect_Tempdir_Directory, Wavdetect_Parameters_Directory_Cxcds_Param4, Wavdetect_Parameters_Directory, Wavdetect_Outputs_Directory]
+        Path_L=[Sources_Marx_Parameters_Directory, Sources_Directory, Injected_Sources_Directory, Wavdetect_Tempdir_Directory, Wavdetect_Parameters_Directory_Cxcds_Param4, Wavdetect_Parameters_Directory_Param, Wavdetect_Parameters_Directory, Wavdetect_Outputs_Directory]
         print("Path_L: ", Path_L)
         for Path in Path_L:
             if(Path[0]!="."):
@@ -462,6 +499,7 @@ def Main_Wrapper(Input_HL):
     Wavdetect_No_Source_Fixed_Outfile=Input_L[21]
     Wavdetect_No_Source_Control_Outfile=Input_L[22]
     Wavdetect_No_Source_Control_Fixed_Outfile=Input_L[23]
+    Synthetic_Background_Path=Input_L[24]
     #Postage_Stamp_Coords[0]=[[0, 0], [80.0, 80.0], [4145.0, 4135.0], ['359.9933716666962', '0.005261666616669011']]
     Target_Chip_Coords=Postage_Stamp_Coords[1]
     Chip_X=Target_Chip_Coords[0]
@@ -484,9 +522,26 @@ def Main_Wrapper(Input_HL):
     Background_Area=Ideal_Parameter_Tuple[3]
     P_B_Ideal=Source_Detect.Ideal_Type_I_Calc(Phi, Theta, Background_Float, Counts, Parameter_Tuple=Ideal_Parameter_Tuple)
     Ideal_Type_II_Source_Detection_Bool=Source_Detect.Type_II_Calc(P_B_Ideal)
+
+    """
     Empirical_Parameter_Tuple=Source_Detect.Empirical_Type_I_Parameters_Calc(Injected_Outpath, Phi, Theta, Target_X, Target_Y)
-    Empirical_Enclosed_Source_Counts=Source_Detect.Empirical_Isolated_Counts_Calc(Reproject_Outpath, Phi, Theta, Target_X, Target_Y)
+    Empirical_Source_Counts=Empirical_Parameter_Tuple[0]
     Empirical_Background_Counts=Empirical_Parameter_Tuple[1]
+    """
+
+    #Empirical_Source_Counts_No_Background=Source_Detect.Empirical_Isolated_Counts_Calc(Reproject_Outpath, Phi, Theta, Target_X, Target_Y)
+    Empirical_Parameter_Tuple_No_Background=Source_Detect.Empirical_Type_I_Parameters_Calc(Reproject_Outpath, Phi, Theta, Target_X, Target_Y)
+    Empirical_Source_Counts_No_Background=Empirical_Parameter_Tuple_No_Background[0]
+    Empirical_Background_Counts_No_Background=Empirical_Parameter_Tuple_No_Background[1]
+    Empirical_Parameter_Tuple_No_Source=Source_Detect.Empirical_Type_I_Parameters_Calc(Synthetic_Background_Path, Phi, Theta, Target_X, Target_Y)
+    Empirical_Source_Counts_No_Source=Empirical_Parameter_Tuple_No_Source[0]
+    Empirical_Background_Counts_No_Source=Empirical_Parameter_Tuple_No_Source[1]
+
+    Empirical_Source_Counts=int(Empirical_Source_Counts_No_Background)+int(Empirical_Source_Counts_No_Source)
+    Empirical_Background_Counts=int(Empirical_Background_Counts_No_Background)+int(Empirical_Background_Counts_No_Source)
+    Empirical_Parameter_Tuple=(Empirical_Source_Counts,Empirical_Background_Counts,BACKSCAL)
+
+    #Empirical_Background_Counts=Empirical_Parameter_Tuple[1]
     Empirical_Background=float(Empirical_Background_Counts)/float(Background_Area)
     P_B_Empirical=Source_Detect.Empirical_Type_I_Calc(Postage_Stamp_Outpath, Phi, Theta, Target_X, Target_Y, Background_Float, Counts, Parameter_Tuple=Empirical_Parameter_Tuple)
     Empirical_Type_II_Source_Detection_Bool=Source_Detect.Type_II_Calc(P_B_Empirical)
@@ -494,8 +549,8 @@ def Main_Wrapper(Input_HL):
         ####No Background####
         Source_Detect.Wavdetect(Postage_Stamp_No_Background_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Background")
         Source_Detection_Bool_No_Background, Source_Detection_Amount_No_Background=Source_Detect.Source_Detection_Bool_Calc(Wavdetect_No_Background_Outfile, Target_X, Target_Y)
-        Source_Detect.Wavdetect(Postage_Stamp_No_Background_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Background_Fixed", Input_Background_Bool=True)
-        Source_Detection_Bool_No_Background_Fixed, Source_Detection_Amount_No_Background_Fixed=Source_Detect.Source_Detection_Bool_Calc(Wavdetect_No_Background_Fixed_Outfile, Target_X, Target_Y)
+        ##Source_Detect.Wavdetect(Postage_Stamp_No_Background_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Background_Fixed", Input_Background_Bool=True)
+        ##Source_Detection_Bool_No_Background_Fixed, Source_Detection_Amount_No_Background_Fixed=Source_Detect.Source_Detection_Bool_Calc(Wavdetect_No_Background_Fixed_Outfile, Target_X, Target_Y)
         ####No Source####
         ##Source_Detect.Wavdetect(Postage_Stamp_No_Source_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Source", Input_Background_Bool=True)
         #Source_Detect.Wavdetect(Postage_Stamp_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Source", Input_Background_Bool=True)
@@ -503,34 +558,39 @@ def Main_Wrapper(Input_HL):
         #Source_Detect.Wavdetect(Postage_Stamp_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Source", Input_Background_Bool=True)
         #Source_Detect.Wavdetect(Postage_Stamp_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Source")
         Source_Detection_Bool_No_Source, Source_Detection_Amount_No_Source=Source_Detect.Source_Detection_Bool_Calc(Wavdetect_No_Source_Outfile, Target_X, Target_Y)
-        Source_Detect.Wavdetect(Postage_Stamp_No_Source_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Source_Fixed", Input_Background_Bool=True)
-        Source_Detection_Bool_No_Source_Fixed, Source_Detection_Amount_No_Source_Fixed=Source_Detect.Source_Detection_Bool_Calc(Wavdetect_No_Source_Fixed_Outfile, Target_X, Target_Y)
-
+        ##Source_Detect.Wavdetect(Postage_Stamp_No_Source_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Source_Fixed", Input_Background_Bool=True)
+        ##Source_Detection_Bool_No_Source_Fixed, Source_Detection_Amount_No_Source_Fixed=Source_Detect.Source_Detection_Bool_Calc(Wavdetect_No_Source_Fixed_Outfile, Target_X, Target_Y)
+        """
         Source_Detect.Wavdetect(Postage_Stamp_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Source_Control")
         Source_Detection_Bool_No_Source_Control, Source_Detection_Amount_No_Source_Control=Source_Detect.Source_Detection_Bool_Calc(Wavdetect_No_Source_Control_Outfile, Target_X, Target_Y)
         Source_Detect.Wavdetect(Postage_Stamp_Outpath, Outpath, PSF_Outpath, Background_Float, Counts, Key="_No_Source_Control_Fixed", Input_Background_Bool=True)
         Source_Detection_Bool_No_Source_Control_Fixed, Source_Detection_Amount_No_Source_Control_Fixed=Source_Detect.Source_Detection_Bool_Calc(Wavdetect_No_Source_Control_Fixed_Outfile, Target_X, Target_Y)
+        """
+        #Outfile_Str=str(Source_Detection_Bool)+","+str(Source_Detection_Amount)+","+str(Source_Detection_Bool_No_Background)+","+str(Source_Detection_Amount_No_Background)+","+str(Source_Detection_Bool_No_Background_Fixed)+","+str(Source_Detection_Amount_No_Background_Fixed)+","+str(Source_Detection_Bool_No_Source)+","+str(Source_Detection_Amount_No_Source)+","+str(M)+","+str(BACKSCAL)+","+str(Background_Area)+","+str(P_B_Ideal)+","+str(Ideal_Type_II_Source_Detection_Bool)+","+str(Empirical_Source_Counts_No_Background)+","+str(Empirical_Background_Counts)+","+str(Empirical_Background)+","+str(P_B_Empirical)+","+str(Empirical_Type_II_Source_Detection_Bool)
+        ##Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+str(int(Source_Detection_Bool_No_Background))+","+str(Source_Detection_Amount_No_Background)+","+str(int(Source_Detection_Bool_No_Background_Fixed))+","+str(Source_Detection_Amount_No_Background_Fixed)+","+str(int(Source_Detection_Bool_No_Source))+","+str(Source_Detection_Amount_No_Source)+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(np.round(P_B_Ideal,5))+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Source_Counts_No_Background)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(np.round(P_B_Empirical,5))+","+str(int(Empirical_Type_II_Source_Detection_Bool))
+        ##Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+str(int(Source_Detection_Bool_No_Background))+","+str(Source_Detection_Amount_No_Background)+","+str(int(Source_Detection_Bool_No_Background_Fixed))+","+str(Source_Detection_Amount_No_Background_Fixed)+","+str(int(Source_Detection_Bool_No_Source))+","+str(Source_Detection_Amount_No_Source)+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(P_B_Ideal)+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Source_Counts_No_Background)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(P_B_Empirical)+","+str(int(Empirical_Type_II_Source_Detection_Bool))
+        #Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+str(int(Source_Detection_Bool_No_Background))+","+str(Source_Detection_Amount_No_Background)+","+str(int(Source_Detection_Bool_No_Source))+","+str(Source_Detection_Amount_No_Source)+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(P_B_Ideal)+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Source_Counts_No_Background)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(P_B_Empirical)+","+str(int(Empirical_Type_II_Source_Detection_Bool))
+        ##Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+str(int(Source_Detection_Bool_No_Background))+","+str(Source_Detection_Amount_No_Background)+","+str(int(Source_Detection_Bool_No_Background_Fixed))+","+str(Source_Detection_Amount_No_Background_Fixed)+","+str(int(Source_Detection_Bool_No_Source))+","+str(Source_Detection_Amount_No_Source)+","+str(int(Source_Detection_Bool_No_Source_Fixed))+","+str(Source_Detection_Amount_No_Source_Fixed)+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(P_B_Ideal)+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Source_Counts_No_Background)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(P_B_Empirical)+","+str(int(Empirical_Type_II_Source_Detection_Bool))
+        ##Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+str(int(Source_Detection_Bool_No_Background))+","+str(Source_Detection_Amount_No_Background)+","+str(int(Source_Detection_Bool_No_Background_Fixed))+","+str(Source_Detection_Amount_No_Background_Fixed)+","+str(int(Source_Detection_Bool_No_Source))+","+str(Source_Detection_Amount_No_Source)+","+str(int(Source_Detection_Bool_No_Source_Fixed))+","+str(Source_Detection_Amount_No_Source_Fixed)+","+str(int(Source_Detection_Bool_No_Source_Control))+","+str(Source_Detection_Amount_No_Source_Control)+","+str(int(Source_Detection_Bool_No_Source_Control_Fixed))+","+str(Source_Detection_Amount_No_Source_Control_Fixed)+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(P_B_Ideal)+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Source_Counts_No_Background)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(P_B_Empirical)+","+str(int(Empirical_Type_II_Source_Detection_Bool))
+        Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+str(int(Source_Detection_Bool_No_Background))+","+str(Source_Detection_Amount_No_Background)+","+str(int(Source_Detection_Bool_No_Source))+","+str(Source_Detection_Amount_No_Source)+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(P_B_Ideal)+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(Empirical_Source_Counts_No_Background)+","+str(Empirical_Background_Counts_No_Background)+","+str(Empirical_Source_Counts_No_Source)+","+str(Empirical_Background_Counts_No_Source)+","+str(P_B_Empirical)+","+str(int(Empirical_Type_II_Source_Detection_Bool))
 
-        #Outfile_Str=str(Source_Detection_Bool)+","+str(Source_Detection_Amount)+","+str(Source_Detection_Bool_No_Background)+","+str(Source_Detection_Amount_No_Background)+","+str(Source_Detection_Bool_No_Background_Fixed)+","+str(Source_Detection_Amount_No_Background_Fixed)+","+str(Source_Detection_Bool_No_Source)+","+str(Source_Detection_Amount_No_Source)+","+str(M)+","+str(BACKSCAL)+","+str(Background_Area)+","+str(P_B_Ideal)+","+str(Ideal_Type_II_Source_Detection_Bool)+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(Empirical_Background)+","+str(P_B_Empirical)+","+str(Empirical_Type_II_Source_Detection_Bool)
-        ##Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+str(int(Source_Detection_Bool_No_Background))+","+str(Source_Detection_Amount_No_Background)+","+str(int(Source_Detection_Bool_No_Background_Fixed))+","+str(Source_Detection_Amount_No_Background_Fixed)+","+str(int(Source_Detection_Bool_No_Source))+","+str(Source_Detection_Amount_No_Source)+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(np.round(P_B_Ideal,5))+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(np.round(P_B_Empirical,5))+","+str(int(Empirical_Type_II_Source_Detection_Bool))
-        ##Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+str(int(Source_Detection_Bool_No_Background))+","+str(Source_Detection_Amount_No_Background)+","+str(int(Source_Detection_Bool_No_Background_Fixed))+","+str(Source_Detection_Amount_No_Background_Fixed)+","+str(int(Source_Detection_Bool_No_Source))+","+str(Source_Detection_Amount_No_Source)+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(P_B_Ideal)+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(P_B_Empirical)+","+str(int(Empirical_Type_II_Source_Detection_Bool))
-        #Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+str(int(Source_Detection_Bool_No_Background))+","+str(Source_Detection_Amount_No_Background)+","+str(int(Source_Detection_Bool_No_Source))+","+str(Source_Detection_Amount_No_Source)+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(P_B_Ideal)+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(P_B_Empirical)+","+str(int(Empirical_Type_II_Source_Detection_Bool))
-        ##Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+str(int(Source_Detection_Bool_No_Background))+","+str(Source_Detection_Amount_No_Background)+","+str(int(Source_Detection_Bool_No_Background_Fixed))+","+str(Source_Detection_Amount_No_Background_Fixed)+","+str(int(Source_Detection_Bool_No_Source))+","+str(Source_Detection_Amount_No_Source)+","+str(int(Source_Detection_Bool_No_Source_Fixed))+","+str(Source_Detection_Amount_No_Source_Fixed)+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(P_B_Ideal)+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(P_B_Empirical)+","+str(int(Empirical_Type_II_Source_Detection_Bool))
-        Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+str(int(Source_Detection_Bool_No_Background))+","+str(Source_Detection_Amount_No_Background)+","+str(int(Source_Detection_Bool_No_Background_Fixed))+","+str(Source_Detection_Amount_No_Background_Fixed)+","+str(int(Source_Detection_Bool_No_Source))+","+str(Source_Detection_Amount_No_Source)+","+str(int(Source_Detection_Bool_No_Source_Fixed))+","+str(Source_Detection_Amount_No_Source_Fixed)+","+str(int(Source_Detection_Bool_No_Source_Control))+","+str(Source_Detection_Amount_No_Source_Control)+","+str(int(Source_Detection_Bool_No_Source_Control_Fixed))+","+str(Source_Detection_Amount_No_Source_Control_Fixed)+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(P_B_Ideal)+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(P_B_Empirical)+","+str(int(Empirical_Type_II_Source_Detection_Bool))
 
 
     else:
-        #Outfile_Str=str(Source_Detection_Bool)+","+str(Source_Detection_Amount)+","+","+","+","+","+","+","+str(M)+","+str(BACKSCAL)+","+str(Background_Area)+","+str(P_B_Ideal)+","+str(Ideal_Type_II_Source_Detection_Bool)+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(Empirical_Background)+","+str(P_B_Empirical)+","+str(Empirical_Type_II_Source_Detection_Bool)
-        ##Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+","+","+","+","+","+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(np.round(P_B_Ideal,5))+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(np.round(P_B_Empirical,5))+","+str(int(Empirical_Type_II_Source_Detection_Bool))
-        ##Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+","+","+","+","+","+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(P_B_Ideal)+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(P_B_Empirical)+","+str(int(Empirical_Type_II_Source_Detection_Bool))
-        #Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+","+","+","+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(P_B_Ideal)+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(P_B_Empirical)+","+str(int(Empirical_Type_II_Source_Detection_Bool))
-        ##Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+","+","+","+","+","+","+","+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(P_B_Ideal)+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(P_B_Empirical)+","+str(int(Empirical_Type_II_Source_Detection_Bool))
-        Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+","+","+","+","+","+","+","+","+","+","+","+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(P_B_Ideal)+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Enclosed_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(P_B_Empirical)+","+str(int(Empirical_Type_II_Source_Detection_Bool))
+        #Outfile_Str=str(Source_Detection_Bool)+","+str(Source_Detection_Amount)+","+","+","+","+","+","+","+str(M)+","+str(BACKSCAL)+","+str(Background_Area)+","+str(P_B_Ideal)+","+str(Ideal_Type_II_Source_Detection_Bool)+","+str(Empirical_Source_Counts_No_Background)+","+str(Empirical_Background_Counts)+","+str(Empirical_Background)+","+str(P_B_Empirical)+","+str(Empirical_Type_II_Source_Detection_Bool)
+        ##Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+","+","+","+","+","+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(np.round(P_B_Ideal,5))+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Source_Counts_No_Background)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(np.round(P_B_Empirical,5))+","+str(int(Empirical_Type_II_Source_Detection_Bool))
+        ##Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+","+","+","+","+","+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(P_B_Ideal)+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Source_Counts_No_Background)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(P_B_Empirical)+","+str(int(Empirical_Type_II_Source_Detection_Bool))
+        #Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+","+","+","+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(P_B_Ideal)+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Source_Counts_No_Background)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(P_B_Empirical)+","+str(int(Empirical_Type_II_Source_Detection_Bool))
+        #Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+","+","+","+","+","+","+","+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(P_B_Ideal)+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Source_Counts_No_Background)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(P_B_Empirical)+","+str(int(Empirical_Type_II_Source_Detection_Bool))
+        ##Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+","+","+","+","+","+","+","+","+","+","+","+","+","+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(P_B_Ideal)+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Source_Counts_No_Background)+","+str(Empirical_Background_Counts)+","+str(np.round(Empirical_Background,5))+","+str(P_B_Empirical)+","+str(int(Empirical_Type_II_Source_Detection_Bool))
+        Outfile_Str=str(int(Source_Detection_Bool))+","+str(Source_Detection_Amount)+",,,,,"+str(M)+","+str(BACKSCAL)+","+str(np.round(Background_Area,5))+","+str(P_B_Ideal)+","+str(int(Ideal_Type_II_Source_Detection_Bool))+","+str(Empirical_Source_Counts)+","+str(Empirical_Background_Counts)+","+str(Empirical_Source_Counts_No_Background)+","+str(Empirical_Background_Counts_No_Background)+","+str(Empirical_Source_Counts_No_Source)+","+str(Empirical_Background_Counts_No_Source)+","+str(P_B_Empirical)+","+str(int(Empirical_Type_II_Source_Detection_Bool))
+
 
     #Outfile_Header="SDB,SDA,SDBNB,SDANB,SDBNBF,SDANBF,SDBNS,SDANS,M,BACKSCAL,BA,PBI,T2I,EEC,EEBC,EB,PBE,T2E\n"
     #Outfile_Header="SDB,SDA,SDBNB,SDANB,SDBNS,SDANS,M,BACKSCAL,BA,PBI,T2I,EEC,EEBC,EB,PBE,T2E\n"
     #Outfile_Header="SDB,SDA,SDBNB,SDANB,SDBNBF,SDANBF,SDBNS,SDANS,SDBNSF,SDANSF,M,BACKSCAL,BA,PBI,T2I,EEC,EEBC,EB,PBE,T2E\n"
-    Outfile_Header="SDB,SDA,SDBNB,SDANB,SDBNBF,SDANBF,SDBNS,SDANS,SDBNSF,SDANSF,NSC,NSA,NSCF,NSAF,M,BACKSCAL,BA,PBI,T2I,EEC,EEBC,EB,PBE,T2E\n"
+    ##Outfile_Header="SDB,SDA,SDBNB,SDANB,SDBNBF,SDANBF,SDBNS,SDANS,SDBNSF,SDANSF,NSC,NSA,NSCF,NSAF,M,BACKSCAL,BA,PBI,T2I,EEC,EEBC,EB,PBE,T2E\n"
+    Outfile_Header="SDB,SDA,SDBNB,SDANB,SDBNS,SDANS,M,BACKSCAL,BA,PBI,T2I,ESC,EBC,ESCNB,EBCNB,ESCNS,EBCNS,PBE,T2E\n"
 
     Outfile_Str_Merged=Outfile_Header+Outfile_Str
     Source_Detect.Save_Parameter(Outfile_Str_Merged, Outpath, Key="_Standard_Outputs", Suffix=".csv")
@@ -559,13 +619,28 @@ def Empty_Coords_Generator_Main():
     Source_Generator.Empty_Coords_Generator()
     os.system("cp Empty_Coords/empty.fits ../Required_Files_Generated/")
 
-def Main_Driver():
+def Main_Driver(Clobber_Bool=False):
     Input_L=Main_Big_Input_Generator()
+    print("Total Number of Runs: ", len(Input_L))
+    if(Clobber_Bool==False):
+        Input_L_Uncreated=[]
+        for Input in Input_L:
+            Cleanup_Files_Input_L=Input[3]
+            Phi=Cleanup_Files_Input_L[0]
+            Theta=Cleanup_Files_Input_L[1]
+            Counts=Cleanup_Files_Input_L[2]
+            Background=Cleanup_Files_Input_L[3]
+            Run_Count=Cleanup_Files_Input_L[4]
+            File_Exists_Bool=Check_Files(Phi, Theta, Counts, Background, Run_Count)
+            if(File_Exists_Bool==False):
+                Input_L_Uncreated.append(Input)
+        Input_L=Input_L_Uncreated
+        print("Remaining Number of Runs ", len(Input_L))
     Driver(Main_Wrapper, Input_L)
 
 def Main():
     if __name__ == '__main__':
-        Synthetic_Background_Generator_Driver()
+        ###Synthetic_Background_Generator_Driver()
         ###Empty_Coords_Generator_Main()
         start_time_Big = time.time()
         Main_Driver()

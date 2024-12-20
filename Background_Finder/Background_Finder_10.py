@@ -11,6 +11,8 @@ path=os.path.realpath('../')
 #print "Path=",path
 sys.path.append(os.path.abspath(path))
 from D25_Finder import D25_Finder
+from Galaxy_Name_Reducer import Galaxy_Name_Reducer
+
 def Background_Finder_3(gname,evtfpath,objLfpath,R): #Need to apply energy filter (0.3kev to 10kev) to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
     """
     gname:-str, Galaxy Name, The name of the galaxy in the form NGC #, For Example 'NGC 3077'
@@ -334,9 +336,21 @@ def GC_Query(Gname):
         decGC=float(G_Data['DEC'])
     return raGC, decGC
 
-def Background_Finder_3(Gname,Evtfpath,Reg_Filepath):
+def Background_Finder_V2(Gname,Evtfpath,Reg_Filepath,Fov1_Path):
+    Gname_Modifed=Galaxy_Name_Reducer.Galaxy_Name_Reducer(Gname)
+    #'/opt/xray/anthony/expansion_backup/ObsIDs/2076/new/acisf02076_repro_evt2.fits'
+    #print('Evtfpath :', Evtfpath)
+    #print('Evtfpath.split("/")[-1] :', Evtfpath.split("/")[-1])
+    #print('Evtfpath.split("/")[-1].split("acisf")[-1] :', Evtfpath.split("/")[-1].split("acisf")[-1])
+    #print('Evtfpath.split("/")[-1].split("acisf")[-1].split("_")[0] :', Evtfpath.split("/")[-1].split("acisf")[-1].split("_")[0])
+    #print('int(Evtfpath.split("/")[-1].split("acisf")[0].split("_")[0]) :', int(Evtfpath.split("/")[-1].split("acisf")[-1].split("_")[0]))
+    #ObsID=int(Evtfpath.split("/")[-1].split("acisf")[0].split("_")[0])
+    ObsID=int(Evtfpath.split("/")[-1].split("acisf")[-1].split("_")[0])
+    print("ObsID: ", ObsID)
     Source_Regions=CXCRegion(Reg_Filepath)
+    #print("Source_Regions: ", Source_Regions)
     Source_Regions_Modified=Source_Regions.edit(stretch=3.0)
+    #print("Source_Regions_Modified: ", Source_Regions_Modified)
     G_Data = Ned.query_object(Gname) #G_Data:-astropy.table.table.Table, Galaxy_Data, The queryed data of the galaxy from NED in the form of a astropy table
     raGC,decGC=GC_Query(Gname) #raGC:-float, Right Ascension of Galatic Center, The right ascension of the galatic center of the current galaxy in degrees. #decGC:-float, Declination of Galatic Center, The declination of the galatic center of the current galaxy in degrees.
     D25_S_Maj_Deg=D25_Finder.D25_Finder(Gname)
@@ -347,7 +361,80 @@ def Background_Finder_3(Gname,Evtfpath,Reg_Filepath):
     Chip_ID=dmcoords.chip_id #Chip_ID:-int, Chip_ID, The Chip ID number the GC is on
     R_Phys=D25_S_Maj*2.03252032520325 #R_Phys:-numpy.float64, Radius_Physical, The radius of the galaxy in pixels, the converstion factor is 2.03252032520325pix/arcsec
     D25_Shape_String='circle(' + str(X_Phys) +','+ str(Y_Phys)+','+ str(R_Phys)+')'
-    Source_Regions=CXCRegion(D25_Shape_String)
+    Galaxy_Region=CXCRegion(D25_Shape_String)
+    #Galaxy_Region=Galaxy_Region.edit(stretch=10.0) #For Testing
+    #print("Galaxy_Region: ", Galaxy_Region)
+    FOV_Path_Front_Illuminated_Chips=Fov1_Path+'[ccd_id=0,1,2,3,4,6,8,9]'
+    FOV_Path_Back_Illuminated_Chips=Fov1_Path+'[ccd_id=5,7]'
+    CCD_Regions_Front_Illuminated=CXCRegion(FOV_Path_Front_Illuminated_Chips)
+    CCD_Regions_Back_Illuminated=CXCRegion(FOV_Path_Back_Illuminated_Chips)
+    #print("CCD_Regions_Front_Illuminated: ", CCD_Regions_Front_Illuminated)
+    #print("\n\n")
+    #print("CCD_Regions_Back_Illuminated: ", CCD_Regions_Back_Illuminated)
+    Background_Region_Front_Illuminated=CCD_Regions_Front_Illuminated-Galaxy_Region-Source_Regions_Modified
+    Background_Area_Front_Illuminated=Background_Region_Front_Illuminated.area()
+    Galaxy_Region_Modified=Galaxy_Region
+    n=0
+    while((Background_Area_Front_Illuminated<8000) and (n<4)):
+        print("Galaxy Region Too Large: Size="+str(1.0/(2.0**n)))
+        Galaxy_Region_Modified=Galaxy_Region_Modified.edit(stretch=0.5)
+        Background_Region_Front_Illuminated=CCD_Regions_Front_Illuminated-Galaxy_Region_Modified-Source_Regions_Modified
+        Background_Area_Front_Illuminated=Background_Region_Front_Illuminated.area()
+        n=n+1
+    print("Background_Area_Front_Illuminated: ", Background_Area_Front_Illuminated)
+    #print("Background_Region_Front_Illuminated: ", Background_Region_Front_Illuminated)
+    Region_Outfilepath_Front_Illuminated=str(Gname_Modifed)+"_ObsID_"+str(ObsID)+"_Front_Illuminated_Background_Region.reg"
+    #print("Region_Outfilepath_Front_Illuminated: ", Region_Outfilepath_Front_Illuminated)
+    #Background_Region_Front_Illuminated.write("Background_Finder_V2_Test_Region.reg")
+    Background_Region_Front_Illuminated.write(str(Region_Outfilepath_Front_Illuminated), clobber=True)
+
+    #Dm_Out=dmlist(infile=str(Evtfpath)+"[sky=region("+str("Background_Finder_V2_Test_Region.reg")+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
+    #Dm_Out_Front_Illuminated=dmlist(infile=str(Evtfpath)+"[sky="+str(Background_Region_Front_Illuminated)+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
+    ##Dm_Out_Front_Illuminated=dmlist(infile=str(Evtfpath)+"[sky=region("+str("Background_Finder_V2_Test_Region.reg")+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
+    #print("TEST")
+    Dm_Out_Front_Illuminated=dmlist(infile=str(Evtfpath)+"[sky=region("+str(Region_Outfilepath_Front_Illuminated)+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
+    #print("TEST 2")
+
+    Num_Counts_Str_Dm_Out_Front_Illuminated=Dm_Out_Front_Illuminated.split('\n')[9] #Num_Counts_Str:-str, Number_of_Counts_String, The number of counts in the background cirlce as a string
+    Num_Counts_Front_Illuminated=float(Num_Counts_Str_Dm_Out_Front_Illuminated) #Num_Counts:-float, Number_of_Counts, The number of counts as a float
+    #print("Number of FI Background Counts: ", Num_Counts_Front_Illuminated)
+    ##Background_Area_Front_Illuminated=Background_Region_Front_Illuminated.area()
+    #print("Background_Area_Front_Illuminated: ", Background_Area_Front_Illuminated)
+    Background_Front_Illuminated=float(Num_Counts_Front_Illuminated)/float(Background_Area_Front_Illuminated)
+    #print("Background_Front_Illuminated: ", Background_Front_Illuminated)
+
+    Background_Region_Back_Illuminated=CCD_Regions_Back_Illuminated-Galaxy_Region-Source_Regions_Modified
+    Background_Area_Back_Illuminated=Background_Region_Back_Illuminated.area()
+    Galaxy_Region_Modified=Galaxy_Region
+    n=0
+    while((Background_Area_Back_Illuminated<8000) and (n<4)):
+        print("Galaxy Region Too Large: Size="+str(1.0/(2.0**n)))
+        Galaxy_Region_Modified=Galaxy_Region_Modified.edit(stretch=0.5)
+        Background_Region_Back_Illuminated=CCD_Regions_Back_Illuminated-Galaxy_Region_Modified-Source_Regions_Modified
+        Background_Area_Back_Illuminated=Background_Region_Back_Illuminated.area()
+        n=n+1
+    print("Background_Area_Back_Illuminated: ", Background_Area_Back_Illuminated)
+    #print("Background_Region_Back_Illuminated: ", Background_Region_Back_Illuminated)
+    Region_Outfilepath_Back_Illuminated=str(Gname_Modifed)+"_ObsID_"+str(ObsID)+"_Back_Illuminated_Background_Region.reg"
+    #print("Region_Outfilepath_Back_Illuminated: ", Region_Outfilepath_Back_Illuminated)
+    #Background_Region_Back_Illuminated.write("Background_Finder_V2_Test_Region.reg")
+    Background_Region_Back_Illuminated.write(str(Region_Outfilepath_Back_Illuminated), clobber=True)
+    #Background_Region_Front_Illuminated.write("Background_Finder_V2_Test_Region.reg")
+    #Dm_Out=dmlist(infile=str(Evtfpath)+"[sky=region("+str("Background_Finder_V2_Test_Region.reg")+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
+    ##Dm_Out_Back_Illuminated=dmlist(infile=str(Evtfpath)+"[sky=region("+str("Background_Finder_V2_Test_Region.reg")+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
+    Dm_Out_Back_Illuminated=dmlist(infile=str(Evtfpath)+"[sky=region("+str(Region_Outfilepath_Back_Illuminated)+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
+    Num_Counts_Str_Dm_Out_Back_Illuminated=Dm_Out_Back_Illuminated.split('\n')[9] #Num_Counts_Str:-str, Number_of_Counts_String, The number of counts in the background cirlce as a string
+    Num_Counts_Back_Illuminated=float(Num_Counts_Str_Dm_Out_Back_Illuminated) #Num_Counts:-float, Number_of_Counts, The number of counts as a float
+    #print("Number of BI Background Counts: ", Num_Counts_Back_Illuminated)
+    ##Background_Area_Back_Illuminated=Background_Region_Back_Illuminated.area()
+    #print("Background_Area_Back_Illuminated: ", Background_Area_Back_Illuminated)
+    Background_Back_Illuminated=float(Num_Counts_Back_Illuminated)/float(Background_Area_Back_Illuminated)
+    #print("Background_Back_Illuminated: ", Background_Back_Illuminated)
+
+    return Background_Front_Illuminated, Background_Back_Illuminated
+
+
+
 
 
 
@@ -362,3 +449,8 @@ def Background_Finder_3(Gname,Evtfpath,Reg_Filepath):
 #print Background_Finder_3('NGC 3077','acisf02076_repro_evt2.fits','ngc3077_ObsID-2076_Source_List_R_Mod_2_Artificial.txt',280)
 #print Background_Finder_3('NGC 3077','acisf02076_repro_evt2.fits','ngc3077_ObsID-2076_Source_List_R_Mod_2_Artificial.txt',282) #This is the largest possible radius for this Artifical Big Object Region
 #print Background_Finder_3('NGC 3077','acisf02076_repro_evt2.fits','ngc3077_ObsID-2076_Source_List_R_Mod_2_Artificial.txt',50)
+#Background_Finder_V2('NGC 3077','/opt/xray/anthony/expansion_backup/ObsIDs/2076/new/acisf02076_repro_evt2.fits','/opt/xray/anthony/expansion_backup/Hybrid_Regions/2076/2076_Nearest_Neighbor_Hybrid.reg','/opt/xray/anthony/expansion_backup/ObsIDs/2076/new/acisf02076_repro_fov1.fits')
+#Background_Finder_V2('NGC 3077','/opt/xray/anthony/expansion_backup/ObsIDs/2076/new/acisf02076_repro_evt2.fits','/opt/xray/anthony/expansion_backup/Hybrid_Regions/2076/2076_Nearest_Neighbor_Hybrid.reg','/opt/xray/anthony/expansion_backup/ObsIDs/2076/new/acisf02076_repro_fov1.fits')
+#Background_Finder_V2('NGC 3077','/opt/xray/anthony/expansion_backup/ObsIDs/2076/new/acisf02076_repro_evt2.fits','/opt/xray/anthony/expansion_backup/Hybrid_Regions/2076/2076_Nearest_Neighbor_Hybrid.reg','/opt/xray/anthony/expansion_backup/ObsIDs/2076/new/acisf02076_repro_fov1.fits[ccd_id=5]')
+#Background_Finder_V2('NGC 3077','/opt/xray/anthony/expansion_backup/ObsIDs/2076/new/acisf02076_repro_evt2.fits','/opt/xray/anthony/expansion_backup/Hybrid_Regions/2076/2076_Nearest_Neighbor_Hybrid.reg','/opt/xray/anthony/expansion_backup/ObsIDs/2076/new/acisf02076_repro_fov1.fits[ccd_id=1,7]')
+#print(Background_Finder_V2('NGC 3077','/opt/xray/anthony/expansion_backup/ObsIDs/2076/new/acisf02076_repro_evt2.fits','/opt/xray/anthony/expansion_backup/Hybrid_Regions/2076/2076_Nearest_Neighbor_Hybrid.reg','/opt/xray/anthony/expansion_backup/ObsIDs/2076/new/acisf02076_repro_fov1.fits'))

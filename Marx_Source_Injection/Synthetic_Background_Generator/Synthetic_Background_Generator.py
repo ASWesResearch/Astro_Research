@@ -1,6 +1,7 @@
 from sherpa.astro.ui import *
 from matplotlib import pyplot as plt
 import numpy as np
+import pandas as pd
 import os
 from os import system
 import sys
@@ -72,17 +73,21 @@ def Synthetic_Background_Generator_Big_Input_Generator():
     #Source_Coords_HL=[[135, [2]]]
     ##Source_Coords_HL=[[45, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]]]
     #Source_Coords_HL=[[45, [9, 10]]]
-    Source_Coords_HL=[[0, [0]]]
+    #Source_Coords_HL=[[0, [0]]]
+    #Source_Coords_HL=[[60, [1]]]
+    #Source_Coords_HL=[[60, [2]]]
+    #Source_Coords_HL=[[45, [4]]]
+    Source_Coords_HL=[[0, [0]],[45, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]]]
     #Max_Runs=Max_Runs+1
-    ###Background_Str_L=Source_Generator.Background_Str_List_Genertator()
+    Background_Str_L=Source_Generator.Background_Str_List_Genertator()
     #Background_Str_L=[Background_Str_L[1]] #For Testing
-    Background_Str_L=Source_Generator.Background_Str_List_Genertator(Factor_High=2, Append_End=9E-1)
+    ##Background_Str_L=Source_Generator.Background_Str_List_Genertator(Factor_High=2, Append_End=9E-1)
     #Background_Str_L=[Background_Str_L[25]] #For Testing
     #Background_Str_L=[Background_Str_L[32]] #For Testing
     #Background_Str_L=[Background_Str_L[-1]] #For Testing
     #Background_Str_L=[Background_Str_L[0]] #For Testing
     ##=[Background_Str_L[0],Background_Str_L[1]] #For Testing
-    #print("Background_Str_L: ", Background_Str_L)
+    print("Background_Str_L: ", Background_Str_L)
     Number_of_Sources=0
     Number_of_Runs=0
     Run_Input_L=[]
@@ -90,9 +95,10 @@ def Synthetic_Background_Generator_Big_Input_Generator():
     for Source_Coords_L in Source_Coords_HL:
         Cur_Phi=Source_Coords_L[0]
         Cur_Theta_L=Source_Coords_L[1]
+        Detection_90_Count_Limits=pd.read_csv("../Source_Detection_Analysis/Count_Limits.csv")
         for Cur_Theta in Cur_Theta_L:
             Cur_Coords=(Cur_Theta,Cur_Phi)
-            Cur_Counts_L=Source_Generator.Counts_List_Genertator(Source_Generator.Max_Counts_Calc,Cur_Theta)
+            ##Cur_Counts_L=Source_Generator.Counts_List_Genertator(Source_Generator.Max_Counts_Calc,Cur_Theta)
             #Cur_Counts_L=[Cur_Counts_L[3]] #For Testing
             #Cur_Counts_L=[Cur_Counts_L[4]] #For Testing
             #Cur_Counts_L=[Cur_Counts_L[-1]] #For Testing
@@ -100,11 +106,34 @@ def Synthetic_Background_Generator_Big_Input_Generator():
             ##Cur_Counts_L=[Cur_Counts_L[0], Cur_Counts_L[1]] #For Testing
             #Cur_Counts_L=[1] #For Testing
             #Cur_Counts_L=[165,180,195,210] #For Testing
-            Cur_Counts_L=[Cur_Counts_L[0], Cur_Counts_L[1], Cur_Counts_L[2]] #For Testing
-            for Cur_Counts in Cur_Counts_L:
-                #Number_of_Sources=Number_of_Sources+1
-                for Cur_Background in Background_Str_L:
-                    Number_of_Sources=Number_of_Sources+1
+            ##Cur_Counts_L=[Cur_Counts_L[0], Cur_Counts_L[1], Cur_Counts_L[2]] #For Testing
+            ##for Cur_Counts in Cur_Counts_L:
+            #Number_of_Sources=Number_of_Sources+1
+            for Cur_Background in Background_Str_L:
+                ##Number_of_Sources=Number_of_Sources+1
+                Cur_Background_Float=float(Cur_Background)
+                Cur_Count_Limits=Detection_90_Count_Limits.loc[(Detection_90_Count_Limits['Theta'] == Cur_Theta) & (Detection_90_Count_Limits['Background'] <= Cur_Background_Float)]
+                Cur_Count_Limits = Cur_Count_Limits.iloc[-1:]
+                #print("Cur_Count_Limits: ", Cur_Count_Limits)
+                ###Cur_Counts_L=Source_Generator.Counts_List_Genertator(Source_Generator.Max_Counts_Calc,Cur_Theta)
+                if(Cur_Count_Limits.empty):
+                    print(str(Cur_Background)+" Skipped!")
+                    continue
+                Counts_Low=int(Cur_Count_Limits.iloc[0]['Counts_Low'])
+                #print("Counts_Low", Counts_Low)
+                Counts_High=int(Cur_Count_Limits.iloc[0]['Counts_High'])
+                #print("Counts_High", Counts_High)
+                if(Counts_Low==3):
+                    Cur_Counts_L=Source_Generator.Counts_List_Genertator(Cur_Theta, C_Min=Counts_Low, C_Max=Counts_High, Count_Step=1)
+                else:
+                    Cur_Counts_L=Source_Generator.Counts_List_Genertator(Cur_Theta, C_Min=Counts_Low, C_Max=Counts_High, Count_Step=1, Adjust_Start_Bool=False)
+                ##Cur_Counts_L=[Cur_Counts_L[0], Cur_Counts_L[1], Cur_Counts_L[2]] #For Testing
+                #print("Cur_Counts_L: ", Cur_Counts_L)
+                #Cur_Counts_L=[Cur_Counts_L[0]] #For Testing
+                #Cur_Counts_L=[3] #For Testing
+                #print("Cur_Counts_L: ", Cur_Counts_L)
+                for Cur_Counts in Cur_Counts_L:
+                    ##Number_of_Sources=Number_of_Sources+1
                     Cur_Seed,Cur_Seed_Biased=Seed_Generator(Cur_Phi,Cur_Theta,Cur_Counts,Cur_Background)
                     Cur_Background_Float=float(Cur_Background)
                     #print("Cur_Background_Float: ", Cur_Background+"="+str(Cur_Background_Float))

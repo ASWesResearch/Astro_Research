@@ -108,8 +108,9 @@ def Max_Counts_Calc_Broken(Theta, C_Low=3, C_High=150, Theta_Break=2):
         C_Max=C_High
     return C_Max
 
-def Counts_List_Genertator(Max_Counts_Calc_Func, Theta, C_Min=3, Count_Step=15, Include_Zero_Bool=False, Adjust_Start_Bool=True):
-    C_Max=Max_Counts_Calc_Func(Theta)
+def Counts_List_Genertator(Theta, C_Min=3, C_Max=150, Count_Step=15, Include_Zero_Bool=False, Adjust_Start_Bool=False, Max_Counts_Calc_Func=None):
+    if(Max_Counts_Calc_Func!=None):
+        C_Max=Max_Counts_Calc_Func(Theta)
     C_Max=C_Max+Count_Step
     if(Adjust_Start_Bool):
         Counts_L=np.arange(Count_Step,C_Max,step=Count_Step)

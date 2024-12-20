@@ -1,5 +1,7 @@
 import numpy as np
 import scipy.special
+from decimal import Decimal
+from decimal import *
 import os
 from os import system
 import sys
@@ -119,7 +121,7 @@ def Query_Fits_Header_Value(Fits_Fpath, Key):
     Value=hdul[0].header[Key]
     return Value
 
-def Wavdetect(Filepath, Outpath, PSF_Map_Path, Background_Float, Counts, Key="", Input_Background_Bool=False, Scales="'1 2 4 8'"):
+def Wavdetect(Filepath, Outpath, PSF_Map_Path, Background_Float, Counts, Key="", Input_Background_Bool=False, Scales="1 2 4 8"):
     if((float(Background_Float)==0.0) and (int(Counts)==0)):
         print("Wavdetect 0 Counts and Background Test")
         return
@@ -139,12 +141,14 @@ def Wavdetect(Filepath, Outpath, PSF_Map_Path, Background_Float, Counts, Key="",
         #Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)+" "+str(Regfile)+" "+str(Scellfile)+" "+str(Imagefile)+" "+str(Defnbkgfile)+" "+str(Input_Background_File)+" "+str("yes")
         #Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)+" "+str(Regfile)+" "+str(Scellfile)+" "+str(Imagefile)+" "+str(Defnbkgfile)+" "+str(Input_Background_File)+" "+str(Exposure_Time)+" "+str(Exposure_Time)
         #Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)+" "+str(Regfile)+" "+str(Scellfile)+" "+str(Imagefile)+" "+str(Defnbkgfile)+" "+str(Input_Background_File)+" "+str(Exposure_Time)+" "+str(Exposure_Time)+" "+str(Scales)
+        ##Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)+" "+str(Regfile)+" "+str(Scellfile)+" "+str(Imagefile)+" "+str(Defnbkgfile)+" "+str(Scales)
     else:
         #print("Input_Background_Bool: ", Input_Background_Bool)
         Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)+" "+str(Regfile)+" "+str(Scellfile)+" "+str(Imagefile)+" "+str(Defnbkgfile)+" "+str("NONE")
         #Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)+" "+str(Regfile)+" "+str(Scellfile)+" "+str(Imagefile)+" "+str(Defnbkgfile)+" "+str("NONE")+" "+str("no")
         #Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)+" "+str(Regfile)+" "+str(Scellfile)+" "+str(Imagefile)+" "+str(Defnbkgfile)+" "+str("NONE")+" "+str(Exposure_Time)+" "+str(0)
         #Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)+" "+str(Regfile)+" "+str(Scellfile)+" "+str(Imagefile)+" "+str(Defnbkgfile)+" "+str("NONE")+" "+str(Exposure_Time)+" "+str(0)+" "+str(Scales)
+        ##Bash_Command="bash Bash_Scripts/Wavdetect.sh "+str(Filepath)+" "+str(Outfile)+" "+str(Outpath)+" "+str(PSF_Map_Path)+" "+str(Regfile)+" "+str(Scellfile)+" "+str(Imagefile)+" "+str(Defnbkgfile)+" "+str(Scales)
     #print(Bash_Command)
     os.system(Bash_Command)
 
@@ -257,7 +261,16 @@ def Type_I_Calc(S,B,BACKSCAL=4.0):
             Cur=(Fac(N)/(Fac(X)*Fac(N-X)))*(p**X)*((1-p)**(N-X))
             P_B=P_B+Cur
     except OverflowError:
-        return np.nan
+        N=S+B
+        with localcontext() as ctx:
+            ctx.prec = 4  # desired precision
+            p=ctx.divide(1,ctx.add(1,int(BACKSCAL)))
+            P_B=Decimal(0)
+            for X in range(S,N):
+                Part_1=(ctx.divide(Decimal(Fac(N)), (ctx.multiply(Decimal(Fac(X)), Decimal(Fac(N-X))))))
+                Part_2=ctx.multiply(ctx.power(p, X), ctx.power(ctx.subtract(1,p), ctx.subtract(N,X)))
+                Cur=ctx.multiply(Part_1,Part_2)
+                P_B=ctx.add(P_B,Cur)
     return P_B
 
 def Ideal_Type_I_Calc(Phi, Theta, Background_Float, Counts, Parameter_Tuple=None):
@@ -490,4 +503,17 @@ def Source_Detect_Generator_Driver():
 ##Source_Detect_Generator_Driver()
 #print(Fac(673))
 #print(Fac(673,Exact_Bool=True))
-#print(Fac(100000,Exact_Bool=True))
+#print(Decimal(Fac(100000,Exact_Bool=True))/2.0*2.4)
+"""
+with localcontext() as ctx:
+    ctx.prec = 4  # desired precision
+    print(ctx.divide(Decimal(Fac(100000,Exact_Bool=True)), 2*2))
+    print(type(ctx.divide(Decimal(Fac(100000,Exact_Bool=True)), 2*2)))
+"""
+
+#print(Type_I_Calc(1000,5000,BACKSCAL=4.0))
+#print(Type_I_Calc(200,850,BACKSCAL=4.0))
+#print(type(Type_I_Calc(200,850,BACKSCAL=4.0)))
+#print(str(Type_I_Calc(200,850,BACKSCAL=4.0)))
+#print(Type_II_Calc(Type_I_Calc(200,850,BACKSCAL=4.0), P_B_Thresh=0.007))
+#print(Type_I_Calc(10,50,BACKSCAL=4.0))

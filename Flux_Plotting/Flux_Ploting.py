@@ -104,11 +104,11 @@ def Duplicate_Table_Calc(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL
     Src_Num_L=list(Src_Num_A)
     Counts_A=Data["NET_COUNTS_0.3-8.0"]
     Counts_L=list(Counts_A)
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
     Soft_Flux_L=list(Soft_Flux)
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
     Medium_Flux_L=list(Medium_Flux)
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
     Hard_Flux_L=list(Hard_Flux)
     Colors_Tuple_A=np.vectorize(Color_Color_Calc)(Soft_Flux,Medium_Flux,Hard_Flux)
     HC_Ratio_A=Colors_Tuple_A[0]
@@ -120,11 +120,11 @@ def Duplicate_Table_Calc(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL
     Start_Date_A=Data["Start_Date"]
     Start_Date_L=list(Start_Date_A)
 
-    Soft_Lum=Data["NET_LUM_APER_0.3-1.0"]
+    Soft_Lum=Data["NET_LUM_APER_soft"]
     Soft_Lum_L=list(Soft_Lum)
-    Medium_Lum=Data["NET_LUM_APER_1.0-2.1"]
+    Medium_Lum=Data["NET_LUM_APER_medium"]
     Medium_Lum_L=list(Medium_Lum)
-    Hard_Lum=Data["NET_LUM_APER_2.1-7.5"]
+    Hard_Lum=Data["NET_LUM_APER_hard"]
     Hard_Lum_L=list(Hard_Lum)
     file=open("Duplicate_Colors.csv","w")
     #file.write("ObsID,Dup_ObsID,Source_Num,Dup_Souce_Num,Counts,Dup_Counts,Hard_Color_Flux,Soft_Color_Flux,Dup_Hard_Color_Flux,Dup_Soft_Color_Flux\n")
@@ -162,11 +162,11 @@ def Duplicate_Table_Calc(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL
 
         #"""
         Counts_First_Dup_A=Cur_First_Dup_Data["NET_COUNTS_0.3-8.0"]
-        Soft_Flux_First_Dup=Cur_First_Dup_Data.iloc[0]["NET_FLUX_APER_0.3-1.0"]
+        Soft_Flux_First_Dup=Cur_First_Dup_Data.iloc[0]["NET_FLUX_APER_soft"]
         print("Soft_Flux_First_Dup: ", Soft_Flux_First_Dup)
-        Medium_Flux_First_Dup=Cur_First_Dup_Data.iloc[0]["NET_FLUX_APER_1.0-2.1"]
+        Medium_Flux_First_Dup=Cur_First_Dup_Data.iloc[0]["NET_FLUX_APER_medium"]
         print("Medium_Flux_First_Dup: ", Medium_Flux_First_Dup)
-        Hard_Flux_First_Dup=Cur_First_Dup_Data.iloc[0]["NET_FLUX_APER_2.1-7.5"]
+        Hard_Flux_First_Dup=Cur_First_Dup_Data.iloc[0]["NET_FLUX_APER_hard"]
         print("Hard_Flux_First_Dup: ", Hard_Flux_First_Dup)
         #Colors_Tuple_A=np.vectorize(Color_Color_Calc)(Soft_Flux_First_Dup,Medium_Flux_First_Dup,Hard_Flux_First_Dup)
         #"""
@@ -174,11 +174,11 @@ def Duplicate_Table_Calc(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL
         SC_Dup=Cur_Dup_Data.iloc[0]["Soft_Color_Flux"]
         Dup_Start_Date=Cur_Dup_Data.iloc[0]["Start_Date"]
 
-        Soft_Lum_First_Dup=Cur_First_Dup_Data.iloc[0]["NET_LUM_APER_0.3-1.0"]
+        Soft_Lum_First_Dup=Cur_First_Dup_Data.iloc[0]["NET_LUM_APER_soft"]
         print("Soft_Lum_First_Dup: ", Soft_Lum_First_Dup)
-        Medium_Lum_First_Dup=Cur_First_Dup_Data.iloc[0]["NET_LUM_APER_1.0-2.1"]
+        Medium_Lum_First_Dup=Cur_First_Dup_Data.iloc[0]["NET_LUM_APER_medium"]
         print("Medium_Lum_First_Dup: ", Medium_Lum_First_Dup)
-        Hard_Lum_First_Dup=Cur_First_Dup_Data.iloc[0]["NET_LUM_APER_2.1-7.5"]
+        Hard_Lum_First_Dup=Cur_First_Dup_Data.iloc[0]["NET_LUM_APER_hard"]
         print("Hard_Lum_First_Dup: ", Hard_Lum_First_Dup)
 
         print("Cur_ObsID: ", Cur_ObsID)
@@ -470,109 +470,109 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     Gname_L_Unique =[]
     #'''
     #All
-    Soft_Counts=Data["NET_COUNTS_0.3-1.0"]
-    Medium_Counts=Data["NET_COUNTS_1.0-2.1"]
-    Hard_Counts=Data["NET_COUNTS_2.1-7.5"]
+    Soft_Counts=Data["NET_COUNTS_soft"]
+    Medium_Counts=Data["NET_COUNTS_medium"]
+    Hard_Counts=Data["NET_COUNTS_hard"]
     HC_Ratio=(Hard_Counts-Medium_Counts)/((Hard_Counts+Medium_Counts))
     SC_Ratio=(Medium_Counts-Soft_Counts)/((Medium_Counts+Soft_Counts))
     #Outside D25
-    Soft_Counts_Outside_D25=Data_Outside_D25["NET_COUNTS_0.3-1.0"]
-    Medium_Counts_Outside_D25=Data_Outside_D25["NET_COUNTS_1.0-2.1"]
-    Hard_Counts_Outside_D25=Data_Outside_D25["NET_COUNTS_2.1-7.5"]
+    Soft_Counts_Outside_D25=Data_Outside_D25["NET_COUNTS_soft"]
+    Medium_Counts_Outside_D25=Data_Outside_D25["NET_COUNTS_medium"]
+    Hard_Counts_Outside_D25=Data_Outside_D25["NET_COUNTS_hard"]
     HC_Ratio_Outside_D25=(Hard_Counts_Outside_D25-Medium_Counts_Outside_D25)/((Hard_Counts_Outside_D25+Medium_Counts_Outside_D25))
     SC_Ratio_Outside_D25=(Medium_Counts_Outside_D25-Soft_Counts_Outside_D25)/((Medium_Counts_Outside_D25+Soft_Counts_Outside_D25))
     #Inside D25
-    Soft_Counts_Inside_D25=Data_Inside_D25["NET_COUNTS_0.3-1.0"]
-    Medium_Counts_Inside_D25=Data_Inside_D25["NET_COUNTS_1.0-2.1"]
-    Hard_Counts_Inside_D25=Data_Inside_D25["NET_COUNTS_2.1-7.5"]
+    Soft_Counts_Inside_D25=Data_Inside_D25["NET_COUNTS_soft"]
+    Medium_Counts_Inside_D25=Data_Inside_D25["NET_COUNTS_medium"]
+    Hard_Counts_Inside_D25=Data_Inside_D25["NET_COUNTS_hard"]
     HC_Ratio_Inside_D25=(Hard_Counts_Inside_D25-Medium_Counts_Inside_D25)/((Hard_Counts_Inside_D25+Medium_Counts_Inside_D25))
     SC_Ratio_Inside_D25=(Medium_Counts_Inside_D25-Soft_Counts_Inside_D25)/((Medium_Counts_Inside_D25+Soft_Counts_Inside_D25))
     #Outside Elliptical_D25
-    Soft_Counts_Outside_Elliptical_D25=Data_Outside_Elliptical_D25["NET_COUNTS_0.3-1.0"]
-    Medium_Counts_Outside_Elliptical_D25=Data_Outside_Elliptical_D25["NET_COUNTS_1.0-2.1"]
-    Hard_Counts_Outside_Elliptical_D25=Data_Outside_Elliptical_D25["NET_COUNTS_2.1-7.5"]
+    Soft_Counts_Outside_Elliptical_D25=Data_Outside_Elliptical_D25["NET_COUNTS_soft"]
+    Medium_Counts_Outside_Elliptical_D25=Data_Outside_Elliptical_D25["NET_COUNTS_medium"]
+    Hard_Counts_Outside_Elliptical_D25=Data_Outside_Elliptical_D25["NET_COUNTS_hard"]
     HC_Ratio_Outside_Elliptical_D25=(Hard_Counts_Outside_Elliptical_D25-Medium_Counts_Outside_Elliptical_D25)/((Hard_Counts_Outside_Elliptical_D25+Medium_Counts_Outside_Elliptical_D25))
     SC_Ratio_Outside_Elliptical_D25=(Medium_Counts_Outside_Elliptical_D25-Soft_Counts_Outside_Elliptical_D25)/((Medium_Counts_Outside_Elliptical_D25+Soft_Counts_Outside_Elliptical_D25))
     #Inside D25
-    Soft_Counts_Inside_Elliptical_D25=Data_Inside_Elliptical_D25["NET_COUNTS_0.3-1.0"]
-    Medium_Counts_Inside_Elliptical_D25=Data_Inside_Elliptical_D25["NET_COUNTS_1.0-2.1"]
-    Hard_Counts_Inside_Elliptical_D25=Data_Inside_Elliptical_D25["NET_COUNTS_2.1-7.5"]
+    Soft_Counts_Inside_Elliptical_D25=Data_Inside_Elliptical_D25["NET_COUNTS_soft"]
+    Medium_Counts_Inside_Elliptical_D25=Data_Inside_Elliptical_D25["NET_COUNTS_medium"]
+    Hard_Counts_Inside_Elliptical_D25=Data_Inside_Elliptical_D25["NET_COUNTS_hard"]
     HC_Ratio_Inside_Elliptical_D25=(Hard_Counts_Inside_Elliptical_D25-Medium_Counts_Inside_Elliptical_D25)/((Hard_Counts_Inside_Elliptical_D25+Medium_Counts_Inside_Elliptical_D25))
     SC_Ratio_Inside_Elliptical_D25=(Medium_Counts_Inside_Elliptical_D25-Soft_Counts_Inside_Elliptical_D25)/((Medium_Counts_Inside_Elliptical_D25+Soft_Counts_Inside_Elliptical_D25))
     #Spiral
-    Soft_Counts_Spiral=Data_Spiral["NET_COUNTS_0.3-1.0"]
-    Medium_Counts_Spiral=Data_Spiral["NET_COUNTS_1.0-2.1"]
-    Hard_Counts_Spiral=Data_Spiral["NET_COUNTS_2.1-7.5"]
+    Soft_Counts_Spiral=Data_Spiral["NET_COUNTS_soft"]
+    Medium_Counts_Spiral=Data_Spiral["NET_COUNTS_medium"]
+    Hard_Counts_Spiral=Data_Spiral["NET_COUNTS_hard"]
     HC_Ratio_Spiral=(Hard_Counts_Spiral-Medium_Counts_Spiral)/((Hard_Counts_Spiral+Medium_Counts_Spiral))
     SC_Ratio_Spiral=(Medium_Counts_Spiral-Soft_Counts_Spiral)/((Medium_Counts_Spiral+Soft_Counts_Spiral))
     #Elliptical
-    Soft_Counts_Elliptical=Data_Elliptical["NET_COUNTS_0.3-1.0"]
-    Medium_Counts_Elliptical=Data_Elliptical["NET_COUNTS_1.0-2.1"]
-    Hard_Counts_Elliptical=Data_Elliptical["NET_COUNTS_2.1-7.5"]
+    Soft_Counts_Elliptical=Data_Elliptical["NET_COUNTS_soft"]
+    Medium_Counts_Elliptical=Data_Elliptical["NET_COUNTS_medium"]
+    Hard_Counts_Elliptical=Data_Elliptical["NET_COUNTS_hard"]
     HC_Ratio_Elliptical=(Hard_Counts_Elliptical-Medium_Counts_Elliptical)/((Hard_Counts_Elliptical+Medium_Counts_Elliptical))
     SC_Ratio_Elliptical=(Medium_Counts_Elliptical-Soft_Counts_Elliptical)/((Medium_Counts_Elliptical+Soft_Counts_Elliptical))
     #Irregular
-    Soft_Counts_Irregular=Data_Irregular["NET_COUNTS_0.3-1.0"]
-    Medium_Counts_Irregular=Data_Irregular["NET_COUNTS_1.0-2.1"]
-    Hard_Counts_Irregular=Data_Irregular["NET_COUNTS_2.1-7.5"]
+    Soft_Counts_Irregular=Data_Irregular["NET_COUNTS_soft"]
+    Medium_Counts_Irregular=Data_Irregular["NET_COUNTS_medium"]
+    Hard_Counts_Irregular=Data_Irregular["NET_COUNTS_hard"]
     HC_Ratio_Irregular=(Hard_Counts_Irregular-Medium_Counts_Irregular)/((Hard_Counts_Irregular+Medium_Counts_Irregular))
     SC_Ratio_Irregular=(Medium_Counts_Irregular-Soft_Counts_Irregular)/((Medium_Counts_Irregular+Soft_Counts_Irregular))
-    '''
+
     """
     Flux Color-Color Plots
     """
     #All
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
     HC_Ratio_Flux=(Hard_Flux-Medium_Flux)/((Hard_Flux+Medium_Flux))
     SC_Ratio_Flux=(Medium_Flux-Soft_Flux)/((Medium_Flux+Soft_Flux))
     #Outside D25
-    Soft_Flux_Outside_D25=Data_Outside_D25["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux_Outside_D25=Data_Outside_D25["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux_Outside_D25=Data_Outside_D25["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux_Outside_D25=Data_Outside_D25["NET_FLUX_APER_soft"]
+    Medium_Flux_Outside_D25=Data_Outside_D25["NET_FLUX_APER_medium"]
+    Hard_Flux_Outside_D25=Data_Outside_D25["NET_FLUX_APER_hard"]
     HC_Ratio_Flux_Outside_D25=(Hard_Flux_Outside_D25-Medium_Flux_Outside_D25)/((Hard_Flux_Outside_D25+Medium_Flux_Outside_D25))
     SC_Ratio_Flux_Outside_D25=(Medium_Flux_Outside_D25-Soft_Flux_Outside_D25)/((Medium_Flux_Outside_D25+Soft_Flux_Outside_D25))
     #Inside D25
-    Soft_Flux_Inside_D25=Data_Inside_D25["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux_Inside_D25=Data_Inside_D25["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux_Inside_D25=Data_Inside_D25["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux_Inside_D25=Data_Inside_D25["NET_FLUX_APER_soft"]
+    Medium_Flux_Inside_D25=Data_Inside_D25["NET_FLUX_APER_medium"]
+    Hard_Flux_Inside_D25=Data_Inside_D25["NET_FLUX_APER_hard"]
     HC_Ratio_Flux_Inside_D25=(Hard_Flux_Inside_D25-Medium_Flux_Inside_D25)/((Hard_Flux_Inside_D25+Medium_Flux_Inside_D25))
     SC_Ratio_Flux_Inside_D25=(Medium_Flux_Inside_D25-Soft_Flux_Inside_D25)/((Medium_Flux_Inside_D25+Soft_Flux_Inside_D25))
     #Outside Elliptical_D25
-    Soft_Flux_Outside_Elliptical_D25=Data_Outside_Elliptical_D25["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux_Outside_Elliptical_D25=Data_Outside_Elliptical_D25["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux_Outside_Elliptical_D25=Data_Outside_Elliptical_D25["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux_Outside_Elliptical_D25=Data_Outside_Elliptical_D25["NET_FLUX_APER_soft"]
+    Medium_Flux_Outside_Elliptical_D25=Data_Outside_Elliptical_D25["NET_FLUX_APER_medium"]
+    Hard_Flux_Outside_Elliptical_D25=Data_Outside_Elliptical_D25["NET_FLUX_APER_hard"]
     HC_Ratio_Flux_Outside_Elliptical_D25=(Hard_Flux_Outside_Elliptical_D25-Medium_Flux_Outside_Elliptical_D25)/((Hard_Flux_Outside_Elliptical_D25+Medium_Flux_Outside_Elliptical_D25))
     SC_Ratio_Flux_Outside_Elliptical_D25=(Medium_Flux_Outside_Elliptical_D25-Soft_Flux_Outside_Elliptical_D25)/((Medium_Flux_Outside_Elliptical_D25+Soft_Flux_Outside_Elliptical_D25))
     #Inside D25
-    Soft_Flux_Inside_Elliptical_D25=Data_Inside_Elliptical_D25["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux_Inside_Elliptical_D25=Data_Inside_Elliptical_D25["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux_Inside_Elliptical_D25=Data_Inside_Elliptical_D25["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux_Inside_Elliptical_D25=Data_Inside_Elliptical_D25["NET_FLUX_APER_soft"]
+    Medium_Flux_Inside_Elliptical_D25=Data_Inside_Elliptical_D25["NET_FLUX_APER_medium"]
+    Hard_Flux_Inside_Elliptical_D25=Data_Inside_Elliptical_D25["NET_FLUX_APER_hard"]
     HC_Ratio_Flux_Inside_Elliptical_D25=(Hard_Flux_Inside_Elliptical_D25-Medium_Flux_Inside_Elliptical_D25)/((Hard_Flux_Inside_Elliptical_D25+Medium_Flux_Inside_Elliptical_D25))
     SC_Ratio_Flux_Inside_Elliptical_D25=(Medium_Flux_Inside_Elliptical_D25-Soft_Flux_Inside_Elliptical_D25)/((Medium_Flux_Inside_Elliptical_D25+Soft_Flux_Inside_Elliptical_D25))
     #Spiral
-    Soft_Flux_Spiral=Data_Spiral["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux_Spiral=Data_Spiral["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux_Spiral=Data_Spiral["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux_Spiral=Data_Spiral["NET_FLUX_APER_soft"]
+    Medium_Flux_Spiral=Data_Spiral["NET_FLUX_APER_medium"]
+    Hard_Flux_Spiral=Data_Spiral["NET_FLUX_APER_hard"]
     HC_Ratio_Flux_Spiral=(Hard_Flux_Spiral-Medium_Flux_Spiral)/((Hard_Flux_Spiral+Medium_Flux_Spiral))
     SC_Ratio_Flux_Spiral=(Medium_Flux_Spiral-Soft_Flux_Spiral)/((Medium_Flux_Spiral+Soft_Flux_Spiral))
     #Elliptical
-    Soft_Flux_Elliptical=Data_Elliptical["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux_Elliptical=Data_Elliptical["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux_Elliptical=Data_Elliptical["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux_Elliptical=Data_Elliptical["NET_FLUX_APER_soft"]
+    Medium_Flux_Elliptical=Data_Elliptical["NET_FLUX_APER_medium"]
+    Hard_Flux_Elliptical=Data_Elliptical["NET_FLUX_APER_hard"]
     HC_Ratio_Flux_Elliptical=(Hard_Flux_Elliptical-Medium_Flux_Elliptical)/((Hard_Flux_Elliptical+Medium_Flux_Elliptical))
     SC_Ratio_Flux_Elliptical=(Medium_Flux_Elliptical-Soft_Flux_Elliptical)/((Medium_Flux_Elliptical+Soft_Flux_Elliptical))
     #Irregular
-    Soft_Flux_Irregular=Data_Irregular["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux_Irregular=Data_Irregular["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux_Irregular=Data_Irregular["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux_Irregular=Data_Irregular["NET_FLUX_APER_soft"]
+    Medium_Flux_Irregular=Data_Irregular["NET_FLUX_APER_medium"]
+    Hard_Flux_Irregular=Data_Irregular["NET_FLUX_APER_hard"]
     HC_Ratio_Flux_Irregular=(Hard_Flux_Irregular-Medium_Flux_Irregular)/((Hard_Flux_Irregular+Medium_Flux_Irregular))
     SC_Ratio_Flux_Irregular=(Medium_Flux_Irregular-Soft_Flux_Irregular)/((Medium_Flux_Irregular+Soft_Flux_Irregular))
     #High Counts
-    Soft_Counts_Count_Cut=Data_Count_Cut["NET_COUNTS_0.3-1.0"]
-    Medium_Counts_Count_Cut=Data_Count_Cut["NET_COUNTS_1.0-2.1"]
-    Hard_Counts_Count_Cut=Data_Count_Cut["NET_COUNTS_2.1-7.5"]
+    Soft_Counts_Count_Cut=Data_Count_Cut["NET_COUNTS_soft"]
+    Medium_Counts_Count_Cut=Data_Count_Cut["NET_COUNTS_medium"]
+    Hard_Counts_Count_Cut=Data_Count_Cut["NET_COUNTS_hard"]
     HC_Ratio_Count_Cut=(Hard_Counts_Count_Cut-Medium_Counts_Count_Cut)/((Hard_Counts_Count_Cut+Medium_Counts_Count_Cut))
     SC_Ratio_Count_Cut=(Medium_Counts_Count_Cut-Soft_Counts_Count_Cut)/((Medium_Counts_Count_Cut+Soft_Counts_Count_Cut))
     d = {'HC_Ratio_Count_Cut': HC_Ratio_Count_Cut, 'SC_Ratio_Count_Cut': SC_Ratio_Count_Cut}
@@ -1035,13 +1035,13 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.cla()
     plt.clf()
     """
-    Soft_Counts=Data["NET_COUNTS_0.3-1.0"]
-    Medium_Counts=Data["NET_COUNTS_1.0-2.1"]
-    Hard_Counts=Data["NET_COUNTS_2.1-7.5"]
+    Soft_Counts=Data["NET_COUNTS_soft"]
+    Medium_Counts=Data["NET_COUNTS_medium"]
+    Hard_Counts=Data["NET_COUNTS_hard"]
     HC_Ratio=(Hard_Counts-Medium_Counts)/((Hard_Counts+Medium_Counts))
     SC_Ratio=(Medium_Counts-Soft_Counts)/((Medium_Counts+Soft_Counts))
     """
-    Alt_Soft_Counts=Data["NET_COUNTS_0.3-1.0"]
+    Alt_Soft_Counts=Data["NET_COUNTS_soft"]
     Alt_Medium_Counts=Data["NET_COUNTS_1.0-2.0"]
     Alt_Hard_Counts=Data["NET_COUNTS_2.0-8.0"]
     Alt_HC_Ratio=(Hard_Counts-Medium_Counts)/((Hard_Counts+Medium_Counts))
@@ -1059,13 +1059,13 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.savefig("Color_Color_Counts_Distance_with_SN_with_Alt.pdf")
     plt.cla()
     plt.clf()
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
     #NET_RATE_
-    Soft_Rate=Data["NET_RATE_0.3-1.0"]
-    Medium_Rate=Data["NET_RATE_1.0-2.1"]
-    Hard_Rate=Data["NET_RATE_2.1-7.5"]
+    Soft_Rate=Data["NET_RATE_soft"]
+    Medium_Rate=Data["NET_RATE_medium"]
+    Hard_Rate=Data["NET_RATE_hard"]
     #Beta
     Soft_Beta=Soft_Flux/Soft_Rate
     Medium_Beta=Medium_Flux/Medium_Rate
@@ -1086,37 +1086,37 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
     #NET_RATE_
-    Soft_Rate=Data["NET_RATE_0.3-1.0"]
-    Medium_Rate=Data["NET_RATE_1.0-2.1"]
-    Hard_Rate=Data["NET_RATE_2.1-7.5"]
+    Soft_Rate=Data["NET_RATE_soft"]
+    Medium_Rate=Data["NET_RATE_medium"]
+    Hard_Rate=Data["NET_RATE_hard"]
     #Beta
     Soft_Beta=Soft_Flux/Soft_Rate
     Medium_Beta=Medium_Flux/Medium_Rate
     Hard_Beta=Hard_Flux/Hard_Rate
 
-    Soft_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_soft"]
+    Medium_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_medium"]
+    Hard_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_hard"]
     #NET_RATE_
-    Soft_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_0.3-1.0"]
-    Medium_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_1.0-2.1"]
-    Hard_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_2.1-7.5"]
+    Soft_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_soft"]
+    Medium_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_medium"]
+    Hard_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_hard"]
     #Beta
     Soft_Beta_Thermal_SNR=Soft_Flux_Thermal_SNR/Soft_Rate_Thermal_SNR
     Medium_Beta_Thermal_SNR=Medium_Flux_Thermal_SNR/Medium_Rate_Thermal_SNR
     Hard_Beta_Thermal_SNR=Hard_Flux/Hard_Rate_Thermal_SNR
 
-    Soft_Flux_XRB=XRB_Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux_XRB=XRB_Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux_XRB=XRB_Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux_XRB=XRB_Data["NET_FLUX_APER_soft"]
+    Medium_Flux_XRB=XRB_Data["NET_FLUX_APER_medium"]
+    Hard_Flux_XRB=XRB_Data["NET_FLUX_APER_hard"]
     #NET_RATE_
-    Soft_Rate_XRB=XRB_Data["NET_RATE_0.3-1.0"]
-    Medium_Rate_XRB=XRB_Data["NET_RATE_1.0-2.1"]
-    Hard_Rate_XRB=XRB_Data["NET_RATE_2.1-7.5"]
+    Soft_Rate_XRB=XRB_Data["NET_RATE_soft"]
+    Medium_Rate_XRB=XRB_Data["NET_RATE_medium"]
+    Hard_Rate_XRB=XRB_Data["NET_RATE_hard"]
     #Beta
     Soft_Beta_XRB=Soft_Flux_XRB/Soft_Rate_XRB
     Medium_Beta_XRB=Medium_Flux_XRB/Medium_Rate_XRB
@@ -1151,18 +1151,18 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
     #NET_RATE_
-    Soft_Rate=Data["NET_RATE_0.3-1.0"]
-    Medium_Rate=Data["NET_RATE_1.0-2.1"]
-    Hard_Rate=Data["NET_RATE_2.1-7.5"]
+    Soft_Rate=Data["NET_RATE_soft"]
+    Medium_Rate=Data["NET_RATE_medium"]
+    Hard_Rate=Data["NET_RATE_hard"]
     #Effective_Area
-    #Effective_Area_0.3-1.0
-    Soft_Effective_Area=Data["Effective_Area_0.3-1.0"]
-    Medium_Effective_Area=Data["Effective_Area_1.0-2.1"]
-    Hard_Effective_Area=Data["Effective_Area_2.1-7.5"]
+    #Effective_Area_soft
+    Soft_Effective_Area=Data["Effective_Area_soft"]
+    Medium_Effective_Area=Data["Effective_Area_medium"]
+    Hard_Effective_Area=Data["Effective_Area_hard"]
     #Rate_Effective_Area_Corrected
     Soft_Rate_Effective_Area_Corrected=Soft_Rate/Soft_Effective_Area
     Medium_Rate_Effective_Area_Corrected=Medium_Rate/Medium_Effective_Area
@@ -1172,17 +1172,17 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     Medium_Beta=Medium_Flux/Medium_Rate_Effective_Area_Corrected
     Hard_Beta=Hard_Flux/Hard_Rate_Effective_Area_Corrected
 
-    Soft_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_soft"]
+    Medium_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_medium"]
+    Hard_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_hard"]
     #NET_RATE_
-    Soft_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_0.3-1.0"]
-    Medium_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_1.0-2.1"]
-    Hard_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_2.1-7.5"]
+    Soft_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_soft"]
+    Medium_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_medium"]
+    Hard_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_hard"]
 
-    Soft_Effective_Area_Thermal_SNR=Thermal_SNR_Data["Effective_Area_0.3-1.0"]
-    Medium_Effective_Area_Thermal_SNR=Thermal_SNR_Data["Effective_Area_1.0-2.1"]
-    Hard_Effective_Area_Thermal_SNR=Thermal_SNR_Data["Effective_Area_2.1-7.5"]
+    Soft_Effective_Area_Thermal_SNR=Thermal_SNR_Data["Effective_Area_soft"]
+    Medium_Effective_Area_Thermal_SNR=Thermal_SNR_Data["Effective_Area_medium"]
+    Hard_Effective_Area_Thermal_SNR=Thermal_SNR_Data["Effective_Area_hard"]
     #Rate_Effective_Area_Corrected
     Soft_Rate_Effective_Area_Corrected_Thermal_SNR=Soft_Rate/Soft_Effective_Area_Thermal_SNR
     Medium_Rate_Effective_Area_Corrected_Thermal_SNR=Medium_Rate/Medium_Effective_Area_Thermal_SNR
@@ -1193,17 +1193,17 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     Medium_Beta_Thermal_SNR=Medium_Flux_Thermal_SNR/Medium_Rate_Effective_Area_Corrected
     Hard_Beta_Thermal_SNR=Hard_Flux_Thermal_SNR/Hard_Rate_Effective_Area_Corrected
 
-    Soft_Flux_XRB=XRB_Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux_XRB=XRB_Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux_XRB=XRB_Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux_XRB=XRB_Data["NET_FLUX_APER_soft"]
+    Medium_Flux_XRB=XRB_Data["NET_FLUX_APER_medium"]
+    Hard_Flux_XRB=XRB_Data["NET_FLUX_APER_hard"]
     #NET_RATE_
-    Soft_Rate_XRB=XRB_Data["NET_RATE_0.3-1.0"]
-    Medium_Rate_XRB=XRB_Data["NET_RATE_1.0-2.1"]
-    Hard_Rate_XRB=XRB_Data["NET_RATE_2.1-7.5"]
+    Soft_Rate_XRB=XRB_Data["NET_RATE_soft"]
+    Medium_Rate_XRB=XRB_Data["NET_RATE_medium"]
+    Hard_Rate_XRB=XRB_Data["NET_RATE_hard"]
 
-    Soft_Effective_Area_XRB=XRB_Data["Effective_Area_0.3-1.0"]
-    Medium_Effective_Area_XRB=XRB_Data["Effective_Area_1.0-2.1"]
-    Hard_Effective_Area_XRB=XRB_Data["Effective_Area_2.1-7.5"]
+    Soft_Effective_Area_XRB=XRB_Data["Effective_Area_soft"]
+    Medium_Effective_Area_XRB=XRB_Data["Effective_Area_medium"]
+    Hard_Effective_Area_XRB=XRB_Data["Effective_Area_hard"]
     #Rate_Effective_Area_Corrected
     Soft_Rate_Effective_Area_Corrected_XRB=Soft_Rate_XRB/Soft_Effective_Area_XRB
     Medium_Rate_Effective_Area_Corrected_XRB=Medium_Rate_XRB/Medium_Effective_Area_XRB
@@ -1256,9 +1256,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.clf()
     plt.cla()
     plt.clf()
-    Soft_Beta=Data["Beta_0.3-1.0"]
-    Medium_Beta=Data["Beta_1.0-2.1"]
-    Hard_Beta=Data["Beta_2.1-7.5"]
+    Soft_Beta=Data["Beta_soft"]
+    Medium_Beta=Data["Beta_medium"]
+    Hard_Beta=Data["Beta_hard"]
     #Source_Distance_From_GC_Elliptical_D25
     #plt.plot(Source_Distance_From_GC_Elliptical_D25, Soft_Beta, '.', alpha=0.2)
     plt.plot(Soft_Beta, Source_Distance_From_GC_Elliptical_D25, '.', alpha=0.2)
@@ -1269,9 +1269,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.savefig("Soft_Beta_vs_Distance.pdf")
     plt.cla()
     plt.clf()
-    Soft_Beta=Data["Beta_0.3-1.0"]
-    Medium_Beta=Data["Beta_1.0-2.1"]
-    Hard_Beta=Data["Beta_2.1-7.5"]
+    Soft_Beta=Data["Beta_soft"]
+    Medium_Beta=Data["Beta_medium"]
+    Hard_Beta=Data["Beta_hard"]
     #Source_Distance_From_GC_Elliptical_D25
     plt.plot(Medium_Beta, Source_Distance_From_GC_Elliptical_D25, '.', alpha=0.2)
     #plt.ylim(-0.00001, 0.00001)
@@ -1283,9 +1283,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.clf()
     plt.clf()
     plt.clf()
-    Soft_Beta=Data["Beta_0.3-1.0"]
-    Medium_Beta=Data["Beta_1.0-2.1"]
-    Hard_Beta=Data["Beta_2.1-7.5"]
+    Soft_Beta=Data["Beta_soft"]
+    Medium_Beta=Data["Beta_medium"]
+    Hard_Beta=Data["Beta_hard"]
     #Source_Distance_From_GC_Elliptical_D25
     plt.plot(Hard_Beta, Source_Distance_From_GC_Elliptical_D25, '.', alpha=0.2)
     #plt.ylim(-0.00001, 0.00001)
@@ -1295,9 +1295,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.savefig("Hard_Beta_vs_Distance.pdf")
     plt.cla()
     plt.clf()
-    Soft_Beta=Data["Beta_0.3-1.0"]
-    Medium_Beta=Data["Beta_1.0-2.1"]
-    Hard_Beta=Data["Beta_2.1-7.5"]
+    Soft_Beta=Data["Beta_soft"]
+    Medium_Beta=Data["Beta_medium"]
+    Hard_Beta=Data["Beta_hard"]
     #Source_Distance_From_GC_Elliptical_D25
     #plt.plot(Source_Distance_From_GC_Elliptical_D25, Soft_Beta, '.', alpha=0.2)
     plt.plot(Soft_Beta, Source_Distance_From_GC_Elliptical_D25, '.', alpha=0.2)
@@ -1311,9 +1311,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Beta=Data["Beta_0.3-1.0"]
-    Medium_Beta=Data["Beta_1.0-2.1"]
-    Hard_Beta=Data["Beta_2.1-7.5"]
+    Soft_Beta=Data["Beta_soft"]
+    Medium_Beta=Data["Beta_medium"]
+    Hard_Beta=Data["Beta_hard"]
     #Source_Distance_From_GC_Elliptical_D25
     #plt.plot(Source_Distance_From_GC_Elliptical_D25, Soft_Beta, '.', alpha=0.2)
     plt.plot(Soft_Beta, Source_Distance_From_GC_Elliptical_D25, '.', alpha=0.2)
@@ -1330,9 +1330,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Beta=Data["Beta_0.3-1.0"]
-    Medium_Beta=Data["Beta_1.0-2.1"]
-    Hard_Beta=Data["Beta_2.1-7.5"]
+    Soft_Beta=Data["Beta_soft"]
+    Medium_Beta=Data["Beta_medium"]
+    Hard_Beta=Data["Beta_hard"]
     #Source_Distance_From_GC_Elliptical_D25
     #plt.plot(Source_Distance_From_GC_Elliptical_D25, Soft_Beta, '.', alpha=0.2)
     plt.hist(Soft_Beta, bins=100, range=(0, 10E-11))
@@ -1344,9 +1344,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     #plt.show()
     plt.cla()
     plt.clf()
-    Soft_Beta=Data["Beta_0.3-1.0"]
-    Medium_Beta=Data["Beta_1.0-2.1"]
-    Hard_Beta=Data["Beta_2.1-7.5"]
+    Soft_Beta=Data["Beta_soft"]
+    Medium_Beta=Data["Beta_medium"]
+    Hard_Beta=Data["Beta_hard"]
     #Source_Distance_From_GC_Elliptical_D25
     #plt.plot(Source_Distance_From_GC_Elliptical_D25, Soft_Beta, '.', alpha=0.2)
     plt.hist(Medium_Beta, bins=100, range=(0, 10E-11))
@@ -1358,9 +1358,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     #plt.show()
     plt.cla()
     plt.clf()
-    Soft_Beta=Data["Beta_0.3-1.0"]
-    Medium_Beta=Data["Beta_1.0-2.1"]
-    Hard_Beta=Data["Beta_2.1-7.5"]
+    Soft_Beta=Data["Beta_soft"]
+    Medium_Beta=Data["Beta_medium"]
+    Hard_Beta=Data["Beta_hard"]
     #Source_Distance_From_GC_Elliptical_D25
     #plt.plot(Source_Distance_From_GC_Elliptical_D25, Soft_Beta, '.', alpha=0.2)
     plt.hist(Hard_Beta, bins=100, range=(0, 10E-11))
@@ -1375,9 +1375,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Beta=Data["Beta_0.3-1.0"]
-    Medium_Beta=Data["Beta_1.0-2.1"]
-    Hard_Beta=Data["Beta_2.1-7.5"]
+    Soft_Beta=Data["Beta_soft"]
+    Medium_Beta=Data["Beta_medium"]
+    Hard_Beta=Data["Beta_hard"]
     #Source_Distance_From_GC_Elliptical_D25
     #plt.plot(Source_Distance_From_GC_Elliptical_D25, Soft_Beta, '.', alpha=0.2)
     plt.hist(Soft_Beta, bins=100, range=(0, 10E-11), alpha=0.2)
@@ -1395,9 +1395,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Beta=Data["Beta_0.3-1.0"]
-    Medium_Beta=Data["Beta_1.0-2.1"]
-    Hard_Beta=Data["Beta_2.1-7.5"]
+    Soft_Beta=Data["Beta_soft"]
+    Medium_Beta=Data["Beta_medium"]
+    Hard_Beta=Data["Beta_hard"]
     Start_Date=Data["Start_Date"]
     plt.plot(Start_Date, Soft_Beta, '.', alpha=0.2)
     #plt.ylim(-0.00001, 0.00001)
@@ -1412,9 +1412,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Beta=Data["Beta_0.3-1.0"]
-    Medium_Beta=Data["Beta_1.0-2.1"]
-    Hard_Beta=Data["Beta_2.1-7.5"]
+    Soft_Beta=Data["Beta_soft"]
+    Medium_Beta=Data["Beta_medium"]
+    Hard_Beta=Data["Beta_hard"]
     Start_Date=Data["Start_Date"]
     plt.plot(Start_Date, Medium_Beta, '.', alpha=0.2)
     #plt.ylim(-0.00001, 0.00001)
@@ -1429,9 +1429,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Beta=Data["Beta_0.3-1.0"]
-    Medium_Beta=Data["Beta_1.0-2.1"]
-    Hard_Beta=Data["Beta_2.1-7.5"]
+    Soft_Beta=Data["Beta_soft"]
+    Medium_Beta=Data["Beta_medium"]
+    Hard_Beta=Data["Beta_hard"]
     Start_Date=Data["Start_Date"]
     plt.plot(Start_Date, Hard_Beta, '.', alpha=0.2)
     #plt.ylim(-0.00001, 0.00001)
@@ -1446,18 +1446,18 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
     #NET_RATE_
-    Soft_Rate=Data["NET_RATE_0.3-1.0"]
-    Medium_Rate=Data["NET_RATE_1.0-2.1"]
-    Hard_Rate=Data["NET_RATE_2.1-7.5"]
+    Soft_Rate=Data["NET_RATE_soft"]
+    Medium_Rate=Data["NET_RATE_medium"]
+    Hard_Rate=Data["NET_RATE_hard"]
     #Effective_Area
-    #Effective_Area_0.3-1.0
-    Soft_Effective_Area=Data["Effective_Area_0.3-1.0"]
-    Medium_Effective_Area=Data["Effective_Area_1.0-2.1"]
-    Hard_Effective_Area=Data["Effective_Area_2.1-7.5"]
+    #Effective_Area_soft
+    Soft_Effective_Area=Data["Effective_Area_soft"]
+    Medium_Effective_Area=Data["Effective_Area_medium"]
+    Hard_Effective_Area=Data["Effective_Area_hard"]
     #Rate_Effective_Area_Corrected
     Soft_Rate_Effective_Area_Corrected=Soft_Rate/Soft_Effective_Area
     Medium_Rate_Effective_Area_Corrected=Medium_Rate/Medium_Effective_Area
@@ -1480,18 +1480,18 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
     #NET_RATE_
-    Soft_Rate=Data["NET_RATE_0.3-1.0"]
-    Medium_Rate=Data["NET_RATE_1.0-2.1"]
-    Hard_Rate=Data["NET_RATE_2.1-7.5"]
+    Soft_Rate=Data["NET_RATE_soft"]
+    Medium_Rate=Data["NET_RATE_medium"]
+    Hard_Rate=Data["NET_RATE_hard"]
     #Effective_Area
-    #Effective_Area_0.3-1.0
-    Soft_Effective_Area=Data["Effective_Area_0.3-1.0"]
-    Medium_Effective_Area=Data["Effective_Area_1.0-2.1"]
-    Hard_Effective_Area=Data["Effective_Area_2.1-7.5"]
+    #Effective_Area_soft
+    Soft_Effective_Area=Data["Effective_Area_soft"]
+    Medium_Effective_Area=Data["Effective_Area_medium"]
+    Hard_Effective_Area=Data["Effective_Area_hard"]
     #Rate_Effective_Area_Corrected
     Soft_Rate_Effective_Area_Corrected=Soft_Rate/Soft_Effective_Area
     Medium_Rate_Effective_Area_Corrected=Medium_Rate/Medium_Effective_Area
@@ -1514,18 +1514,18 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
     #NET_RATE_
-    Soft_Rate=Data["NET_RATE_0.3-1.0"]
-    Medium_Rate=Data["NET_RATE_1.0-2.1"]
-    Hard_Rate=Data["NET_RATE_2.1-7.5"]
+    Soft_Rate=Data["NET_RATE_soft"]
+    Medium_Rate=Data["NET_RATE_medium"]
+    Hard_Rate=Data["NET_RATE_hard"]
     #Effective_Area
-    #Effective_Area_0.3-1.0
-    Soft_Effective_Area=Data["Effective_Area_0.3-1.0"]
-    Medium_Effective_Area=Data["Effective_Area_1.0-2.1"]
-    Hard_Effective_Area=Data["Effective_Area_2.1-7.5"]
+    #Effective_Area_soft
+    Soft_Effective_Area=Data["Effective_Area_soft"]
+    Medium_Effective_Area=Data["Effective_Area_medium"]
+    Hard_Effective_Area=Data["Effective_Area_hard"]
     #Rate_Effective_Area_Corrected
     Soft_Rate_Effective_Area_Corrected=Soft_Rate/Soft_Effective_Area
     Medium_Rate_Effective_Area_Corrected=Medium_Rate/Medium_Effective_Area
@@ -1643,9 +1643,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.cla()
     plt.clf()
     Data=Data.sort_values(by=['Start_Date_Timestamp'])
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
     Start_Date=Data["Start_Date"]
     plt.plot(Start_Date, Soft_Flux, '.', alpha=0.2)
     #plt.ylim(-0.00001, 0.00001)
@@ -1661,9 +1661,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
     Start_Date=Data["Start_Date"]
     plt.plot(Start_Date, Medium_Flux, '.', alpha=0.2)
     #plt.ylim(-0.00001, 0.00001)
@@ -1680,9 +1680,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
     Start_Date=Data["Start_Date"]
     plt.plot(Start_Date, Hard_Flux, '.', alpha=0.2)
     #plt.ylim(-0.00001, 0.00001)
@@ -1701,9 +1701,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.clf()
     ax = plt.gca()
     Data=Data.sort_values(by=['Start_Date_Timestamp'])
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
     Start_Date=Data["Start_Date"]
     plt.plot(Start_Date, Soft_Flux, '.', alpha=0.2)
     plt.plot(Start_Date, Medium_Flux, '.', alpha=0.2)
@@ -1722,9 +1722,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.cla()
     plt.clf()
     Data=Data.sort_values(by=['Start_Date_Timestamp'])
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
     Start_Date=Data["Start_Date"]
     #df = df[df['EPS'].notna()]
     #plt.ylim(-0.00001, 0.00001)
@@ -1752,18 +1752,18 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.clf()
     ax = plt.gca()
     Data=Data.sort_values(by=['Start_Date_Timestamp'])
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
     Start_Date=Data["Start_Date"]
     #df = df[df['EPS'].notna()]
-    Data_Soft = Data[Data["NET_FLUX_APER_0.3-1.0"].notna()]
+    Data_Soft = Data[Data["NET_FLUX_APER_soft"].notna()]
     Data_Soft_Start_Date=Data_Soft["Start_Date"]
-    Data_Medium = Data[Data["NET_FLUX_APER_1.0-2.1"].notna()]
+    Data_Medium = Data[Data["NET_FLUX_APER_medium"].notna()]
     Data_Medium_Start_Date=Data_Medium["Start_Date"]
-    Data_Hard = Data[Data["NET_FLUX_APER_2.1-7.5"].notna()]
+    Data_Hard = Data[Data["NET_FLUX_APER_hard"].notna()]
     Data_Hard_Start_Date=Data_Hard["Start_Date"]
-    Data_All=Data[(Data["NET_FLUX_APER_0.3-1.0"].notna()) & (Data["NET_FLUX_APER_1.0-2.1"].notna()) & (Data["NET_FLUX_APER_2.1-7.5"].notna())]
+    Data_All=Data[(Data["NET_FLUX_APER_soft"].notna()) & (Data["NET_FLUX_APER_medium"].notna()) & (Data["NET_FLUX_APER_hard"].notna())]
     #plt.plot(Start_Date, Soft_Flux, '.', alpha=0.2)
     #plt.plot(Start_Date, Medium_Flux, '.', alpha=0.2)
     #plt.plot(Start_Date, Hard_Flux, '.', alpha=0.2)
@@ -1794,16 +1794,16 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.clf()
     ax = plt.gca()
     Data=Data.sort_values(by=['Start_Date_Timestamp'])
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
     Start_Date=Data["Start_Date"]
     #df = df[df['EPS'].notna()]
-    Data_Soft = Data[Data["NET_FLUX_APER_0.3-1.0"].notna()]
+    Data_Soft = Data[Data["NET_FLUX_APER_soft"].notna()]
     Data_Soft_Start_Date=Data_Soft["Start_Date"]
-    Data_Medium = Data[Data["NET_FLUX_APER_1.0-2.1"].notna()]
+    Data_Medium = Data[Data["NET_FLUX_APER_medium"].notna()]
     Data_Medium_Start_Date=Data_Medium["Start_Date"]
-    Data_Hard = Data[Data["NET_FLUX_APER_2.1-7.5"].notna()]
+    Data_Hard = Data[Data["NET_FLUX_APER_hard"].notna()]
     Data_Hard_Start_Date=Data_Hard["Start_Date"]
     #plt.plot(Start_Date, Soft_Flux, '.', alpha=0.2)
     #plt.plot(Start_Date, Medium_Flux, '.', alpha=0.2)
@@ -1833,19 +1833,19 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.clf()
     ax = plt.gca()
     Data=Data.sort_values(by=['Start_Date_Timestamp'])
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
-    Soft_MFlux=Data["NET_MFLUX_APER_0.3-1.0"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
+    Soft_MFlux=Data["NET_MFLUX_APER_soft"]
     Start_Date=Data["Start_Date"]
     #df = df[df['EPS'].notna()]
-    Data_Soft = Data[Data["NET_FLUX_APER_0.3-1.0"].notna()]
+    Data_Soft = Data[Data["NET_FLUX_APER_soft"].notna()]
     Data_Soft_Start_Date=Data_Soft["Start_Date"]
-    Data_MSoft = Data[Data["NET_MFLUX_APER_0.3-1.0"].notna()]
+    Data_MSoft = Data[Data["NET_MFLUX_APER_soft"].notna()]
     Data_MSoft_Start_Date=Data_MSoft["Start_Date"]
-    Data_Medium = Data[Data["NET_FLUX_APER_1.0-2.1"].notna()]
+    Data_Medium = Data[Data["NET_FLUX_APER_medium"].notna()]
     Data_Medium_Start_Date=Data_Medium["Start_Date"]
-    Data_Hard = Data[Data["NET_FLUX_APER_2.1-7.5"].notna()]
+    Data_Hard = Data[Data["NET_FLUX_APER_hard"].notna()]
     Data_Hard_Start_Date=Data_Hard["Start_Date"]
     #plt.plot(Start_Date, Soft_Flux, '.', alpha=0.2)
     #plt.plot(Start_Date, Medium_Flux, '.', alpha=0.2)
@@ -1877,12 +1877,12 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.cla()
     plt.clf()
     Data=Data.sort_values(by=['Start_Date_Timestamp'])
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
-    Soft_MFlux=Data["NET_MFLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_MFLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_MFLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
+    Soft_MFlux=Data["NET_MFLUX_APER_soft"]
+    Medium_Flux=Data["NET_MFLUX_APER_medium"]
+    Hard_Flux=Data["NET_MFLUX_APER_hard"]
     Start_Date=Data["Start_Date"]
     plt.plot(Start_Date, Soft_Flux, '.', alpha=0.2, label="Independent")
     plt.plot(Start_Date, Soft_MFlux, '.', alpha=0.2, label="Model")
@@ -1902,12 +1902,12 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.cla()
     plt.clf()
     Data=Data.sort_values(by=['Start_Date_Timestamp'])
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
-    Soft_MFlux=Data["NET_MFLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_MFLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_MFLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
+    Soft_MFlux=Data["NET_MFLUX_APER_soft"]
+    Medium_Flux=Data["NET_MFLUX_APER_medium"]
+    Hard_Flux=Data["NET_MFLUX_APER_hard"]
     Start_Date=Data["Start_Date"]
     #plt.plot(Start_Date, Soft_Flux, '.', alpha=0.2, label="Independent")
     plt.plot(Start_Date, Soft_MFlux, '.', alpha=0.2, label="Model")
@@ -1944,8 +1944,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     fig = plt.figure()
     ax = plt.axes()
     ##ax.scatter(HC_Ratio_Flux, SC_Ratio_Flux, c=Start_Date, marker=".", alpha=0.2)
-    Start_Date_L=list(Start_Date)
-    Start_Timestamp_L=[]
+    #Start_Date_L=list(Start_Date)
+    #Start_Timestamp_L=[]
+    """
     for Date in Start_Date_L:
         #date_object = datetime.strptime(date_str, '%m-%d-%Y').date()
         #1999-12-05T21:37:28
@@ -1953,7 +1954,11 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
         Cur_Date=datetime.strptime(Date, '%Y-%m-%dT%H:%M:%S')
         Cur_Timestamp=Cur_Date.timestamp()
         Start_Timestamp_L.append(Cur_Timestamp)
-    ax.scatter(HC_Ratio_Flux, SC_Ratio_Flux, c=Start_Timestamp_L, marker=".", alpha=0.2)
+    """
+    Start_Date_Timestamp_A=Data["Start_Date_Timestamp"]
+    ##ax.scatter(HC_Ratio_Flux, SC_Ratio_Flux, c=Start_Timestamp_L, marker=".", alpha=0.2)
+    ax.scatter(HC_Ratio_Flux, SC_Ratio_Flux, c=Start_Date_Timestamp_A, marker=".", alpha=0.2)
+    #ax.scatter(HC_Ratio_Flux, SC_Ratio_Flux, c=Start_Date_L, marker=".", alpha=0.2)
     #ax.scatter(HC_Ratio_Flux_SN, SC_Ratio_Flux_SN, c="red", marker="o")
     ax.scatter(HC_Ratio_Flux_SNR, SC_Ratio_Flux_SNR, c="red", marker="o")
     ax.scatter(HC_Ratio_Flux_XRB, SC_Ratio_Flux_XRB, c="blue", marker="o")
@@ -1982,18 +1987,18 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.cla()
     plt.clf()
     #Soft_Beta_Color=Data["Soft_Beta_Color"]
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
     #NET_RATE_
-    Soft_Rate=Data["NET_RATE_0.3-1.0"]
-    Medium_Rate=Data["NET_RATE_1.0-2.1"]
-    Hard_Rate=Data["NET_RATE_2.1-7.5"]
+    Soft_Rate=Data["NET_RATE_soft"]
+    Medium_Rate=Data["NET_RATE_medium"]
+    Hard_Rate=Data["NET_RATE_hard"]
     #Effective_Area
-    #Effective_Area_0.3-1.0
-    Soft_Effective_Area=Data["Effective_Area_0.3-1.0"]
-    Medium_Effective_Area=Data["Effective_Area_1.0-2.1"]
-    Hard_Effective_Area=Data["Effective_Area_2.1-7.5"]
+    #Effective_Area_soft
+    Soft_Effective_Area=Data["Effective_Area_soft"]
+    Medium_Effective_Area=Data["Effective_Area_medium"]
+    Hard_Effective_Area=Data["Effective_Area_hard"]
     #Rate_Effective_Area_Corrected
     Soft_Rate_Effective_Area_Corrected=Soft_Rate/Soft_Effective_Area
     Medium_Rate_Effective_Area_Corrected=Medium_Rate/Medium_Effective_Area
@@ -2034,18 +2039,18 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.cla()
     plt.clf()
     #Soft_Beta_Color=Data["Soft_Beta_Color"]
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
     #NET_RATE_
-    Soft_Rate=Data["NET_RATE_0.3-1.0"]
-    Medium_Rate=Data["NET_RATE_1.0-2.1"]
-    Hard_Rate=Data["NET_RATE_2.1-7.5"]
+    Soft_Rate=Data["NET_RATE_soft"]
+    Medium_Rate=Data["NET_RATE_medium"]
+    Hard_Rate=Data["NET_RATE_hard"]
     #Effective_Area
-    #Effective_Area_0.3-1.0
-    Soft_Effective_Area=Data["Effective_Area_0.3-1.0"]
-    Medium_Effective_Area=Data["Effective_Area_1.0-2.1"]
-    Hard_Effective_Area=Data["Effective_Area_2.1-7.5"]
+    #Effective_Area_soft
+    Soft_Effective_Area=Data["Effective_Area_soft"]
+    Medium_Effective_Area=Data["Effective_Area_medium"]
+    Hard_Effective_Area=Data["Effective_Area_hard"]
     #Rate_Effective_Area_Corrected
     Soft_Rate_Effective_Area_Corrected=Soft_Rate/Soft_Effective_Area
     Medium_Rate_Effective_Area_Corrected=Medium_Rate/Medium_Effective_Area
@@ -2101,7 +2106,7 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     #plt.ylim(0, 10)
     plt.ylim(-1.0, 1.0)
     plt.xlabel("Observation Start Date")
-    plt.ylabel("Soft Flux Color [(M-S)/(M+S); S=0.3-1.0, M=1.0-2.1]")
+    plt.ylabel("Soft Flux Color [(M-S)/(M+S); S=soft, M=medium]")
     plt.title("Soft Model Independent Flux Color vs Start_Date")
     plt.savefig("Soft_Flux_Color_vs_Start_Date.pdf")
     #plt.show()
@@ -2129,37 +2134,37 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
     #NET_RATE_
-    Soft_Rate=Data["NET_RATE_0.3-1.0"]
-    Medium_Rate=Data["NET_RATE_1.0-2.1"]
-    Hard_Rate=Data["NET_RATE_2.1-7.5"]
+    Soft_Rate=Data["NET_RATE_soft"]
+    Medium_Rate=Data["NET_RATE_medium"]
+    Hard_Rate=Data["NET_RATE_hard"]
     #Beta
     Soft_Beta=Soft_Flux/Soft_Rate
     Medium_Beta=Medium_Flux/Medium_Rate
     Hard_Beta=Hard_Flux/Hard_Rate
 
-    Soft_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_soft"]
+    Medium_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_medium"]
+    Hard_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_hard"]
     #NET_RATE_
-    Soft_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_0.3-1.0"]
-    Medium_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_1.0-2.1"]
-    Hard_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_2.1-7.5"]
+    Soft_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_soft"]
+    Medium_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_medium"]
+    Hard_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_hard"]
     #Beta
     Soft_Beta_Thermal_SNR=Soft_Flux_Thermal_SNR/Soft_Rate_Thermal_SNR
     Medium_Beta_Thermal_SNR=Medium_Flux_Thermal_SNR/Medium_Rate_Thermal_SNR
     Hard_Beta_Thermal_SNR=Hard_Flux/Hard_Rate_Thermal_SNR
 
-    Soft_Flux_XRB=XRB_Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux_XRB=XRB_Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux_XRB=XRB_Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux_XRB=XRB_Data["NET_FLUX_APER_soft"]
+    Medium_Flux_XRB=XRB_Data["NET_FLUX_APER_medium"]
+    Hard_Flux_XRB=XRB_Data["NET_FLUX_APER_hard"]
     #NET_RATE_
-    Soft_Rate_XRB=XRB_Data["NET_RATE_0.3-1.0"]
-    Medium_Rate_XRB=XRB_Data["NET_RATE_1.0-2.1"]
-    Hard_Rate_XRB=XRB_Data["NET_RATE_2.1-7.5"]
+    Soft_Rate_XRB=XRB_Data["NET_RATE_soft"]
+    Medium_Rate_XRB=XRB_Data["NET_RATE_medium"]
+    Hard_Rate_XRB=XRB_Data["NET_RATE_hard"]
     #Beta
     Soft_Beta_XRB=Soft_Flux_XRB/Soft_Rate_XRB
     Medium_Beta_XRB=Medium_Flux_XRB/Medium_Rate_XRB
@@ -2183,7 +2188,8 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     SC_Ratio_Beta_Thermal_SNR=(Medium_Beta-Soft_Beta_Thermal_SNR)/((Medium_Beta+Soft_Beta_Thermal_SNR))
     HC_Ratio_Beta_XRB=(Hard_Beta-Medium_Beta_XRB)/((Hard_Beta+Medium_Beta_XRB))
     SC_Ratio_Beta_XRB=(Medium_Beta-Soft_Beta_XRB)/((Medium_Beta+Soft_Beta_XRB))
-    ax.scatter(HC_Ratio_Beta, SC_Ratio_Beta, c=Start_Timestamp_L, marker=".", alpha=0.2)
+    #ax.scatter(HC_Ratio_Beta, SC_Ratio_Beta, c=Start_Timestamp_L, marker=".", alpha=0.2)
+    ax.scatter(HC_Ratio_Beta, SC_Ratio_Beta, c=Start_Date_Timestamp_A, marker=".", alpha=0.2)
     ax.scatter(HC_Ratio_Beta_Thermal_SNR, SC_Ratio_Beta_Thermal_SNR, c="red", marker="o")
     ax.scatter(HC_Ratio_Beta_XRB, SC_Ratio_Beta_XRB, c="blue", marker="o")
     plt.xlim(-1.0, 1.0)
@@ -2194,18 +2200,18 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
     #NET_RATE_
-    Soft_Rate=Data["NET_RATE_0.3-1.0"]
-    Medium_Rate=Data["NET_RATE_1.0-2.1"]
-    Hard_Rate=Data["NET_RATE_2.1-7.5"]
+    Soft_Rate=Data["NET_RATE_soft"]
+    Medium_Rate=Data["NET_RATE_medium"]
+    Hard_Rate=Data["NET_RATE_hard"]
     #Effective_Area
-    #Effective_Area_0.3-1.0
-    Soft_Effective_Area=Data["Effective_Area_0.3-1.0"]
-    Medium_Effective_Area=Data["Effective_Area_1.0-2.1"]
-    Hard_Effective_Area=Data["Effective_Area_2.1-7.5"]
+    #Effective_Area_soft
+    Soft_Effective_Area=Data["Effective_Area_soft"]
+    Medium_Effective_Area=Data["Effective_Area_medium"]
+    Hard_Effective_Area=Data["Effective_Area_hard"]
     #Rate_Effective_Area_Corrected
     Soft_Rate_Effective_Area_Corrected=Soft_Rate/Soft_Effective_Area
     Medium_Rate_Effective_Area_Corrected=Medium_Rate/Medium_Effective_Area
@@ -2215,17 +2221,17 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     Medium_Beta=Medium_Flux/Medium_Rate_Effective_Area_Corrected
     Hard_Beta=Hard_Flux/Hard_Rate_Effective_Area_Corrected
 
-    Soft_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_soft"]
+    Medium_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_medium"]
+    Hard_Flux_Thermal_SNR=Thermal_SNR_Data["NET_FLUX_APER_hard"]
     #NET_RATE_
-    Soft_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_0.3-1.0"]
-    Medium_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_1.0-2.1"]
-    Hard_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_2.1-7.5"]
+    Soft_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_soft"]
+    Medium_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_medium"]
+    Hard_Rate_Thermal_SNR=Thermal_SNR_Data["NET_RATE_hard"]
 
-    Soft_Effective_Area_Thermal_SNR=Thermal_SNR_Data["Effective_Area_0.3-1.0"]
-    Medium_Effective_Area_Thermal_SNR=Thermal_SNR_Data["Effective_Area_1.0-2.1"]
-    Hard_Effective_Area_Thermal_SNR=Thermal_SNR_Data["Effective_Area_2.1-7.5"]
+    Soft_Effective_Area_Thermal_SNR=Thermal_SNR_Data["Effective_Area_soft"]
+    Medium_Effective_Area_Thermal_SNR=Thermal_SNR_Data["Effective_Area_medium"]
+    Hard_Effective_Area_Thermal_SNR=Thermal_SNR_Data["Effective_Area_hard"]
     #Rate_Effective_Area_Corrected
     Soft_Rate_Effective_Area_Corrected_Thermal_SNR=Soft_Rate/Soft_Effective_Area_Thermal_SNR
     Medium_Rate_Effective_Area_Corrected_Thermal_SNR=Medium_Rate/Medium_Effective_Area_Thermal_SNR
@@ -2236,17 +2242,17 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     Medium_Beta_Thermal_SNR=Medium_Flux_Thermal_SNR/Medium_Rate_Effective_Area_Corrected
     Hard_Beta_Thermal_SNR=Hard_Flux_Thermal_SNR/Hard_Rate_Effective_Area_Corrected
 
-    Soft_Flux_XRB=XRB_Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux_XRB=XRB_Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux_XRB=XRB_Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux_XRB=XRB_Data["NET_FLUX_APER_soft"]
+    Medium_Flux_XRB=XRB_Data["NET_FLUX_APER_medium"]
+    Hard_Flux_XRB=XRB_Data["NET_FLUX_APER_hard"]
     #NET_RATE_
-    Soft_Rate_XRB=XRB_Data["NET_RATE_0.3-1.0"]
-    Medium_Rate_XRB=XRB_Data["NET_RATE_1.0-2.1"]
-    Hard_Rate_XRB=XRB_Data["NET_RATE_2.1-7.5"]
+    Soft_Rate_XRB=XRB_Data["NET_RATE_soft"]
+    Medium_Rate_XRB=XRB_Data["NET_RATE_medium"]
+    Hard_Rate_XRB=XRB_Data["NET_RATE_hard"]
 
-    Soft_Effective_Area_XRB=XRB_Data["Effective_Area_0.3-1.0"]
-    Medium_Effective_Area_XRB=XRB_Data["Effective_Area_1.0-2.1"]
-    Hard_Effective_Area_XRB=XRB_Data["Effective_Area_2.1-7.5"]
+    Soft_Effective_Area_XRB=XRB_Data["Effective_Area_soft"]
+    Medium_Effective_Area_XRB=XRB_Data["Effective_Area_medium"]
+    Hard_Effective_Area_XRB=XRB_Data["Effective_Area_hard"]
     #Rate_Effective_Area_Corrected
     Soft_Rate_Effective_Area_Corrected_XRB=Soft_Rate_XRB/Soft_Effective_Area_XRB
     Medium_Rate_Effective_Area_Corrected_XRB=Medium_Rate_XRB/Medium_Effective_Area_XRB
@@ -2278,7 +2284,8 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     SC_Ratio_Beta_Thermal_SNR=(Medium_Beta-Soft_Beta_Thermal_SNR)/((Medium_Beta+Soft_Beta_Thermal_SNR))
     HC_Ratio_Beta_XRB=(Hard_Beta-Medium_Beta_XRB)/((Hard_Beta+Medium_Beta_XRB))
     SC_Ratio_Beta_XRB=(Medium_Beta-Soft_Beta_XRB)/((Medium_Beta+Soft_Beta_XRB))
-    ax.scatter(HC_Ratio_Beta, SC_Ratio_Beta, c=Start_Timestamp_L, marker=".", alpha=0.2)
+    #ax.scatter(HC_Ratio_Beta, SC_Ratio_Beta, c=Start_Timestamp_L, marker=".", alpha=0.2)
+    ax.scatter(HC_Ratio_Beta, SC_Ratio_Beta, c=Start_Date_Timestamp_A, marker=".", alpha=0.2)
     ax.scatter(HC_Ratio_Beta_Thermal_SNR, SC_Ratio_Beta_Thermal_SNR, c="red", marker="o")
     ax.scatter(HC_Ratio_Beta_XRB, SC_Ratio_Beta_XRB, c="blue", marker="o")
     plt.xlim(0, 1.0)
@@ -2301,9 +2308,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.cla()
     plt.clf()
     Galactic_Distance_A=Data["Galactic_Distance"]
-    Soft_Counts_Effective_Area_Corrected=Data["NET_COUNTS_AREA_CORRECTED_0.3-1.0"]
-    Medium_Counts_Effective_Area_Corrected=Data["NET_COUNTS_AREA_CORRECTED_1.0-2.1"]
-    Hard_Counts_Effective_Area_Corrected=Data["NET_COUNTS_AREA_CORRECTED_2.1-7.5"]
+    Soft_Counts_Effective_Area_Corrected=Data["NET_COUNTS_AREA_CORRECTED_soft"]
+    Medium_Counts_Effective_Area_Corrected=Data["NET_COUNTS_AREA_CORRECTED_medium"]
+    Hard_Counts_Effective_Area_Corrected=Data["NET_COUNTS_AREA_CORRECTED_hard"]
     Soft_Counts_Distance_Adjusted=Soft_Counts_Effective_Area_Corrected/(4.0*np.pi*(Galactic_Distance_A**2.0))
     Medium_Counts_Distance_Adjusted=Medium_Counts_Effective_Area_Corrected/(4.0*np.pi*(Galactic_Distance_A**2.0))
     Hard_Counts_Distance_Adjusted=Hard_Counts_Effective_Area_Corrected/(4.0*np.pi*(Galactic_Distance_A**2.0))
@@ -2352,9 +2359,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.cla()
     plt.clf()
     ##Soft_Flux_Color=Data["Soft_Flux_Color"]
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
     HC_Ratio_Flux=(Hard_Flux-Medium_Flux)/((Hard_Flux+Medium_Flux))
     SC_Ratio_Flux=(Medium_Flux-Soft_Flux)/((Medium_Flux+Soft_Flux))
     Start_Date=Data["Start_Date"]
@@ -2370,9 +2377,9 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.clf()
     plt.cla()
     plt.clf()
-    Soft_Flux=Data_All["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data_All["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data_All["NET_FLUX_APER_2.1-7.5"]
+    Soft_Flux=Data_All["NET_FLUX_APER_soft"]
+    Medium_Flux=Data_All["NET_FLUX_APER_medium"]
+    Hard_Flux=Data_All["NET_FLUX_APER_hard"]
     fig = plt.figure()
     ax = plt.axes()
     #HC_Ratio_Beta, SC_Ratio_Beta=Color_Color_Calc(Soft_Beta,Medium_Beta,Hard_Beta)
@@ -2395,12 +2402,12 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Flux=Data_Before_Cutoff["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data_Before_Cutoff["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data_Before_Cutoff["NET_FLUX_APER_2.1-7.5"]
-    Soft_MFlux=Data_Before_Cutoff["NET_MFLUX_APER_0.3-1.0"]
-    Medium_MFlux=Data_Before_Cutoff["NET_MFLUX_APER_1.0-2.1"]
-    Hard_MFlux=Data_Before_Cutoff["NET_MFLUX_APER_2.1-7.5"]
+    Soft_Flux=Data_Before_Cutoff["NET_FLUX_APER_soft"]
+    Medium_Flux=Data_Before_Cutoff["NET_FLUX_APER_medium"]
+    Hard_Flux=Data_Before_Cutoff["NET_FLUX_APER_hard"]
+    Soft_MFlux=Data_Before_Cutoff["NET_MFLUX_APER_soft"]
+    Medium_MFlux=Data_Before_Cutoff["NET_MFLUX_APER_medium"]
+    Hard_MFlux=Data_Before_Cutoff["NET_MFLUX_APER_hard"]
     #Start_Date=Data["Start_Date"]
     plt.plot(Soft_Flux, Soft_MFlux, '.', alpha=0.2)
     #plt.ylim(10E-15, 10E-14)
@@ -2417,12 +2424,12 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Flux=Data_After_Cutoff["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data_After_Cutoff["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data_After_Cutoff["NET_FLUX_APER_2.1-7.5"]
-    Soft_MFlux=Data_After_Cutoff["NET_MFLUX_APER_0.3-1.0"]
-    Medium_MFlux=Data_After_Cutoff["NET_MFLUX_APER_1.0-2.1"]
-    Hard_MFlux=Data_After_Cutoff["NET_MFLUX_APER_2.1-7.5"]
+    Soft_Flux=Data_After_Cutoff["NET_FLUX_APER_soft"]
+    Medium_Flux=Data_After_Cutoff["NET_FLUX_APER_medium"]
+    Hard_Flux=Data_After_Cutoff["NET_FLUX_APER_hard"]
+    Soft_MFlux=Data_After_Cutoff["NET_MFLUX_APER_soft"]
+    Medium_MFlux=Data_After_Cutoff["NET_MFLUX_APER_medium"]
+    Hard_MFlux=Data_After_Cutoff["NET_MFLUX_APER_hard"]
     #Start_Date=Data["Start_Date"]
     plt.plot(Soft_Flux, Soft_MFlux, '.', alpha=0.2)
     #plt.ylim(10E-15, 10E-14)
@@ -2438,12 +2445,12 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Flux=Data_Before_Cutoff["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data_Before_Cutoff["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data_Before_Cutoff["NET_FLUX_APER_2.1-7.5"]
-    Soft_MFlux=Data_Before_Cutoff["NET_MFLUX_APER_0.3-1.0"]
-    Medium_MFlux=Data_Before_Cutoff["NET_MFLUX_APER_1.0-2.1"]
-    Hard_MFlux=Data_Before_Cutoff["NET_MFLUX_APER_2.1-7.5"]
+    Soft_Flux=Data_Before_Cutoff["NET_FLUX_APER_soft"]
+    Medium_Flux=Data_Before_Cutoff["NET_FLUX_APER_medium"]
+    Hard_Flux=Data_Before_Cutoff["NET_FLUX_APER_hard"]
+    Soft_MFlux=Data_Before_Cutoff["NET_MFLUX_APER_soft"]
+    Medium_MFlux=Data_Before_Cutoff["NET_MFLUX_APER_medium"]
+    Hard_MFlux=Data_Before_Cutoff["NET_MFLUX_APER_hard"]
     #Start_Date=Data["Start_Date"]
     plt.plot(Hard_Flux, Hard_MFlux, '.', alpha=0.2)
     #plt.ylim(10E-15, 10E-14)
@@ -2459,12 +2466,12 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Flux=Data_After_Cutoff["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data_After_Cutoff["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data_After_Cutoff["NET_FLUX_APER_2.1-7.5"]
-    Soft_MFlux=Data_After_Cutoff["NET_MFLUX_APER_0.3-1.0"]
-    Medium_MFlux=Data_After_Cutoff["NET_MFLUX_APER_1.0-2.1"]
-    Hard_MFlux=Data_After_Cutoff["NET_MFLUX_APER_2.1-7.5"]
+    Soft_Flux=Data_After_Cutoff["NET_FLUX_APER_soft"]
+    Medium_Flux=Data_After_Cutoff["NET_FLUX_APER_medium"]
+    Hard_Flux=Data_After_Cutoff["NET_FLUX_APER_hard"]
+    Soft_MFlux=Data_After_Cutoff["NET_MFLUX_APER_soft"]
+    Medium_MFlux=Data_After_Cutoff["NET_MFLUX_APER_medium"]
+    Hard_MFlux=Data_After_Cutoff["NET_MFLUX_APER_hard"]
     #Start_Date=Data["Start_Date"]
     plt.plot(Hard_Flux, Hard_MFlux, '.', alpha=0.2)
     #plt.ylim(10E-15, 10E-14)
@@ -2480,12 +2487,12 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
-    Soft_MFlux=Data["NET_MFLUX_APER_0.3-1.0"]
-    Medium_MFlux=Data["NET_MFLUX_APER_1.0-2.1"]
-    Hard_MFlux=Data["NET_MFLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
+    Soft_MFlux=Data["NET_MFLUX_APER_soft"]
+    Medium_MFlux=Data["NET_MFLUX_APER_medium"]
+    Hard_MFlux=Data["NET_MFLUX_APER_hard"]
     Start_Date=Data["Start_Date"]
     Soft_Flux_Comparison_Ratio=Soft_MFlux/Soft_Flux
     Hard_Flux_Comparison_Ratio=Hard_MFlux/Hard_Flux
@@ -2503,12 +2510,12 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
-    Soft_MFlux=Data["NET_MFLUX_APER_0.3-1.0"]
-    Medium_MFlux=Data["NET_MFLUX_APER_1.0-2.1"]
-    Hard_MFlux=Data["NET_MFLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
+    Soft_MFlux=Data["NET_MFLUX_APER_soft"]
+    Medium_MFlux=Data["NET_MFLUX_APER_medium"]
+    Hard_MFlux=Data["NET_MFLUX_APER_hard"]
     Start_Date=Data["Start_Date"]
     Soft_Flux_Comparison_Ratio=Soft_MFlux/Soft_Flux
     Hard_Flux_Comparison_Ratio=Hard_MFlux/Hard_Flux
@@ -2526,12 +2533,12 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
-    Soft_MFlux=Data["NET_MFLUX_APER_0.3-1.0"]
-    Medium_MFlux=Data["NET_MFLUX_APER_1.0-2.1"]
-    Hard_MFlux=Data["NET_MFLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
+    Soft_MFlux=Data["NET_MFLUX_APER_soft"]
+    Medium_MFlux=Data["NET_MFLUX_APER_medium"]
+    Hard_MFlux=Data["NET_MFLUX_APER_hard"]
     Start_Date=Data["Start_Date"]
     Soft_Flux_Comparison_Ratio=Soft_MFlux/Soft_Flux
     Hard_Flux_Comparison_Ratio=Hard_MFlux/Hard_Flux
@@ -2549,12 +2556,12 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
-    Soft_Flux=Data["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux=Data["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux=Data["NET_FLUX_APER_2.1-7.5"]
-    Soft_MFlux=Data["NET_MFLUX_APER_0.3-1.0"]
-    Medium_MFlux=Data["NET_MFLUX_APER_1.0-2.1"]
-    Hard_MFlux=Data["NET_MFLUX_APER_2.1-7.5"]
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
+    Soft_MFlux=Data["NET_MFLUX_APER_soft"]
+    Medium_MFlux=Data["NET_MFLUX_APER_medium"]
+    Hard_MFlux=Data["NET_MFLUX_APER_hard"]
     Start_Date=Data["Start_Date"]
     Soft_Flux_Comparison_Ratio=Soft_MFlux/Soft_Flux
     Hard_Flux_Comparison_Ratio=Hard_MFlux/Hard_Flux
@@ -2718,7 +2725,7 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.clf()
     print("Data_ObsIDs:\n", Data_ObsIDs)
     print("Start_Dates:\n", Data_ObsIDs["Start_Date"])
-    '''
+
     plt.cla()
     plt.clf()
     Data_Date_Parsed=Data
@@ -2730,8 +2737,8 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     print("Year_A: ", Year_A)
     """
     Soft_Flux_Binned=Data_Binned["NET_FLUX_APER_0.3-1.0"]
-    Medium_Flux_Binned=Data_Binned["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux_Binned=Data_Binned["NET_FLUX_APER_2.1-7.5"]
+    Medium_Flux_Binned=Data_Binned["NET_FLUX_APER_medium"]
+    Hard_Flux_Binned=Data_Binned["NET_FLUX_APER_hard"]
     Start_Date_Binned=Data_Binned["Start_Date"]
     #df.resample('3H', on='datetime').sum()
     plt.plot(Start_Date_Binned, Soft_Flux_Binned, '.', alpha=0.2)
@@ -2759,7 +2766,7 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     """
     Soft_Flux_Binned=Data_Binned["NET_FLUX_APER_0.3-1.0"]
     Medium_Flux_Binned=Data_Binned["NET_FLUX_APER_1.0-2.1"]
-    Hard_Flux_Binned=Data_Binned["NET_FLUX_APER_2.1-7.5"]
+    Hard_Flux_Binned=Data_Binned["NET_FLUX_APER_hard"]
     Start_Date_Binned=Data_Binned["Start_Date"]
     #df.resample('3H', on='datetime').sum()
     plt.plot(Start_Date_Binned, Soft_Flux_Binned, '.', alpha=0.2)
