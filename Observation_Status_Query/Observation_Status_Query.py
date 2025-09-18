@@ -4,7 +4,7 @@ import sys
 from ciao_contrib.runtool import * #Imports ciao tools into python
 import re
 import pandas as pd
-def Observation_Status_Query(ObsID,Threshold=22480):
+def Observation_Status_Query(ObsID,Threshold=26039):
     #Query_Str=os.popen('find_chandra_obsid '+str(ObsID)+' verbose=3').read()
     #print("Query_Str:\n", Query_Str)
     print("ObsID: "+str(ObsID))

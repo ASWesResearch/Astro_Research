@@ -23,6 +23,7 @@
 **.expmap
 **.psfmap
 **.fov
+**.pickle
 Galaxy_Test/2022/secondary/axaff02022N002_VV001_vvref2.pdf.gz
 Galaxy_Test/2198/secondary/axaff02198N002_VV001_vvref2.pdf.gz
 Galaxy_Test/9518/primary/acisf09518N002_evt2.fits.gz
@@ -89,3 +90,9 @@ Log_N_Log_S_Calc/*.csv
 Marx_Source_Injection/Main_Code/Wavdetect_Outputs_Backup/
 Marx_Source_Injection/Source_Detection_Analysis/Backups/
 Marx_Source_Injection/Parameter_Files/
+Flux_Plotting/High_Count_After_Cutoff_Souces.csv
+Observation_Tester/Source_Validation_Output.csv
+Observation_Tester/Test_Source_Validation_Output.csv
+Source_Matcher/Chandra_Missing_Data_ds9.csv
+Trace_Source_Area_Calc/Raytraced_Source_Areas.csv
+Source_Matcher/Matched_Data.csv

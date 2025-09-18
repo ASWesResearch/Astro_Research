@@ -1,3 +1,4 @@
+import os
 import sys
 sys.path=sys.path[:-2]+[sys.path[-1]]+[sys.path[-2]]
 print("sys.path: ", sys.path)
@@ -19,9 +20,16 @@ print("path : ", path)
 sys.path.append(os.path.abspath(path))
 from File_Query_Code import File_Query_Code_5
 from Galaxy_Name_Reducer import Galaxy_Name_Reducer
-def Observation_Tester(Gname_L,Simple_Reg_B=False,Max_Exp_B=False,Optical_Bool=True,Outpath="Test_Out.txt"):
+def Observation_Tester(Gname_L, Simple_Reg_B=False, Max_Exp_B=False, Optical_Bool=True, ObsID_Match=None, Source_Num_Match=None, Starting_Point_Bool=False, Outpath="Test_Out_2.txt"):
     #d = pyds9.DS9()
-    Outfile=open(Outpath,"a+")
+    if(os.path.exists(Outpath)):
+        Outfile=open(Outpath,"a+")
+    else:
+        Outfile=open(Outpath,"a+")
+        Header="Gname,ObsID,Source_Num,Source_Phys_X,Source_Phys_Y,Galaxy_Status,ObsID_Status,Source_Status\n"
+        Outfile.write(Header)
+    #Outfile=open(Outpath,"a+")
+    #Cur_Line=str(Gname_Modifed)+","+str(Cur_Evt2_ObsID)+","+str(Source_Num)+","+str(Source_Phys_X)+","+str(Source_Phys_Y)+",n,n,n"
     Accept_L=[]
     Reject_L=[]
     Question_L=[]
@@ -65,9 +73,16 @@ def Observation_Tester(Gname_L,Simple_Reg_B=False,Max_Exp_B=False,Optical_Bool=T
         D25_Region_Path=Root_Path+"xray/anthony/Thesis/Galaxy_Optical_Image_Query/Galaxy_Optical_Images/"+Gname_Modifed+"/"+Gname_Modifed+".reg"
         print("Evt2_File_H_L ", Evt2_File_H_L)
         #print "Fov_File_H_L ", Fov_File_H_L
+        Start_Point_Found=False
         for Evt2_File_L in Evt2_File_H_L:
             Cur_Evt2_ObsID=Evt2_File_L[0]
             Cur_Evt2_Filepath=Evt2_File_L[1]
+            if(ObsID_Match!=None):
+                if((Starting_Point_Bool) and (Cur_Evt2_ObsID==ObsID_Match)):
+                    Start_Point_Found=True
+                #if(Cur_Evt2_ObsID!=ObsID_Match):
+                if((Cur_Evt2_ObsID!=ObsID_Match) and (Start_Point_Found==False)):
+                    continue
             for Fov_File_L in Fov_File_H_L:
                 Cur_Fov_ObsID=Fov_File_L[0]
                 Cur_Fov_Filepath=Fov_File_L[1]
@@ -78,6 +93,33 @@ def Observation_Tester(Gname_L,Simple_Reg_B=False,Max_Exp_B=False,Optical_Bool=T
                         Cur_Reg_ObsID=Reg_File_L[0]
                         Cur_Reg_Filepath=Reg_File_L[1]
                         if(Cur_Evt2_ObsID==Cur_Reg_ObsID):
+                            Coords_Path=Root_Path+"xray/anthony/expansion_backup/Hybrid_Regions/"+str(Cur_Evt2_ObsID)+"/Nearest_Neighbor_Hybrid_Sources_ObsID_"+str(Cur_Evt2_ObsID)+"_Coords.csv"
+                            Data_Coords=pd.read_csv(Coords_Path)
+                            Source_Phys_X_L=list(Data_Coords["Phys_X"])
+                            Source_Phys_Y_L=list(Data_Coords["Phys_Y"])
+                            #print("Source_Phys_X_L: ", Source_Phys_X_L)
+                            #print("Source_Phys_Y_L: ", Source_Phys_Y_L)
+                            Num_Sources=len(Source_Phys_X_L)
+                            print("Number of Sources: ", Num_Sources)
+                            if(Reject_Galaxy_Bool):
+                                """
+                                Coords_Path=Root_Path+"xray/anthony/expansion_backup/Hybrid_Regions/"+str(Cur_Evt2_ObsID)+"/Nearest_Neighbor_Hybrid_Sources_ObsID_"+str(Cur_Evt2_ObsID)+"_Coords.csv"
+                                Data_Coords=pd.read_csv(Coords_Path)
+                                Source_Phys_X_L=list(Data_Coords["Phys_X"])
+                                Source_Phys_Y_L=list(Data_Coords["Phys_Y"])
+                                #print("Source_Phys_X_L: ", Source_Phys_X_L)
+                                #print("Source_Phys_Y_L: ", Source_Phys_Y_L)
+                                Num_Sources=len(Source_Phys_X_L)
+                                """
+                                print("Number of Sources: ", Num_Sources)
+                                for i in range(0,Num_Sources):
+                                    Source_Num=i+1
+                                    Source_Phys_X=Source_Phys_X_L[i]
+                                    Source_Phys_Y=Source_Phys_Y_L[i]
+                                    ##Cur_Line=str(Gname_Modifed)+","+str(Cur_Evt2_ObsID)+","+str(Source_Num)+",n,n,n"
+                                    Cur_Line=str(Gname_Modifed)+","+str(Cur_Evt2_ObsID)+","+str(Source_Num)+","+str(Source_Phys_X)+","+str(Source_Phys_Y)+",n,n,n\n"
+                                    Outfile.write(Cur_Line)
+                                continue
                             Obs_ID_Counter=Obs_ID_Counter+1
                             Obs_Info_L=[Gname,Cur_Evt2_ObsID]
                             print("Obs_Info_L : ", Obs_Info_L)
@@ -160,20 +202,59 @@ def Observation_Tester(Gname_L,Simple_Reg_B=False,Max_Exp_B=False,Optical_Bool=T
                                 Obs_Info_L.append("Galaxy Rejected")
                                 Reject_L.append(Obs_Info_L)
                                 #Galaxy_Reject_L.append(Gname)
+                                continue
                             else:
                                 User_Input=input("y,n, RG or q :\n")
                                 if(User_Input=="RG"):
                                     Reject_Galaxy_Bool=True
+                                    """
+                                    Coords_Path=Root_Path+"xray/anthony/expansion_backup/Hybrid_Regions/"+str(Cur_Evt2_ObsID)+"/Nearest_Neighbor_Hybrid_Sources_ObsID_"+str(Cur_Evt2_ObsID)+"_Coords.csv"
+                                    Data_Coords=pd.read_csv(Coords_Path)
+                                    Source_Phys_X_L=list(Data_Coords["Phys_X"])
+                                    Source_Phys_Y_L=list(Data_Coords["Phys_Y"])
+                                    #print("Source_Phys_X_L: ", Source_Phys_X_L)
+                                    #print("Source_Phys_Y_L: ", Source_Phys_Y_L)
+                                    Num_Sources=len(Source_Phys_X_L)
+                                    print("Number of Sources: ", Num_Sources)
+                                    """
+                                    for i in range(0,Num_Sources):
+                                        Source_Num=i+1
+                                        ##Cur_Line=str(Gname_Modifed)+","+str(Cur_Evt2_ObsID)+","+str(Source_Num)+",n,n,n"
+                                        Source_Phys_X=Source_Phys_X_L[i]
+                                        Source_Phys_Y=Source_Phys_Y_L[i]
+                                        ##Cur_Line=str(Gname_Modifed)+","+str(Cur_Evt2_ObsID)+","+str(Source_Num)+",n,n,n"
+                                        Cur_Line=str(Gname_Modifed)+","+str(Cur_Evt2_ObsID)+","+str(Source_Num)+","+str(Source_Phys_X)+","+str(Source_Phys_Y)+",n,n,n\n"
+                                        Outfile.write(Cur_Line)
                                     Galaxy_Reject_L.append(Gname)
                                     Obs_Info_L.append("Galaxy Rejected")
                                     Reject_L.append(Obs_Info_L)
-                                if((User_Input=="y") or (User_Input=="Y")):
+                                if((User_Input=="y") or (User_Input=="Y") or (User_Input=="")):
                                     #Accept_L.append(Obs_Info_L)
                                     User_Input_Source_Check=input("Check Sources?: y,n or q :\n")
                                     if((User_Input_Source_Check=="n") or (User_Input_Source_Check=="N")):
+                                        """
+                                        Coords_Path=Root_Path+"xray/anthony/expansion_backup/Hybrid_Regions/"+str(Cur_Evt2_ObsID)+"/Nearest_Neighbor_Hybrid_Sources_ObsID_"+str(Cur_Evt2_ObsID)+"_Coords.csv"
+                                        Data_Coords=pd.read_csv(Coords_Path)
+                                        Source_Phys_X_L=list(Data_Coords["Phys_X"])
+                                        Source_Phys_Y_L=list(Data_Coords["Phys_Y"])
+                                        #print("Source_Phys_X_L: ", Source_Phys_X_L)
+                                        #print("Source_Phys_Y_L: ", Source_Phys_Y_L)
+                                        Num_Sources=len(Source_Phys_X_L)
+                                        """
+                                        print("Number of Sources: ", Num_Sources)
+                                        for i in range(0,Num_Sources):
+                                            Source_Num=i+1
+                                            ##Cur_Line=str(Gname_Modifed)+","+str(Cur_Evt2_ObsID)+","+str(Source_Num)+",y,y,y"
+                                            Source_Phys_X=Source_Phys_X_L[i]
+                                            Source_Phys_Y=Source_Phys_Y_L[i]
+                                            ##Cur_Line=str(Gname_Modifed)+","+str(Cur_Evt2_ObsID)+","+str(Source_Num)+",n,n,n"
+                                            Cur_Line=str(Gname_Modifed)+","+str(Cur_Evt2_ObsID)+","+str(Source_Num)+","+str(Source_Phys_X)+","+str(Source_Phys_Y)+",y,y,y\n"
+                                            Outfile.write(Cur_Line)
                                         Accept_L.append(Obs_Info_L)
+                                    #if((User_Input_Source_Check=="y") or (User_Input_Source_Check=="Y") or (User_Input=="")):
                                     if((User_Input_Source_Check=="y") or (User_Input_Source_Check=="Y")):
                                         #/opt/xray/anthony/expansion_backup/Hybrid_Regions/316/Nearest_Neighbor_Hybrid_Sources_ObsID_316_Coords.csv
+                                        """
                                         Coords_Path=Root_Path+"xray/anthony/expansion_backup/Hybrid_Regions/"+str(Cur_Evt2_ObsID)+"/Nearest_Neighbor_Hybrid_Sources_ObsID_"+str(Cur_Evt2_ObsID)+"_Coords.csv"
                                         Data_Coords=pd.read_csv(Coords_Path)
                                         Source_Phys_X_L=list(Data_Coords["Phys_X"])
@@ -182,15 +263,33 @@ def Observation_Tester(Gname_L,Simple_Reg_B=False,Max_Exp_B=False,Optical_Bool=T
                                         print("Source_Phys_Y_L: ", Source_Phys_Y_L)
                                         Num_Sources=len(Source_Phys_X_L)
                                         print("Number of Sources: ", Num_Sources)
+                                        """
                                         #for i in range(0,len(Source_Phys_X_L)):
                                         #Batch_List=[10,5,1]
                                         #for i in range(0,int(Num_Sources/15)):
                                         Source_Reject_L=[]
-                                        for i in range(0,int(Num_Sources)):
-                                        #while(i<int(Num_Sources)):
+                                        ##for i in range(0,int(Num_Sources)):
+                                        Source_Start_Point_Found=False
+                                        i=0
+                                        while(i<int(Num_Sources)):
+                                            #while(i<int(Num_Sources)):
                                             t0 = time.time()
                                             print("i: ", i)
                                             Source_Num=i+1
+                                            if(Source_Num_Match!=None):
+                                                if((Starting_Point_Bool) and (Source_Num==Source_Num_Match)):
+                                                    Source_Start_Point_Found=True
+                                                #if(Source_Num!=Source_Num_Match):
+                                                if((Source_Num!=Source_Num_Match) and (Source_Start_Point_Found==False)):
+                                                    i=i+1
+                                                    continue
+                                            """
+                                            if((Starting_Point_Bool) and (Cur_Evt2_ObsID==ObsID_Match)):
+                                                Start_Point_Found=True
+                                            #if(Cur_Evt2_ObsID!=ObsID_Match):
+                                            if((Cur_Evt2_ObsID!=ObsID_Match) and (Start_Point_Found==False)):
+                                                continue
+                                            """
                                             print("Source_Num: ", Source_Num)
                                             Source_Phys_X=Source_Phys_X_L[i]
                                             Source_Phys_Y=Source_Phys_Y_L[i]
@@ -221,39 +320,76 @@ def Observation_Tester(Gname_L,Simple_Reg_B=False,Max_Exp_B=False,Optical_Bool=T
                                             d.set("pan to "+str(Source_Phys_X)+" "+str(Source_Phys_Y)+" physical")
                                             #d.set("pan to 500 500 physical")
                                             #d.set("zoom to 2")
-                                            d.set("zoom to 1")
+                                            ##d.set("zoom to 1")
+                                            d.set("zoom to 0.27")
                                             Individual_Source_Outpath_Region_WCS=Root_Path+"xray/anthony/Research_Git/Observation_Tester/Converted_Regions/"+str(Cur_Evt2_ObsID)+"_Source_"+str(Source_Num)+"_WCS.reg"
                                             d.set("region save select "+Individual_Source_Outpath_Region_WCS)
-                                            d.set("frame next")
-                                            d.set("region select all")
-                                            d.set("regions " + str(Individual_Source_Outpath_Region_WCS))
-                                            d.set("region select invert")
-                                            d.set("regions color yellow")
-                                            d.set("region move front")
-                                            d.set("frame prev")
+                                            if(Optical_Bool):
+                                                d.set("frame next")
+                                                d.set("region select all")
+                                                d.set("regions " + str(Individual_Source_Outpath_Region_WCS))
+                                                d.set("region select invert")
+                                                d.set("regions color yellow")
+                                                d.set("region move front")
+                                                d.set("frame prev")
                                             t1 = time.time()
                                             total_time = t1-t0
                                             print("total_time: ", total_time)
                                             User_Input_Source=input("Source "+str(Source_Num)+": y,n or q :\n")
+                                            if(User_Input_Source==""):
+                                                User_Input_Source="y"
+                                            ##Cur_Line=str(Gname_Modifed)+","+str(Cur_Evt2_ObsID)+","+str(Source_Num)+",y,y,"+str(User_Input_Source)
+                                            Cur_Line=str(Gname_Modifed)+","+str(Cur_Evt2_ObsID)+","+str(Source_Num)+","+str(Source_Phys_X)+","+str(Source_Phys_Y)+",y,y,"+str(User_Input_Source)+"\n"
+                                            Outfile.write(Cur_Line)
                                             if((User_Input_Source=="n") or (User_Input_Source=="N")):
                                                 Source_Reject_L.append(Source_Num)
                                             #d.set("frame prev")
                                             d.set("regions color magenta")
-                                            d.set("frame next")
-                                            d.set("regions color magenta")
-                                            d.set("frame prev")
+                                            if(Optical_Bool):
+                                                d.set("frame next")
+                                                d.set("regions color magenta")
+                                                d.set("frame prev")
+                                            if(((User_Input_Source=="u") or (User_Input_Source=="U")) and (i>0)):
+                                                i=i-1
+                                            else:
+                                                i=i+1
                                         Obs_Info_L.append(Source_Reject_L)
                                         Accept_L.append(Obs_Info_L)
                                         d.set("regions select none")
                                         d.set("regions color green")
                                 if((User_Input=="n") or (User_Input=="N")):
                                     #Reject_L.append(Obs_Info_L)
+                                    """
+                                    Coords_Path=Root_Path+"xray/anthony/expansion_backup/Hybrid_Regions/"+str(Cur_Evt2_ObsID)+"/Nearest_Neighbor_Hybrid_Sources_ObsID_"+str(Cur_Evt2_ObsID)+"_Coords.csv"
+                                    Data_Coords=pd.read_csv(Coords_Path)
+                                    Source_Phys_X_L=list(Data_Coords["Phys_X"])
+                                    Source_Phys_Y_L=list(Data_Coords["Phys_Y"])
+                                    #print("Source_Phys_X_L: ", Source_Phys_X_L)
+                                    #print("Source_Phys_Y_L: ", Source_Phys_Y_L)
+                                    Num_Sources=len(Source_Phys_X_L)
+                                    """
+                                    print("Number of Sources: ", Num_Sources)
+                                    for i in range(0,Num_Sources):
+                                        Source_Num=i+1
+                                        ##Cur_Line=str(Gname_Modifed)+","+str(Cur_Evt2_ObsID)+","+str(Source_Num)+",y,n,n"
+                                        Source_Phys_X=Source_Phys_X_L[i]
+                                        Source_Phys_Y=Source_Phys_Y_L[i]
+                                        ##Cur_Line=str(Gname_Modifed)+","+str(Cur_Evt2_ObsID)+","+str(Source_Num)+",n,n,n"
+                                        Cur_Line=str(Gname_Modifed)+","+str(Cur_Evt2_ObsID)+","+str(Source_Num)+","+str(Source_Phys_X)+","+str(Source_Phys_Y)+",y,n,n\n"
+                                        Outfile.write(Cur_Line)
                                     Rejection_Reason_Input=input("Reasoning: ")
                                     if(Rejection_Reason_Input!=""):
                                         Obs_Info_L.append(Rejection_Reason_Input)
                                     Reject_L.append(Obs_Info_L)
                                 if((User_Input=="q") or (User_Input=="Q")):
                                     #Reject_L.append(Obs_Info_L)
+                                    for i in range(0,Num_Sources):
+                                        Source_Num=i+1
+                                        Source_Phys_X=Source_Phys_X_L[i]
+                                        Source_Phys_Y=Source_Phys_Y_L[i]
+                                        ##Cur_Line=str(Gname_Modifed)+","+str(Cur_Evt2_ObsID)+","+str(Source_Num)+",n,n,n"
+                                        Cur_Line=str(Gname_Modifed)+","+str(Cur_Evt2_ObsID)+","+str(Source_Num)+","+str(Source_Phys_X)+","+str(Source_Phys_Y)+",n,q,q\n"
+                                        Outfile.write(Cur_Line)
                                     Rejection_Reason_Input=input("Reasoning: ")
                                     if(Rejection_Reason_Input!=""):
                                         Obs_Info_L.append(Rejection_Reason_Input)
@@ -268,7 +404,7 @@ def Observation_Tester(Gname_L,Simple_Reg_B=False,Max_Exp_B=False,Optical_Bool=T
                                     Update_String=str(Galaxy_Counter)+" Out of "+str(Num_Galaxies)+" Galaxies Checked : "+str(Obs_ID_Counter)+" Observations Checked"
                                     print(Update_String)
                                 Outstring="Accept_L: "+str(Accept_L)+"\n"+"Reject_L: "+str(Reject_L)+"\n"
-                                Outfile.write(Outstring)
+                                ##Outfile.write(Outstring)
                             #d.set("regions color green")
                             d.set("frame prev")
                             d.set("frame delete")
@@ -292,35 +428,58 @@ def TEST():
 
 
 
+def Main():
+    #Observation_Tester(["NGC 253"])
+    #Observation_Tester(['NGC 4278', 'NGC 5204', 'NGC 2841', 'NGC 3877', 'MESSIER 106', 'NGC 5194', 'MESSIER 104', 'MESSIER 105', 'MESSIER 101', 'NGC 5054', 'NGC 5813', 'MESSIER 108', 'MESSIER 066', 'MESSIER 061', 'MESSIER 063', 'MESSIER 086', 'MESSIER 084', 'MESSIER 083', 'MESSIER 082', 'MESSIER 081', 'NGC 0278', 'MESSIER 088', 'NGC 1042', 'NGC 6744', 'IC 5332', 'NGC 3585', 'NGC 4478', 'NGC 7507', 'NGC 1637', 'NGC 4473', 'NGC 1365', 'MESSIER 074', 'NGC 4476', 'NGC 4570', 'NGC 5576', 'NGC 4321', 'NGC 5474', 'NGC 7090', 'MESSIER 094', 'MESSIER 095', 'NGC 4494', 'NGC 0247', 'NGC 4490', 'IC 1613', 'NGC 4477', 'NGC 4365', 'NGC 2787', 'NGC 3557', 'IC 5267', 'NGC 4388', 'NGC 3923', 'NGC 4945', 'NGC 891', 'NGC 1300', 'UGC 05340', 'NGC 3631', 'UGCA 166', 'NGC 4314', 'NGC 4550', 'Holmberg IX                   ', 'NGC 4559', 'IC 1459', 'NGC 1399', 'NGC 4039', 'NGC 4038', 'NGC 1316', 'NGC 1097', 'NGC 0383', 'NGC 2681', 'NGC 5018', 'NGC 5253', 'NGC 4631', 'NGC 4308', 'MESSIER 060', 'NGC 4742', 'NGC 1672', 'NGC 5846', 'NGC 4725', 'NGC 2403', 'NGC 3507', 'MESSIER 087', 'NGC 0891', 'NGC 4698', 'NGC 3384', 'NGC 6946', 'NGC 1291:[LFF2012] 084', 'NGC 3115', 'NGC 1332', 'NGC 1700', 'NGC 5584', 'NGC 4527', 'NGC 7552', 'NGC 2997', 'NGC 4449', 'MESSIER 049', 'NGC 3198', 'NGC 0855', 'NGC 7793', 'NGC 0119', 'NGC 2865', 'Circinus Galaxy               ', 'MESSIER 059', 'NGC 7331', 'NGC 1427', 'NGC 3628', 'NGC 3608', 'NGC 0055', 'NGC 4457', 'NGC 4214', 'NGC 4459', 'NGC 3521','NGC 4565', 'NGC 1313', 'NGC 0253'])
 
-#Observation_Tester(["NGC 253"])
-#Observation_Tester(['NGC 4278', 'NGC 5204', 'NGC 2841', 'NGC 3877', 'MESSIER 106', 'NGC 5194', 'MESSIER 104', 'MESSIER 105', 'MESSIER 101', 'NGC 5054', 'NGC 5813', 'MESSIER 108', 'MESSIER 066', 'MESSIER 061', 'MESSIER 063', 'MESSIER 086', 'MESSIER 084', 'MESSIER 083', 'MESSIER 082', 'MESSIER 081', 'NGC 0278', 'MESSIER 088', 'NGC 1042', 'NGC 6744', 'IC 5332', 'NGC 3585', 'NGC 4478', 'NGC 7507', 'NGC 1637', 'NGC 4473', 'NGC 1365', 'MESSIER 074', 'NGC 4476', 'NGC 4570', 'NGC 5576', 'NGC 4321', 'NGC 5474', 'NGC 7090', 'MESSIER 094', 'MESSIER 095', 'NGC 4494', 'NGC 0247', 'NGC 4490', 'IC 1613', 'NGC 4477', 'NGC 4365', 'NGC 2787', 'NGC 3557', 'IC 5267', 'NGC 4388', 'NGC 3923', 'NGC 4945', 'NGC 891', 'NGC 1300', 'UGC 05340', 'NGC 3631', 'UGCA 166', 'NGC 4314', 'NGC 4550', 'Holmberg IX                   ', 'NGC 4559', 'IC 1459', 'NGC 1399', 'NGC 4039', 'NGC 4038', 'NGC 1316', 'NGC 1097', 'NGC 0383', 'NGC 2681', 'NGC 5018', 'NGC 5253', 'NGC 4631', 'NGC 4308', 'MESSIER 060', 'NGC 4742', 'NGC 1672', 'NGC 5846', 'NGC 4725', 'NGC 2403', 'NGC 3507', 'MESSIER 087', 'NGC 0891', 'NGC 4698', 'NGC 3384', 'NGC 6946', 'NGC 1291:[LFF2012] 084', 'NGC 3115', 'NGC 1332', 'NGC 1700', 'NGC 5584', 'NGC 4527', 'NGC 7552', 'NGC 2997', 'NGC 4449', 'MESSIER 049', 'NGC 3198', 'NGC 0855', 'NGC 7793', 'NGC 0119', 'NGC 2865', 'Circinus Galaxy               ', 'MESSIER 059', 'NGC 7331', 'NGC 1427', 'NGC 3628', 'NGC 3608', 'NGC 0055', 'NGC 4457', 'NGC 4214', 'NGC 4459', 'NGC 3521','NGC 4565', 'NGC 1313', 'NGC 0253'])
+    #Observation_Tester(['NGC 4278', 'NGC 2841', 'NGC 3877', 'NGC 5194', 'NGC 5054', 'NGC 5813', 'MESSIER 108', 'MESSIER 066', 'MESSIER 061', 'MESSIER 063', 'MESSIER 086', 'MESSIER 084', 'MESSIER 083', 'MESSIER 082', 'NGC 0278', 'MESSIER 088', 'NGC 3585', 'NGC 7507', 'NGC 1637', 'NGC 4473', 'NGC 1365', 'MESSIER 074', 'NGC 4570', 'NGC 5576', 'NGC 4321', 'NGC 5474', 'NGC 7090', 'MESSIER 094', 'MESSIER 095', 'NGC 4494', 'IC 1613', 'NGC 4477', 'NGC 4365', 'NGC 2787', 'NGC 3557', 'IC 5267', 'NGC 4388', 'NGC 3923', 'NGC 891', 'NGC 1300', 'UGC 05340', 'NGC 3631', 'UGCA 166', 'NGC 4314', 'NGC 4550', 'Holmberg IX                   ', 'NGC 4559', 'NGC 1399', 'NGC 1316', 'NGC 1097', 'NGC 2681', 'NGC 5018', 'NGC 5253', 'NGC 4631', 'MESSIER 060', 'NGC 4742', 'NGC 1672', 'NGC 5846', 'NGC 4725', 'NGC 3507', 'MESSIER 087', 'NGC 0891', 'NGC 3384', 'NGC 6946', 'NGC 1291:[LFF2012] 084', 'NGC 3115', 'NGC 1332', 'NGC 1700', 'NGC 5584', 'NGC 7552', 'NGC 2997', 'NGC 4449', 'MESSIER 049', 'NGC 3198', 'NGC 0855', 'NGC 7793', 'NGC 0119', 'NGC 2865', 'MESSIER 059', 'NGC 1427', 'NGC 3628', 'NGC 3608', 'NGC 0055', 'NGC 4457', 'NGC 4214', 'NGC 4459', 'NGC 3521', 'NGC 4565', 'NGC 1313'],Simple_Reg_B=False, Max_Exp_B=True)
+    #Observation_Tester(["NGC 1313"])
+    #Observation_Tester(["MESSIER_083"])
+    #Observation_Tester(["NGC 3608"])
+    #Observation_Tester(["NGC 4457","NGC 5813","NGC 3631"])
+    #Observation_Tester(['NGC 4278', 'NGC 5194', 'NGC 5054', 'NGC 5813', 'MESSIER 061', 'MESSIER 086', 'MESSIER 084', 'NGC 7507', 'NGC 4473', 'NGC 5576', 'NGC 4321', 'NGC 4477', 'NGC 4365', 'NGC 3557', 'NGC 4388', 'NGC 4314', 'NGC 4550', 'Holmberg IX                   ', 'NGC 1399', 'NGC 1316', 'NGC 1097', 'NGC 2681', 'NGC 5018', 'NGC 4631', 'MESSIER 060', 'NGC 5846', 'NGC 3507', 'MESSIER 087', 'NGC 3384', 'NGC 6946', 'NGC 3115', 'NGC 1332', 'NGC 1700', 'MESSIER 059', 'NGC 3608', 'NGC 4459', 'NGC 4565'],Max_Exp_B=True)
+    #NGC 5813
+    #Observation_Tester(["NGC 5813"])
+    #NGC 4473
+    #Observation_Tester(["NGC 4473"])
+    #NGC_4321
+    #Observation_Tester(["NGC_4321"])
+    #Holmberg IX
+    #Observation_Tester(["Holmberg IX"])
+    #NGC 4631
+    #Observation_Tester(["NGC 4631"])
+    #NGC 3507
+    #Observation_Tester(["NGC 3507"])
+    #NGC 3608
+    #Observation_Tester(["NGC 3608"])
+    #Observation_Tester(["NGC 1313"])
+    #Observation_Tester(["NGC 253","NGC 5813"],Max_Exp_B=True)
+    #Observation_Tester(["NGC 3631"])
+    #Observation_Tester(["MESSIER 049"], Max_Exp_B=True)
+    #Observation_Tester(["MESSIER 049"])
+    #Observation_Tester(["MESSIER 049", "MESSIER 063"], Max_Exp_B=True)
+    #print(File_Query("MESSIER 049","evt2"))
+    #TEST()
+    #Observation_Tester(['NGC 5128', 'MESSIER 086', 'MESSIER 106', 'MESSIER 082', 'MESSIER 081', 'NGC 1569', 'NGC 4697', 'NGC 0253', 'IC 2574', 'MESSIER 083', 'NGC 0891', 'NGC 1291:[LFF2012] 084', 'NGC 4631', 'MESSIER 094', 'NGC 0404', 'NGC 6503', 'MESSIER 101', 'NGC 4244', 'NGC 4485', 'MESSIER 104', 'MESSIER 105', 'NGC 2403', 'MESSIER 108', 'NGC 4214', 'NGC 4449', 'NGC 5253', 'NGC 3628', 'NGC 3115', 'MESSIER 074', 'ESO 495- G 021', 'NGC 3077', 'MESSIER 063', 'NGC 0055', 'NGC 6822', 'NGC 3377', 'NGC 5102', 'NGC 1313', 'NGC 4725', 'NGC 1808', 'NGC 4526', 'NGC 1705', 'NGC 1427A', 'NGC 4565', 'IC 0010', 'NGC 7793', 'NGC 4473', 'NGC 2787', 'NGC 0045', 'NGC 1023', 'NGC 0625', 'Maffei 1', 'IC 1613', 'MESSIER 090', 'MESSIER 095', 'NGC 2841', 'NGC 3998', 'NGC 7090', 'Maffei 2', 'NGC 2915', 'UGC 05423', 'UGC 08201', 'UGC 04459', 'Holmberg I', 'Holmberg IX', 'NGC 4236', 'MESSIER 064', 'NGC 5474', 'NGC 0024', 'MESSIER 066', 'NGC 4625', 'NGC 0855', 'NGC 3198', 'NGC 3521', 'IC 4710', 'NGC 2903', 'NGC 7814', 'NGC 2683', 'NGC 3384', 'NGC 7457', 'NGC 0300', 'NGC 4861', 'NGC 4088', 'Sextans A', 'NGC 4417', 'MRK 0750', 'NGC 0660', 'NGC 2835', 'NGC 6744', 'NGC 5248', 'NGC 3344', 'NGC 4550', 'NGC 4551', 'NGC 1404', 'MESSIER 049', 'NGC 1559', 'NGC 5866', 'MESSIER 099', 'NGC 4460', 'NGC 4536', 'NGC 4302', 'NGC 1792', 'IC342', 'NGC 3287', 'MESSIER 096'], Max_Exp_B=True)
+    #Observation_Tester(['NGC 4631', 'MESSIER 094', 'NGC 0404', 'NGC 6503', 'MESSIER 101', 'NGC 4244', 'NGC 4485', 'MESSIER 104', 'MESSIER 105', 'NGC 2403', 'MESSIER 108', 'NGC 4214', 'NGC 4449', 'NGC 5253', 'NGC 3628', 'NGC 3115', 'MESSIER 074', 'ESO 495- G 021', 'NGC 3077', 'MESSIER 063', 'NGC 0055', 'NGC 6822', 'NGC 3377', 'NGC 5102', 'NGC 1313', 'NGC 4725', 'NGC 1808', 'NGC 4526', 'NGC 1705', 'NGC 1427A', 'NGC 4565', 'IC 0010', 'NGC 7793', 'NGC 4473', 'NGC 2787', 'NGC 0045', 'NGC 1023', 'NGC 0625', 'Maffei 1', 'IC 1613', 'MESSIER 090', 'MESSIER 095', 'NGC 2841', 'NGC 3998', 'NGC 7090', 'Maffei 2', 'NGC 2915', 'UGC 05423', 'UGC 08201', 'UGC 04459', 'Holmberg I', 'Holmberg IX', 'NGC 4236', 'MESSIER 064', 'NGC 5474', 'NGC 0024', 'MESSIER 066', 'NGC 4625', 'NGC 0855', 'NGC 3198', 'NGC 3521', 'IC 4710', 'NGC 2903', 'NGC 7814', 'NGC 2683', 'NGC 3384', 'NGC 7457', 'NGC 0300', 'NGC 4861', 'NGC 4088', 'Sextans A', 'NGC 4417', 'MRK 0750', 'NGC 0660', 'NGC 2835', 'NGC 6744', 'NGC 5248', 'NGC 3344', 'NGC 4550', 'NGC 4551', 'NGC 1404', 'MESSIER 049', 'NGC 1559', 'NGC 5866', 'MESSIER 099', 'NGC 4460', 'NGC 4536', 'NGC 4302', 'NGC 1792', 'IC342', 'NGC 3287', 'MESSIER 096'], Max_Exp_B=True)
+    #Observation_Tester(['NGC 4485'], Max_Exp_B=True)
+    #Observation_Tester(['MESSIER 105'], Max_Exp_B=True)
+    #Observation_Tester(['NGC 6822', 'NGC 3377', 'NGC 5102', 'NGC 1313', 'NGC 4725', 'NGC 1808', 'NGC 4526', 'NGC 1705', 'NGC 1427A', 'NGC 4565', 'IC 0010', 'NGC 7793', 'NGC 4473', 'NGC 2787', 'NGC 0045', 'NGC 1023', 'NGC 0625', 'Maffei 1', 'IC 1613', 'MESSIER 090', 'MESSIER 095', 'NGC 2841', 'NGC 3998', 'NGC 7090', 'Maffei 2', 'NGC 2915', 'UGC 05423', 'UGC 08201', 'UGC 04459', 'Holmberg I', 'Holmberg IX', 'NGC 4236', 'MESSIER 064', 'NGC 5474', 'NGC 0024', 'MESSIER 066', 'NGC 4625', 'NGC 0855', 'NGC 3198', 'NGC 3521', 'IC 4710', 'NGC 2903', 'NGC 7814', 'NGC 2683', 'NGC 3384', 'NGC 7457', 'NGC 0300', 'NGC 4861', 'NGC 4088', 'Sextans A', 'NGC 4417', 'MRK 0750', 'NGC 0660', 'NGC 2835', 'NGC 6744', 'NGC 5248', 'NGC 3344', 'NGC 4550', 'NGC 4551', 'NGC 1404', 'MESSIER 049', 'NGC 1559', 'NGC 5866', 'MESSIER 099', 'NGC 4460', 'NGC 4536', 'NGC 4302', 'NGC 1792', 'IC342', 'NGC 3287', 'MESSIER 096'], Max_Exp_B=True)
+    #Observation_Tester(['NGC 6822', 'NGC 3377'], Max_Exp_B=False, Optical_Bool=False)
+    #Observation_Tester(['NGC 6822', 'NGC 3377'], Max_Exp_B=False, Optical_Bool=True)
+    #Observation_Tester(['NGC 253','NGC 6822', 'NGC 3377'], Max_Exp_B=False, Optical_Bool=True)
+    #Observation_Tester(['NGC 253','NGC 6822', 'NGC 3377'], Max_Exp_B=False, Optical_Bool=True, ObsID_Match=969)
+    #Observation_Tester(['NGC 253','NGC 6822', 'NGC 3377'], Max_Exp_B=False, Optical_Bool=True, ObsID_Match=969, Starting_Point_Bool=True)
+    #Observation_Tester(['NGC 253','NGC 6822', 'NGC 3377'], Max_Exp_B=False, Optical_Bool=True, ObsID_Match=969, Source_Num_Match=5)
+    #Observation_Tester(['NGC 253','NGC 6822', 'NGC 3377'], Max_Exp_B=False, Optical_Bool=True, ObsID_Match=969, Source_Num_Match=5, Starting_Point_Bool=True)
+    Galaxy_A=pd.read_csv("/opt/xray/anthony/Research_Git/Galaxy_List/Galaxy_Names_Reduced_Homogeneous_Resolved_Unique.csv")
+    Galaxy_L=list(Galaxy_A["Galaxy_Name_Reduced"])
+    ##print(Galaxy_L)
+    ###Observation_Tester(Galaxy_L, Max_Exp_B=False, Optical_Bool=True, Outpath="Source_Validation_Output.csv")
+    #Observation_Tester(Galaxy_L, Max_Exp_B=False, Optical_Bool=True, ObsID_Match=8489, Source_Num_Match=176, Starting_Point_Bool=True, Outpath="Source_Validation_Output.csv")
+    #Observation_Tester(Galaxy_L, Max_Exp_B=False, Optical_Bool=True, ObsID_Match=8490, Starting_Point_Bool=True, Outpath="Source_Validation_Output.csv")
+    #Observation_Tester(Galaxy_L, Max_Exp_B=False, Optical_Bool=True, ObsID_Match=10722, Source_Num_Match=149, Starting_Point_Bool=True, Outpath="Source_Validation_Output.csv")
+    Observation_Tester(Galaxy_L, Max_Exp_B=False, Optical_Bool=True, ObsID_Match=10723, Starting_Point_Bool=True, Outpath="Source_Validation_Output.csv")
 
-#Observation_Tester(['NGC 4278', 'NGC 2841', 'NGC 3877', 'NGC 5194', 'NGC 5054', 'NGC 5813', 'MESSIER 108', 'MESSIER 066', 'MESSIER 061', 'MESSIER 063', 'MESSIER 086', 'MESSIER 084', 'MESSIER 083', 'MESSIER 082', 'NGC 0278', 'MESSIER 088', 'NGC 3585', 'NGC 7507', 'NGC 1637', 'NGC 4473', 'NGC 1365', 'MESSIER 074', 'NGC 4570', 'NGC 5576', 'NGC 4321', 'NGC 5474', 'NGC 7090', 'MESSIER 094', 'MESSIER 095', 'NGC 4494', 'IC 1613', 'NGC 4477', 'NGC 4365', 'NGC 2787', 'NGC 3557', 'IC 5267', 'NGC 4388', 'NGC 3923', 'NGC 891', 'NGC 1300', 'UGC 05340', 'NGC 3631', 'UGCA 166', 'NGC 4314', 'NGC 4550', 'Holmberg IX                   ', 'NGC 4559', 'NGC 1399', 'NGC 1316', 'NGC 1097', 'NGC 2681', 'NGC 5018', 'NGC 5253', 'NGC 4631', 'MESSIER 060', 'NGC 4742', 'NGC 1672', 'NGC 5846', 'NGC 4725', 'NGC 3507', 'MESSIER 087', 'NGC 0891', 'NGC 3384', 'NGC 6946', 'NGC 1291:[LFF2012] 084', 'NGC 3115', 'NGC 1332', 'NGC 1700', 'NGC 5584', 'NGC 7552', 'NGC 2997', 'NGC 4449', 'MESSIER 049', 'NGC 3198', 'NGC 0855', 'NGC 7793', 'NGC 0119', 'NGC 2865', 'MESSIER 059', 'NGC 1427', 'NGC 3628', 'NGC 3608', 'NGC 0055', 'NGC 4457', 'NGC 4214', 'NGC 4459', 'NGC 3521', 'NGC 4565', 'NGC 1313'],Simple_Reg_B=False, Max_Exp_B=True)
-#Observation_Tester(["NGC 1313"])
-#Observation_Tester(["MESSIER_083"])
-#Observation_Tester(["NGC 3608"])
-#Observation_Tester(["NGC 4457","NGC 5813","NGC 3631"])
-#Observation_Tester(['NGC 4278', 'NGC 5194', 'NGC 5054', 'NGC 5813', 'MESSIER 061', 'MESSIER 086', 'MESSIER 084', 'NGC 7507', 'NGC 4473', 'NGC 5576', 'NGC 4321', 'NGC 4477', 'NGC 4365', 'NGC 3557', 'NGC 4388', 'NGC 4314', 'NGC 4550', 'Holmberg IX                   ', 'NGC 1399', 'NGC 1316', 'NGC 1097', 'NGC 2681', 'NGC 5018', 'NGC 4631', 'MESSIER 060', 'NGC 5846', 'NGC 3507', 'MESSIER 087', 'NGC 3384', 'NGC 6946', 'NGC 3115', 'NGC 1332', 'NGC 1700', 'MESSIER 059', 'NGC 3608', 'NGC 4459', 'NGC 4565'],Max_Exp_B=True)
-#NGC 5813
-#Observation_Tester(["NGC 5813"])
-#NGC 4473
-#Observation_Tester(["NGC 4473"])
-#NGC_4321
-#Observation_Tester(["NGC_4321"])
-#Holmberg IX
-#Observation_Tester(["Holmberg IX"])
-#NGC 4631
-#Observation_Tester(["NGC 4631"])
-#NGC 3507
-#Observation_Tester(["NGC 3507"])
-#NGC 3608
-#Observation_Tester(["NGC 3608"])
-#Observation_Tester(["NGC 1313"])
-#Observation_Tester(["NGC 253","NGC 5813"],Max_Exp_B=True)
-#Observation_Tester(["NGC 3631"])
-#Observation_Tester(["MESSIER 049"], Max_Exp_B=True)
-#Observation_Tester(["MESSIER 049"])
-Observation_Tester(["MESSIER 049", "MESSIER 063"])
-#print(File_Query("MESSIER 049","evt2"))
-#TEST()
+
+Main()

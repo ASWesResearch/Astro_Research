@@ -7,6 +7,9 @@ import os
 from os import system
 from astropy.io import ascii
 import sys
+
+dir = os.path.dirname(__file__)
+print("dir: ", dir)
 path=os.path.realpath('../')
 #print "Path=",path
 sys.path.append(os.path.abspath(path))
@@ -376,31 +379,39 @@ def Background_Finder_V2(Gname,Evtfpath,Reg_Filepath,Fov1_Path):
     Galaxy_Region_Modified=Galaxy_Region
     n=0
     while((Background_Area_Front_Illuminated<8000) and (n<4)):
-        print("Galaxy Region Too Large: Size="+str(1.0/(2.0**n)))
+        print("Current Background_Area_Front_Illuminated: ", Background_Area_Front_Illuminated)
+        print(str(Gname)+" Galaxy Region Too Large (ObsID "+str(ObsID)+"): Size="+str(1.0/(2.0**n)))
         Galaxy_Region_Modified=Galaxy_Region_Modified.edit(stretch=0.5)
         Background_Region_Front_Illuminated=CCD_Regions_Front_Illuminated-Galaxy_Region_Modified-Source_Regions_Modified
         Background_Area_Front_Illuminated=Background_Region_Front_Illuminated.area()
         n=n+1
     print("Background_Area_Front_Illuminated: ", Background_Area_Front_Illuminated)
-    #print("Background_Region_Front_Illuminated: ", Background_Region_Front_Illuminated)
-    Region_Outfilepath_Front_Illuminated=str(Gname_Modifed)+"_ObsID_"+str(ObsID)+"_Front_Illuminated_Background_Region.reg"
-    #print("Region_Outfilepath_Front_Illuminated: ", Region_Outfilepath_Front_Illuminated)
-    #Background_Region_Front_Illuminated.write("Background_Finder_V2_Test_Region.reg")
-    Background_Region_Front_Illuminated.write(str(Region_Outfilepath_Front_Illuminated), clobber=True)
+    if(Background_Area_Front_Illuminated>0):
+        #print("Background_Region_Front_Illuminated: ", Background_Region_Front_Illuminated)
+        ##Region_Outfilepath_Front_Illuminated=str(Gname_Modifed)+"_ObsID_"+str(ObsID)+"_Front_Illuminated_Background_Region.reg"
+        #dir = os.path.dirname(__file__)
+        Region_Outfilepath_Front_Illuminated=dir+"/Background_Regions/"+str(Gname_Modifed)+"_ObsID_"+str(ObsID)+"_Front_Illuminated_Background_Region.reg"
 
-    #Dm_Out=dmlist(infile=str(Evtfpath)+"[sky=region("+str("Background_Finder_V2_Test_Region.reg")+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
-    #Dm_Out_Front_Illuminated=dmlist(infile=str(Evtfpath)+"[sky="+str(Background_Region_Front_Illuminated)+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
-    ##Dm_Out_Front_Illuminated=dmlist(infile=str(Evtfpath)+"[sky=region("+str("Background_Finder_V2_Test_Region.reg")+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
-    #print("TEST")
-    Dm_Out_Front_Illuminated=dmlist(infile=str(Evtfpath)+"[sky=region("+str(Region_Outfilepath_Front_Illuminated)+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
-    #print("TEST 2")
+        #print("Region_Outfilepath_Front_Illuminated: ", Region_Outfilepath_Front_Illuminated)
+        #Background_Region_Front_Illuminated.write("Background_Finder_V2_Test_Region.reg")
+        Background_Region_Front_Illuminated.write(str(Region_Outfilepath_Front_Illuminated), clobber=True, newline=True)
 
-    Num_Counts_Str_Dm_Out_Front_Illuminated=Dm_Out_Front_Illuminated.split('\n')[9] #Num_Counts_Str:-str, Number_of_Counts_String, The number of counts in the background cirlce as a string
-    Num_Counts_Front_Illuminated=float(Num_Counts_Str_Dm_Out_Front_Illuminated) #Num_Counts:-float, Number_of_Counts, The number of counts as a float
-    #print("Number of FI Background Counts: ", Num_Counts_Front_Illuminated)
-    ##Background_Area_Front_Illuminated=Background_Region_Front_Illuminated.area()
-    #print("Background_Area_Front_Illuminated: ", Background_Area_Front_Illuminated)
-    Background_Front_Illuminated=float(Num_Counts_Front_Illuminated)/float(Background_Area_Front_Illuminated)
+        #Dm_Out=dmlist(infile=str(Evtfpath)+"[sky=region("+str("Background_Finder_V2_Test_Region.reg")+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
+        #Dm_Out_Front_Illuminated=dmlist(infile=str(Evtfpath)+"[sky="+str(Background_Region_Front_Illuminated)+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
+        ##Dm_Out_Front_Illuminated=dmlist(infile=str(Evtfpath)+"[sky=region("+str("Background_Finder_V2_Test_Region.reg")+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
+        #print("TEST")
+        Dm_Out_Front_Illuminated=dmlist(infile=str(Evtfpath)+"[sky=region("+str(Region_Outfilepath_Front_Illuminated)+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
+        #print("TEST 2")
+
+        Num_Counts_Str_Dm_Out_Front_Illuminated=Dm_Out_Front_Illuminated.split('\n')[9] #Num_Counts_Str:-str, Number_of_Counts_String, The number of counts in the background cirlce as a string
+        Num_Counts_Front_Illuminated=float(Num_Counts_Str_Dm_Out_Front_Illuminated) #Num_Counts:-float, Number_of_Counts, The number of counts as a float
+        #print("Number of FI Background Counts: ", Num_Counts_Front_Illuminated)
+        ##Background_Area_Front_Illuminated=Background_Region_Front_Illuminated.area()
+        #print("Background_Area_Front_Illuminated: ", Background_Area_Front_Illuminated)
+    if(Background_Area_Front_Illuminated>0):
+        Background_Front_Illuminated=float(Num_Counts_Front_Illuminated)/float(Background_Area_Front_Illuminated)
+    else:
+        Background_Front_Illuminated=None
     #print("Background_Front_Illuminated: ", Background_Front_Illuminated)
 
     Background_Region_Back_Illuminated=CCD_Regions_Back_Illuminated-Galaxy_Region-Source_Regions_Modified
@@ -408,27 +419,40 @@ def Background_Finder_V2(Gname,Evtfpath,Reg_Filepath,Fov1_Path):
     Galaxy_Region_Modified=Galaxy_Region
     n=0
     while((Background_Area_Back_Illuminated<8000) and (n<4)):
+        print("Current Background_Area_Back_Illuminated: ", Background_Area_Back_Illuminated)
         print("Galaxy Region Too Large: Size="+str(1.0/(2.0**n)))
+        print(str(Gname)+" Galaxy Region Too Large (ObsID "+str(ObsID)+"): Size="+str(1.0/(2.0**n)))
         Galaxy_Region_Modified=Galaxy_Region_Modified.edit(stretch=0.5)
         Background_Region_Back_Illuminated=CCD_Regions_Back_Illuminated-Galaxy_Region_Modified-Source_Regions_Modified
         Background_Area_Back_Illuminated=Background_Region_Back_Illuminated.area()
         n=n+1
     print("Background_Area_Back_Illuminated: ", Background_Area_Back_Illuminated)
     #print("Background_Region_Back_Illuminated: ", Background_Region_Back_Illuminated)
+    """
     Region_Outfilepath_Back_Illuminated=str(Gname_Modifed)+"_ObsID_"+str(ObsID)+"_Back_Illuminated_Background_Region.reg"
     #print("Region_Outfilepath_Back_Illuminated: ", Region_Outfilepath_Back_Illuminated)
     #Background_Region_Back_Illuminated.write("Background_Finder_V2_Test_Region.reg")
     Background_Region_Back_Illuminated.write(str(Region_Outfilepath_Back_Illuminated), clobber=True)
-    #Background_Region_Front_Illuminated.write("Background_Finder_V2_Test_Region.reg")
-    #Dm_Out=dmlist(infile=str(Evtfpath)+"[sky=region("+str("Background_Finder_V2_Test_Region.reg")+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
-    ##Dm_Out_Back_Illuminated=dmlist(infile=str(Evtfpath)+"[sky=region("+str("Background_Finder_V2_Test_Region.reg")+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
-    Dm_Out_Back_Illuminated=dmlist(infile=str(Evtfpath)+"[sky=region("+str(Region_Outfilepath_Back_Illuminated)+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
-    Num_Counts_Str_Dm_Out_Back_Illuminated=Dm_Out_Back_Illuminated.split('\n')[9] #Num_Counts_Str:-str, Number_of_Counts_String, The number of counts in the background cirlce as a string
-    Num_Counts_Back_Illuminated=float(Num_Counts_Str_Dm_Out_Back_Illuminated) #Num_Counts:-float, Number_of_Counts, The number of counts as a float
-    #print("Number of BI Background Counts: ", Num_Counts_Back_Illuminated)
-    ##Background_Area_Back_Illuminated=Background_Region_Back_Illuminated.area()
-    #print("Background_Area_Back_Illuminated: ", Background_Area_Back_Illuminated)
-    Background_Back_Illuminated=float(Num_Counts_Back_Illuminated)/float(Background_Area_Back_Illuminated)
+    """
+    if(Background_Area_Back_Illuminated>0):
+        Region_Outfilepath_Back_Illuminated=dir+"/Background_Regions/"+str(Gname_Modifed)+"_ObsID_"+str(ObsID)+"_Back_Illuminated_Background_Region.reg"
+
+        #print("Region_Outfilepath_Back_Illuminated: ", Region_Outfilepath_Back_Illuminated)
+        #Background_Region_Back_Illuminated.write("Background_Finder_V2_Test_Region.reg")
+        Background_Region_Back_Illuminated.write(str(Region_Outfilepath_Back_Illuminated), clobber=True, newline=True)
+        #Background_Region_Front_Illuminated.write("Background_Finder_V2_Test_Region.reg")
+        #Dm_Out=dmlist(infile=str(Evtfpath)+"[sky=region("+str("Background_Finder_V2_Test_Region.reg")+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
+        ##Dm_Out_Back_Illuminated=dmlist(infile=str(Evtfpath)+"[sky=region("+str("Background_Finder_V2_Test_Region.reg")+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
+        Dm_Out_Back_Illuminated=dmlist(infile=str(Evtfpath)+"[sky=region("+str(Region_Outfilepath_Back_Illuminated)+"),energy=300:10000]", opt='counts', outfile="", verbose=2) #Dm_Out:-ciao_contrib.runtool.CIAOPrintableString,Dmlist_Out,Uses the Dmlist CIAO tool to find the amount of counts in the background cirlce, Note: mlist "acis_evt2.fits[sky=rotbox(4148,4044,8,22,44.5)]" counts #Energy filter (0.3kev to 10kev) has been applied to the counts, This may allow the code to treat back illuminated chips and front illuminated chips the same, if not then the code must be modifed to consider both cases
+        Num_Counts_Str_Dm_Out_Back_Illuminated=Dm_Out_Back_Illuminated.split('\n')[9] #Num_Counts_Str:-str, Number_of_Counts_String, The number of counts in the background cirlce as a string
+        Num_Counts_Back_Illuminated=float(Num_Counts_Str_Dm_Out_Back_Illuminated) #Num_Counts:-float, Number_of_Counts, The number of counts as a float
+        #print("Number of BI Background Counts: ", Num_Counts_Back_Illuminated)
+        ##Background_Area_Back_Illuminated=Background_Region_Back_Illuminated.area()
+        #print("Background_Area_Back_Illuminated: ", Background_Area_Back_Illuminated)
+    if(Background_Area_Back_Illuminated>0):
+        Background_Back_Illuminated=float(Num_Counts_Back_Illuminated)/float(Background_Area_Back_Illuminated)
+    else:
+        Background_Back_Illuminated=None
     #print("Background_Back_Illuminated: ", Background_Back_Illuminated)
 
     return Background_Front_Illuminated, Background_Back_Illuminated

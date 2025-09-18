@@ -101,7 +101,8 @@ def D25_Finder(Gname):
     #print "Obs_ID : ", Obs_ID
     ##path_Source_Flux_Table=os.path.realpath('../SQL_Standard_File/Source_Flux_Table.csv') #Reltive Path
     #path_Source_Flux_Table=os.path.realpath('/Volumes/xray/anthony/Research_Git/SQL_Standard_File/Source_Flux_Table.csv') #Absolute Path
-    path_Source_Flux_Table=os.path.realpath('../SQL_Standard_File/ocatResult_Modified.csv') #Reltive Path
+    ##path_Source_Flux_Table=os.path.realpath('../SQL_Standard_File/ocatResult_Modified.csv') #Reltive Path
+    path_Source_Flux_Table=os.path.realpath(str(__file__)+'/../../SQL_Standard_File/ocatResult_Modified.csv') #Reltive Path
     print("path_Source_Flux_Table : ", path_Source_Flux_Table)
     #Source_Flux_Table=ascii.read(path_Source_Flux_Table)
     Source_Flux_Table=pd.read_csv(path_Source_Flux_Table)
@@ -185,6 +186,88 @@ def D25_List_Run(Gname_L):
             Fail_L.append(Gname)
     print("Fail_L : \n", Fail_L)
 
+def D25_Full_Query(Gname):
+    """
+    Gname=Gname_Query(ObsID)
+    if(str(Gname)=="nan"):
+        print("Error Gname: ", Gname)
+        return np.nan,np.nan,np.nan
+    print("ObsID: ", ObsID)
+    print("Gname: ", Gname)
+    """
+    try:
+        Dia_Table = Ned.get_table(Gname, table='diameters') #Dia_Table:-astropy.table.table.Table, Diameter_Table, The Data table queried from NED that contains the infomation about the Major Axis of the input Galaxy Name
+    except:
+        return np.nan,np.nan,np.nan
+    #Dia_Table = Ned.get_table(Resolved_Name, table='diameters') #Dia_Table:-astropy.table.table.Table, Diameter_Table, The Data table queried from NED that contains the infomation about the Major Axis of the input Galaxy Name
+    #print(type(Dia_Table))
+    #print(Dia_Table)
+    #print(Dia_Table.colnames)
+    #print(Dia_Table.meta)
+    #print(Dia_Table.columns)
+    Dia_Table_Feq=Dia_Table['Frequency targeted'] #Dia_Table_Feq:-astropy.table.column.MaskedColumn, Diameter_Table_Fequency, The Array containing all named frequencies of light that are being used for the Major Axis Measurement
+    #print(Dia_Table['NED Frequency'])
+    #print(Dia_Table_Feq)
+    #print(type(Dia_Table_Feq))
+    Dia_Table_Feq_L=list(Dia_Table_Feq) #Dia_Table_Feq_L:-List, Diameter_Table_Fequency_List, The list containing all named frequencies of light that are being used for the Major Axis Measurement
+    #print(Dia_Table_Feq_L)
+    Dia_Table_Num=Dia_Table['No.'] #Dia_Table_Num:-astropy.table.column.MaskedColumn, Diameter_Table_Number, The number Ned assigns to
+    #print Dia_Table_Num
+    #print type(Dia_Table_Num)
+    Dia_Table_Num_L=list(Dia_Table_Num)
+    #print Dia_Table_Num_L
+    Match_Bool=False
+    for i in range(0,len(Dia_Table_Feq_L)-1): #There is a bug here with index matching, The matched index isn't that same index for the major axis
+        Cur_Feq=Dia_Table_Feq_L[i]
+        #print Cur_Feq
+        if(Cur_Feq=="RC3 D_25, R_25 (blue)"):
+            Match_inx=i
+            Match_Feq=Dia_Table_Feq_L[Match_inx]
+            Match_Num=Dia_Table_Num_L[Match_inx]
+            Match_Bool=True
+            #Match_Num
+            #print "Match_Feq ", Match_Feq
+            #print "Match_inx ", Match_inx
+            #print "Match_Num ", Match_Num
+    if(Match_Bool==False):
+        return np.nan,np.nan,np.nan
+    #Dia_Table_Maj=Dia_Table['Major Axis']
+    Dia_Table_Maj=Dia_Table['NED Major Axis']
+    Dia_Table_Min=Dia_Table['NED Minor Axis']
+    Dia_Table_Angle=Dia_Table['NED Position Angle']
+    #print("Dia_Table_Angle:\n", Dia_Table_Angle)
+    #print Dia_Table_Maj
+    Dia_Table_Maj_L=list(Dia_Table_Maj)
+    Dia_Table_Min_L=list(Dia_Table_Min)
+    Dia_Table_Angle_L=list(Dia_Table_Angle)
+    #print Dia_Table_Maj_L
+    Dia_Table_Maj_Units=Dia_Table['Major Axis Unit']
+    #print Dia_Table_Maj_Units
+    Dia_Table_Maj_Units_L=list(Dia_Table_Maj_Units)
+    #print Dia_Table_Maj_Units_L
+    #print "i ", i
+    D25_Maj=Dia_Table_Maj_L[Match_inx]
+    D25_Min=Dia_Table_Min_L[Match_inx]
+    D25_Angle=Dia_Table_Angle_L[Match_inx]
+    #print "D25_Maj ", D25_Maj
+    D25_Units=Dia_Table_Maj_Units[Match_inx]
+    #print "D25_Units ", D25_Units
+    #print type(Dia_Table)
+    #print Dia_Table.info()
+    #Dia_Table_2=Dia_Table[6]
+    #print Dia_Table_2
+    #Maj=Dia_Table_2[18]
+    #print "Maj, ! ! !", Maj
+    D25_S_Maj=D25_Maj/2.0
+    D25_S_Maj_Deg=D25_S_Maj/3600.0
+    D25_S_Maj_Arcmin=D25_S_Maj_Deg*60.0
+    D25_S_Min=D25_Min/2.0
+    D25_S_Min_Deg=D25_S_Min/3600.0
+    D25_S_Min_Arcmin=D25_S_Min_Deg*60.0
+    #return D25_S_Maj_Deg
+    ##return D25_S_Maj_Arcmin
+    return (D25_S_Maj_Arcmin, D25_S_Min_Arcmin, D25_Angle)
+
 
 
 #print D25_Finder("A2357+47")
@@ -215,3 +298,7 @@ D25_List_Run(['SN 2004am', 'SN 1996aq', 'PGC135659', 'M51', 'SN2011ja', 'N119',
 """
 
 #D25_List_Run(['SN 2004am','SN 1996aq','PGC135659','M51','SN2011ja','N119','SN 2011ja','NGC 346','SNR 1987A','SN 1998S','NGC 604','NGC5471B','NGC 5204 X-1','NGC 1818','FORNAX CLUSTER','SN 2002HH','SN 1986J','SN 2004dj','SN 2004et','NGC 1313 X-1','NGC 1313 X-2','VIRGO CLUSTER','ngc 1672','SN 1993J','SNR 0509-67.5','SN1999em','SN1998S','UGC 7658','SNR 0104-72.3','SN1978K','NGC7507','NGC 4472','M83','NGC 253','NGC3923','NGC 4490','NGC1097','M33','NGC 2865','NGC 1316','NGC 5253','NGC 3628','NGC 1291','NGC 5236','NGC 1700','NGC 5018','3C31','IC 1459','NGC 1332','M82','NGC 3557','NGC 4258','M87','NGC 3031','IC5267','NGC 4565','M101','NGC1427','M84','M81','NGC 7552','NGC 4649','NGC 5846','NGC 891','NGC 4631','NGC 4374','I ZW 18','NGC3585','M86','NGC1399'])
+#print(D25_Full_Query("NGC 3631"))
+#print(D25_Full_Query("NGC 3077"))
+#print(D25_Full_Query("NGC 891"))
+#print(D25_Full_Query("MESSIER 106"))

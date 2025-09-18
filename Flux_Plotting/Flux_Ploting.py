@@ -5,6 +5,7 @@ import matplotlib
 import matplotlib.dates as mdates
 import matplotlib.cm as cm
 from matplotlib.colors import Normalize
+import matplotlib.colors as colors
 import re
 from datetime import datetime
 
@@ -416,6 +417,13 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     #Data=pd.read_csv(Standard_File_Fpath)
     ###Data=pd.read_csv(Standard_File_Fpath, low_memory=False)
     Data=pd.read_csv(Standard_File_Fpath, low_memory=False, parse_dates=['Start_Date'])
+    Soft_Flux=Data["NET_FLUX_APER_soft"]
+    Medium_Flux=Data["NET_FLUX_APER_medium"]
+    Hard_Flux=Data["NET_FLUX_APER_hard"]
+    HC_Ratio_Flux=(Hard_Flux-Medium_Flux)/((Hard_Flux+Medium_Flux))
+    SC_Ratio_Flux=(Medium_Flux-Soft_Flux)/((Medium_Flux+Soft_Flux))
+    Data["Hard_Flux_Color"]=HC_Ratio_Flux
+    Data["Soft_Flux_Color"]=SC_Ratio_Flux
     Data_ObsIDs=Data.drop_duplicates(subset=['ObsID'])
     ##Data=Data[Data["NET_COUNTS_0.3-8.0"]> 25.0]
     ##Data=Data[Data["NET_COUNTS_0.3-8.0"]> 50.0]
@@ -426,11 +434,26 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     #Flux issue cutoff time: 2012-09-26T05:12:47, 1348650767
     Data_Before_Cutoff=Data[Data["Start_Date_Timestamp"]<= 1348650767]
     Data_After_Cutoff=Data[Data["Start_Date_Timestamp"]> 1348650767]
+    Data_High_Count_After_Cutoff_Souces=Data_After_Cutoff[Data_After_Cutoff["NET_COUNTS_0.3-8.0"]> 100.0]
+    print("Data_High_Count_After_Cutoff_Souces: ", Data_High_Count_After_Cutoff_Souces)
+    Data_High_Count_After_Cutoff_Souces.to_csv("High_Count_After_Cutoff_Souces.csv")
+    #return
     ##Data=Data[(Data["Soft_Beta_Color"]<-0.25) & (Data["Soft_Beta_Color"]>-0.90)]
     Data_Outside_D25=Data[Data["Outside_D25_Bool"]]
     Data_Inside_D25=Data[Data["Outside_D25_Bool"]==False]
     Data_Outside_Elliptical_D25=Data[Data["Outside_Elliptical_D25_Bool"]]
     Data_Inside_Elliptical_D25=Data[Data["Outside_Elliptical_D25_Bool"]==False]
+    """
+    #Source_Distance_From_GC_Elliptical_D25
+    Data_Core_Elliptical_D25=Data[Data["Source_Distance_From_GC_Elliptical_D25"]<0.5]
+    Data_Halo_Elliptical_D25=Data[(Data["Source_Distance_From_GC_Elliptical_D25"]>1.0) & (Data["Source_Distance_From_GC_Elliptical_D25"]<1.5)]
+    Data_Background_Elliptical_D25=Data[Data["Source_Distance_From_GC_Elliptical_D25"]>2.0]
+    """
+    #Source_Distance_From_GC_Elliptical_D25
+    Data_Core_Elliptical_D25=Data[Data["Source_Distance_From_GC_Elliptical_D25"]<0.5]
+    Data_Halo_Elliptical_D25=Data[(Data["Source_Distance_From_GC_Elliptical_D25"]>1.0) & (Data["Source_Distance_From_GC_Elliptical_D25"]<1.5)]
+    Data_Background_Elliptical_D25=Data[Data["Source_Distance_From_GC_Elliptical_D25"]>2.75]
+
     Data_Count_Cut=Data[Data["NET_COUNTS_0.3-8.0"]> 25.0]
     #Data=Data[Data["NET_COUNTS_0.3-8.0"]> 25.0]
     ##Data=Data[Data["NET_COUNTS_0.3-8.0"]> 30.0]
@@ -499,6 +522,24 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     Hard_Counts_Inside_Elliptical_D25=Data_Inside_Elliptical_D25["NET_COUNTS_hard"]
     HC_Ratio_Inside_Elliptical_D25=(Hard_Counts_Inside_Elliptical_D25-Medium_Counts_Inside_Elliptical_D25)/((Hard_Counts_Inside_Elliptical_D25+Medium_Counts_Inside_Elliptical_D25))
     SC_Ratio_Inside_Elliptical_D25=(Medium_Counts_Inside_Elliptical_D25-Soft_Counts_Inside_Elliptical_D25)/((Medium_Counts_Inside_Elliptical_D25+Soft_Counts_Inside_Elliptical_D25))
+    #Halo
+    Soft_Counts_Halo_Elliptical_D25=Data_Halo_Elliptical_D25["NET_COUNTS_soft"]
+    Medium_Counts_Halo_Elliptical_D25=Data_Halo_Elliptical_D25["NET_COUNTS_medium"]
+    Hard_Counts_Halo_Elliptical_D25=Data_Halo_Elliptical_D25["NET_COUNTS_hard"]
+    HC_Ratio_Halo_Elliptical_D25=(Hard_Counts_Halo_Elliptical_D25-Medium_Counts_Halo_Elliptical_D25)/((Hard_Counts_Halo_Elliptical_D25+Medium_Counts_Halo_Elliptical_D25))
+    SC_Ratio_Halo_Elliptical_D25=(Medium_Counts_Halo_Elliptical_D25-Soft_Counts_Halo_Elliptical_D25)/((Medium_Counts_Halo_Elliptical_D25+Soft_Counts_Halo_Elliptical_D25))
+    #Core
+    Soft_Counts_Core_Elliptical_D25=Data_Core_Elliptical_D25["NET_COUNTS_soft"]
+    Medium_Counts_Core_Elliptical_D25=Data_Core_Elliptical_D25["NET_COUNTS_medium"]
+    Hard_Counts_Core_Elliptical_D25=Data_Core_Elliptical_D25["NET_COUNTS_hard"]
+    HC_Ratio_Core_Elliptical_D25=(Hard_Counts_Core_Elliptical_D25-Medium_Counts_Core_Elliptical_D25)/((Hard_Counts_Core_Elliptical_D25+Medium_Counts_Core_Elliptical_D25))
+    SC_Ratio_Core_Elliptical_D25=(Medium_Counts_Core_Elliptical_D25-Soft_Counts_Core_Elliptical_D25)/((Medium_Counts_Core_Elliptical_D25+Soft_Counts_Core_Elliptical_D25))
+    #Background
+    Soft_Counts_Background_Elliptical_D25=Data_Background_Elliptical_D25["NET_COUNTS_soft"]
+    Medium_Counts_Background_Elliptical_D25=Data_Background_Elliptical_D25["NET_COUNTS_medium"]
+    Hard_Counts_Background_Elliptical_D25=Data_Background_Elliptical_D25["NET_COUNTS_hard"]
+    HC_Ratio_Background_Elliptical_D25=(Hard_Counts_Background_Elliptical_D25-Medium_Counts_Background_Elliptical_D25)/((Hard_Counts_Background_Elliptical_D25+Medium_Counts_Background_Elliptical_D25))
+    SC_Ratio_Background_Elliptical_D25=(Medium_Counts_Background_Elliptical_D25-Soft_Counts_Background_Elliptical_D25)/((Medium_Counts_Background_Elliptical_D25+Soft_Counts_Background_Elliptical_D25))
     #Spiral
     Soft_Counts_Spiral=Data_Spiral["NET_COUNTS_soft"]
     Medium_Counts_Spiral=Data_Spiral["NET_COUNTS_medium"]
@@ -527,6 +568,8 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     Hard_Flux=Data["NET_FLUX_APER_hard"]
     HC_Ratio_Flux=(Hard_Flux-Medium_Flux)/((Hard_Flux+Medium_Flux))
     SC_Ratio_Flux=(Medium_Flux-Soft_Flux)/((Medium_Flux+Soft_Flux))
+    #Data["Hard_Flux_Color"]=HC_Ratio_Flux
+    #Data["Soft_Flux_Color"]=SC_Ratio_Flux
     #Outside D25
     Soft_Flux_Outside_D25=Data_Outside_D25["NET_FLUX_APER_soft"]
     Medium_Flux_Outside_D25=Data_Outside_D25["NET_FLUX_APER_medium"]
@@ -551,6 +594,26 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     Hard_Flux_Inside_Elliptical_D25=Data_Inside_Elliptical_D25["NET_FLUX_APER_hard"]
     HC_Ratio_Flux_Inside_Elliptical_D25=(Hard_Flux_Inside_Elliptical_D25-Medium_Flux_Inside_Elliptical_D25)/((Hard_Flux_Inside_Elliptical_D25+Medium_Flux_Inside_Elliptical_D25))
     SC_Ratio_Flux_Inside_Elliptical_D25=(Medium_Flux_Inside_Elliptical_D25-Soft_Flux_Inside_Elliptical_D25)/((Medium_Flux_Inside_Elliptical_D25+Soft_Flux_Inside_Elliptical_D25))
+
+    #Halo
+    Soft_Flux_Halo_Elliptical_D25=Data_Halo_Elliptical_D25["NET_FLUX_APER_soft"]
+    Medium_Flux_Halo_Elliptical_D25=Data_Halo_Elliptical_D25["NET_FLUX_APER_medium"]
+    Hard_Flux_Halo_Elliptical_D25=Data_Halo_Elliptical_D25["NET_FLUX_APER_hard"]
+    HC_Ratio_Flux_Halo_Elliptical_D25=(Hard_Flux_Halo_Elliptical_D25-Medium_Flux_Halo_Elliptical_D25)/((Hard_Flux_Halo_Elliptical_D25+Medium_Flux_Halo_Elliptical_D25))
+    SC_Ratio_Flux_Halo_Elliptical_D25=(Medium_Flux_Halo_Elliptical_D25-Soft_Flux_Halo_Elliptical_D25)/((Medium_Flux_Halo_Elliptical_D25+Soft_Flux_Halo_Elliptical_D25))
+    #Core
+    Soft_Flux_Core_Elliptical_D25=Data_Core_Elliptical_D25["NET_FLUX_APER_soft"]
+    Medium_Flux_Core_Elliptical_D25=Data_Core_Elliptical_D25["NET_FLUX_APER_medium"]
+    Hard_Flux_Core_Elliptical_D25=Data_Core_Elliptical_D25["NET_FLUX_APER_hard"]
+    HC_Ratio_Flux_Core_Elliptical_D25=(Hard_Flux_Core_Elliptical_D25-Medium_Flux_Core_Elliptical_D25)/((Hard_Flux_Core_Elliptical_D25+Medium_Flux_Core_Elliptical_D25))
+    SC_Ratio_Flux_Core_Elliptical_D25=(Medium_Flux_Core_Elliptical_D25-Soft_Flux_Core_Elliptical_D25)/((Medium_Flux_Core_Elliptical_D25+Soft_Flux_Core_Elliptical_D25))
+    #Background
+    Soft_Flux_Background_Elliptical_D25=Data_Background_Elliptical_D25["NET_FLUX_APER_soft"]
+    Medium_Flux_Background_Elliptical_D25=Data_Background_Elliptical_D25["NET_FLUX_APER_medium"]
+    Hard_Flux_Background_Elliptical_D25=Data_Background_Elliptical_D25["NET_FLUX_APER_hard"]
+    HC_Ratio_Flux_Background_Elliptical_D25=(Hard_Flux_Background_Elliptical_D25-Medium_Flux_Background_Elliptical_D25)/((Hard_Flux_Background_Elliptical_D25+Medium_Flux_Background_Elliptical_D25))
+    SC_Ratio_Flux_Background_Elliptical_D25=(Medium_Flux_Background_Elliptical_D25-Soft_Flux_Background_Elliptical_D25)/((Medium_Flux_Background_Elliptical_D25+Soft_Flux_Background_Elliptical_D25))
+
     #Spiral
     Soft_Flux_Spiral=Data_Spiral["NET_FLUX_APER_soft"]
     Medium_Flux_Spiral=Data_Spiral["NET_FLUX_APER_medium"]
@@ -708,6 +771,34 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.cla()
     plt.clf()
 
+
+
+    plt.cla()
+    plt.clf()
+    plt.plot(HC_Ratio_Halo_Elliptical_D25,SC_Ratio_Halo_Elliptical_D25,".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.plot(HC_Ratio_Background_Elliptical_D25,SC_Ratio_Background_Elliptical_D25,".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Halo_Background_Combined_Elliptical_D25.pdf")
+    plt.cla()
+    plt.clf()
+
+
+    plt.cla()
+    plt.clf()
+    plt.plot(HC_Ratio_Core_Elliptical_D25,SC_Ratio_Core_Elliptical_D25,".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.plot(HC_Ratio_Background_Elliptical_D25,SC_Ratio_Background_Elliptical_D25,".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Core_Background_Combined_Elliptical_D25.pdf")
+    plt.cla()
+    plt.clf()
+
+
     plt.plot(HC_Ratio_Spiral,SC_Ratio_Spiral,".", alpha=0.2)
     plt.xlim(-1.0, 1.0)
     plt.ylim(-1.0, 1.0)
@@ -777,6 +868,31 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
     plt.xlim(-1.0, 1.0)
     plt.ylim(-1.0, 1.0)
     plt.savefig("Color_Color_Flux_Combined_Elliptical_D25.pdf")
+    plt.cla()
+    plt.clf()
+
+    plt.cla()
+    plt.clf()
+    plt.plot(HC_Ratio_Flux_Halo_Elliptical_D25,SC_Ratio_Halo_Elliptical_D25,".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.plot(HC_Ratio_Flux_Background_Elliptical_D25,SC_Ratio_Background_Elliptical_D25,".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Flux_Halo_Background_Combined_Elliptical_D25.pdf")
+    plt.cla()
+    plt.clf()
+
+
+    plt.cla()
+    plt.clf()
+    plt.plot(HC_Ratio_Flux_Core_Elliptical_D25,SC_Ratio_Flux_Core_Elliptical_D25,".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.plot(HC_Ratio_Flux_Background_Elliptical_D25,SC_Ratio_Flux_Background_Elliptical_D25,".", alpha=0.2)
+    plt.xlim(-1.0, 1.0)
+    plt.ylim(-1.0, 1.0)
+    plt.savefig("Color_Color_Flux_Core_Background_Combined_Elliptical_D25.pdf")
     plt.cla()
     plt.clf()
 
@@ -991,7 +1107,15 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     fig = plt.figure()
     ax = plt.axes()
-    ax.scatter(HC_Ratio_Flux, SC_Ratio_Flux, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, vmax=10.0)
+    ##Plot=ax.scatter(HC_Ratio_Flux, SC_Ratio_Flux, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, vmax=10.0)
+    #ax.scatter(HC_Ratio_Flux, SC_Ratio_Flux, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, cmap="coolwarm", norm=colors.CenteredNorm(vcenter=1.0))
+    #ax.scatter(HC_Ratio_Flux, SC_Ratio_Flux, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, cmap="coolwarm", norm=colors.CenteredNorm(halfrange=1.0))
+    #ax.scatter(HC_Ratio_Flux, SC_Ratio_Flux, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, cmap="coolwarm", norm=colors.TwoSlopeNorm(vmin=0, vmax=10.0, vcenter=1.0))
+    #Plot=ax.scatter(HC_Ratio_Flux, SC_Ratio_Flux, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, cmap="Spectral", norm=colors.TwoSlopeNorm(vmin=0, vmax=5.0, vcenter=1.0))
+    #Plot=ax.scatter(HC_Ratio_Flux, SC_Ratio_Flux, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, cmap="Spectral", norm=colors.CenteredNorm(vcenter=1.0, halfrange=1.0))
+    ##Plot=ax.scatter(HC_Ratio_Flux, SC_Ratio_Flux, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, cmap="seismic", norm=colors.TwoSlopeNorm(vmin=0, vmax=5.0, vcenter=1.0))
+    Plot=ax.scatter(HC_Ratio_Flux, SC_Ratio_Flux, c=Source_Distance_From_GC_Elliptical_D25, marker=".", alpha=0.2, cmap="seismic", norm=colors.TwoSlopeNorm(vmin=0, vmax=5.0, vcenter=2.75))
+    plt.colorbar(mappable=Plot)
     #ax.scatter(HC_Ratio_Flux_SN, SC_Ratio_Flux_SN, c="red", marker="o")
     ax.scatter(HC_Ratio_Flux_SNR, SC_Ratio_Flux_SNR, c="red", marker="o")
     ax.scatter(HC_Ratio_Flux_XRB, SC_Ratio_Flux_XRB, c="blue", marker="o")
@@ -1395,16 +1519,23 @@ def Flux_Plotting(Standard_File_Fpath="/opt/xray/anthony/Research_Git/SQL_Standa
 
     plt.cla()
     plt.clf()
+    ax = plt.gca()
     Soft_Beta=Data["Beta_soft"]
     Medium_Beta=Data["Beta_medium"]
     Hard_Beta=Data["Beta_hard"]
     Start_Date=Data["Start_Date"]
+    #ax.xaxis.set_major_locator(matplotlib.dates.YearLocator())
+    ax.xaxis.set_major_locator(matplotlib.dates.YearLocator(4))
+    ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%Y'))
+    ##plt.plot(Start_Date, Soft_Beta, '.', alpha=0.2)
+    ax.set_yscale('log')
     plt.plot(Start_Date, Soft_Beta, '.', alpha=0.2)
     #plt.ylim(-0.00001, 0.00001)
     #plt.ylim(-10E-11, 10E-11)
     #plt.xlim(0, 10E-11)
     #plt.ylim(0, 10)
-    plt.ylim(0, 10E-11)
+    #plt.ylim(0, 10E-11)
+    plt.ylim(10E-13, 10E-8)
     plt.savefig("Soft_Beta_vs_Start_Date.pdf")
     #plt.show()
     plt.cla()

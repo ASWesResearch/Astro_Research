@@ -183,11 +183,14 @@ def Main():
     #Fail_L=[380,400,963,1578]
     #Fluximage(Fail_L)
     #Wavdetect(Fail_L)
-    ObsID_L=ObsID_From_CSV_Query.Read_ObsIDs(Remove_Unarchived=True)
-    print("ObsID_L: ", ObsID_L)
+    ###ObsID_L=ObsID_From_CSV_Query.Read_ObsIDs(Remove_Unarchived=True)
+    #print("ObsID_L: ", ObsID_L)
     ##Source_Detection_Big_Input(ObsID_L, Clobber_Bool=False, Skip_Existing_Directory_Bool=True)
     #Source_Detection_Big_Input(ObsID_L, Clobber_Bool=False, Skip_Existing_Directory_Bool=False)
-    Source_Detection_Big_Input(ObsID_L, Clobber_Bool=True, Skip_Existing_Directory_Bool=False)
+    #Source_Detection_Big_Input(ObsID_L, Clobber_Bool=True, Skip_Existing_Directory_Bool=False)
     #Fail_L:  [349, 353, 380, 400, 963, 1578, 3786, 16005, 23498, 23499, 25179]
     #Source_Detection_Big_Input([3786, 16005, 23498], Clobber_Bool=True)
+    ObsID_New_L=[25220, 25777, 25778, 25779, 25780, 25781, 25782, 26039]
+    Source_Detection_Big_Input(ObsID_New_L, Clobber_Bool=False, Skip_Existing_Directory_Bool=True)
+
 Main()

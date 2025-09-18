@@ -11,14 +11,19 @@ from scipy import interpolate
 from scipy.interpolate import interp1d
 
 dir = os.path.dirname(__file__)
-path=os.path.realpath('../')
+#print("dir: ", dir)
+##path=os.path.realpath('../')
+path=os.path.realpath(dir+'/../')
+print("path: ", path)
 sys.path.append(os.path.abspath(path))
 
 from Source_Generator import Source_Generator
 
 
 dir = os.path.dirname(__file__)
-path=os.path.realpath('../../')
+##path=os.path.realpath('../../')
+path=os.path.realpath(dir+'/../../')
+print("path 2: ", path)
 sys.path.append(os.path.abspath(path))
 
 from Detection_Probablity_Calc import Detection_Probability_Calc_7
@@ -164,7 +169,7 @@ def Probability_Model_Plotting():
 
 def Process_Data(Fpath):
     Data=pd.read_csv(Fpath)
-    print("Data:\n", Data)
+    #print("Data:\n", Data)
     Data["Detection_Bool"]=Data['SDB']>0
     #Data["SNR_1"]=(Data["Counts"]/(128.0**2.0))/(Data["Background"])
     Data["SNR"]=(Data["Counts"])/(Data["Background"]*(128.0**2.0))
@@ -187,7 +192,7 @@ def Process_Data(Fpath):
         Data_Grouped_Sum=Data.groupby(['Grouping_Key']).sum()
         #print("Data_Grouped_Sum:\n", Data_Grouped_Sum)
         Data_Grouped_Mean["Detection_Bool"]=Data_Grouped_Sum["Detection_Bool"]
-        print("Data_Grouped_Mean:\n", Data_Grouped_Mean)
+        #print("Data_Grouped_Mean:\n", Data_Grouped_Mean)
         return Data, Data_Grouped, Data_Grouped_Mean, Data_Grouped_Sum
 
 def Plot_Detection_Probability(Theta, Counts_L, Fpath):
@@ -244,7 +249,7 @@ def Limiting_Counts_Calc(Background, Data_Input):
     else:
         Data_Grouped_Mean=Data_Input
     Background=np.float64(Background)
-    print("Background: ", Background)
+    #print("Background: ", Background)
     Data_Grouped_Mean_Filtered=Data_Grouped_Mean[(np.isclose(Data_Grouped_Mean["Background"], Background))]
     #print("Data_Grouped_Mean_Filtered Before: ", Data_Grouped_Mean_Filtered)
     Data_Grouped_Mean_Filtered=Data_Grouped_Mean_Filtered.sort_values(by=["Theta"])
@@ -252,9 +257,9 @@ def Limiting_Counts_Calc(Background, Data_Input):
     Data_Grouped_Mean_Filtered["Detection_Probability"]=Detection_Probability_Tuple[0]
     Data_Grouped_Mean_Filtered["Detection_Probability_Errors"]=Detection_Probability_Tuple[1]
     Data_Grouped_Mean_Filtered=Data_Grouped_Mean_Filtered[Data_Grouped_Mean_Filtered["Detection_Probability"]>=0.90]
-    print("Data_Grouped_Mean_Filtered:\n", Data_Grouped_Mean_Filtered)
+    #print("Data_Grouped_Mean_Filtered:\n", Data_Grouped_Mean_Filtered)
     Data_Grouped_Min=Data_Grouped_Mean_Filtered.loc[Data_Grouped_Mean_Filtered.groupby('Theta').Detection_Probability.idxmin()]
-    print("Data_Grouped_Min:\n", Data_Grouped_Min)
+    #print("Data_Grouped_Min:\n", Data_Grouped_Min)
     Theta_A=Data_Grouped_Min["Theta"]
     Limiting_Counts_A=Data_Grouped_Min["Counts"]
     return Theta_A, Limiting_Counts_A
@@ -276,22 +281,32 @@ def Limiting_Counts_to_Theta(Limiting_Counts, Background, Data_Input="Marx_Sourc
 def Backgrounds_Calc(Data_Input="Marx_Source_Detection_Data.csv"):
     if(isinstance(Data_Input,str)):
         Data, Data_Grouped, Data_Grouped_Mean, Data_Grouped_Sum=Process_Data(Data_Input)
+    else:
+        Data_Grouped_Mean=Data_Input
     Backgronds_Unique=list(set(list(np.round(Data_Grouped_Mean["Background"],4))))
     Backgronds_Unique.sort()
     return Backgronds_Unique
 
 def Background_Exists_Check(Background, Data_Input="Marx_Source_Detection_Data.csv"):
+    if(isinstance(Data_Input,str)):
+        Data, Data_Grouped, Data_Grouped_Mean, Data_Grouped_Sum=Process_Data(Data_Input)
+    else:
+        Data_Grouped_Mean=Data_Input
     Background_L=Backgrounds_Calc(Data_Input=Data_Input)
     if Background in Background_L:
         return True
 
 def Nearest_Backgrounds_Calc(Background, Data_Input="Marx_Source_Detection_Data.csv"):
+    if(isinstance(Data_Input,str)):
+        Data, Data_Grouped, Data_Grouped_Mean, Data_Grouped_Sum=Process_Data(Data_Input)
+    else:
+        Data_Grouped_Mean=Data_Input
     Background_L=Backgrounds_Calc(Data_Input=Data_Input)
     """
     if Background in Background_L:
         return Background
     """
-    if(Background_Exists_Check(Background)):
+    if(Background_Exists_Check(Background,Data_Input=Data_Input)):
         return Background
     for i in range(0,len(Background_L)):
         Background_Test=Background_L[i]
@@ -301,12 +316,16 @@ def Nearest_Backgrounds_Calc(Background, Data_Input="Marx_Source_Detection_Data.
             return Background_Low, Background_High
 
 def Limiting_Counts_Interpolation(Background, Data_Input="Marx_Source_Detection_Data.csv"):
-    if(Background_Exists_Check(Background)):
+    if(isinstance(Data_Input,str)):
+        Data, Data_Grouped, Data_Grouped_Mean, Data_Grouped_Sum=Process_Data(Data_Input)
+    else:
+        Data_Grouped_Mean=Data_Input
+    if(Background_Exists_Check(Background, Data_Input=Data_Input)):
         Theta_A, Limiting_Counts_A=Limiting_Counts_Calc(Background, Data_Input)
         return Theta_A, Limiting_Counts_A
     Background_Low, Background_High=Nearest_Backgrounds_Calc(Background, Data_Input=Data_Input)
-    print("Background_Low: ", Background_Low)
-    print("Background_High: ", Background_High)
+    #print("Background_Low: ", Background_Low)
+    #print("Background_High: ", Background_High)
     Theta_Low_A, Limiting_Counts_Low_A=Limiting_Counts_Calc(Background_Low, Data_Input=Data_Input)
     Theta_High_A, Limiting_Counts_High_A=Limiting_Counts_Calc(Background_High, Data_Input=Data_Input)
     #print("Theta_Low_A: ", Theta_Low_A)
@@ -332,7 +351,7 @@ def Limiting_Counts_Interpolation(Background, Data_Input="Marx_Source_Detection_
     #print("Slope:\n", Slope)
     #Interpolated_Limiting_Counts=Slope*Background #y=mx+b
     Interpolated_Limiting_Counts=Slope*(Background-Background_Low)+Limiting_Counts_Interpolated_Low_A #y=m(x-x1)+y1
-    print("Interpolated_Limiting_Counts:\n", Interpolated_Limiting_Counts)
+    #print("Interpolated_Limiting_Counts:\n", Interpolated_Limiting_Counts)
     Theta_Interpolated_A=pd.DataFrame(Interpolated_Limiting_Counts.index.to_numpy()).iloc[:,0]
     return Theta_Interpolated_A, Interpolated_Limiting_Counts
 
@@ -375,7 +394,7 @@ def Theta_Interpolation(Limiting_Counts, Limiting_Counts_Data):
         Limiting_Counts_High=High_Point[1]
         #Slope=(Limiting_Counts_High-Limiting_Counts_Low)/(Theta_High-Theta_Low) #m=(y2-y1)/(x2-x1)
         Slope=(Theta_High-Theta_Low)/(Limiting_Counts_High-Limiting_Counts_Low) #m=(y2-y1)/(x2-x1)
-        print("Slope: ", Slope)
+        #print("Slope: ", Slope)
         #y=m(x-x1)+y1
         Cur_Interpolated_Theta=Slope*(Limiting_Counts-Limiting_Counts_Low)+Theta_Low
         Interpolated_Theta_L.append(Cur_Interpolated_Theta)
@@ -383,11 +402,15 @@ def Theta_Interpolation(Limiting_Counts, Limiting_Counts_Data):
 
 
 def Limiting_Counts_to_Theta(Limiting_Counts, Background, Data_Input="Marx_Source_Detection_Data.csv"):
+    if(isinstance(Data_Input,str)):
+        Data, Data_Grouped, Data_Grouped_Mean, Data_Grouped_Sum=Process_Data(Data_Input)
+    else:
+        Data_Grouped_Mean=Data_Input
     Theta_A, Limiting_Counts_A=Limiting_Counts_Interpolation(Background, Data_Input)
-    print("Theta_A: ", Theta_A)
-    print("Limiting_Counts_A: ", Limiting_Counts_A)
+    #print("Theta_A: ", Theta_A)
+    #print("Limiting_Counts_A: ", Limiting_Counts_A)
     Limiting_Counts_Data=pd.DataFrame({'Theta': Theta_A, 'Limiting_Counts': Limiting_Counts_A})
-    print("Limiting_Counts_Data: ", Limiting_Counts_Data)
+    #print("Limiting_Counts_Data: ", Limiting_Counts_Data)
     """
     Limiting_Counts_Data=Limiting_Counts_Data.sort_values(by=['Limiting_Counts'])
     #Plot_Theta_Inversion(Limiting_Counts_Data)
@@ -402,32 +425,50 @@ def Limiting_Counts_to_Theta(Limiting_Counts, Background, Data_Input="Marx_Sourc
     return Interpolated_Theta_L
 
 def Limiting_Counts_Annuli_Calc(Limiting_Counts_Low, Limiting_Counts_High, Background, Data_Input="Marx_Source_Detection_Data.csv"):
+    if(Background==None):
+        return []
+    if(isinstance(Data_Input,str)):
+        Data, Data_Grouped, Data_Grouped_Mean, Data_Grouped_Sum=Process_Data(Data_Input)
+        Data_Input=Data_Grouped_Mean
+    else:
+        Data_Grouped_Mean=Data_Input
+    Theta_A, Limiting_Counts_A=Limiting_Counts_Interpolation(Background, Data_Input)
+    #print("Limiting_Counts_A:\n", Limiting_Counts_A)
+    Limiting_Counts_Min=Limiting_Counts_A.min()
+    Limiting_Counts_Max=Limiting_Counts_A.max()
+    Outside_Range_Bool=False
+    if((Limiting_Counts_Low>Limiting_Counts_Max) or (Limiting_Counts_High<Limiting_Counts_Min)):
+        #print("Outside Range!")
+        Outside_Range_Bool=True
+        return []
+    #print("Limiting_Counts_Max: ", Limiting_Counts_Max)
+    #return #For Testing
     Theta_Intersection_L_Low=Limiting_Counts_to_Theta(Limiting_Counts_Low, Background, Data_Input=Data_Input)
     Theta_Intersection_L_High=Limiting_Counts_to_Theta(Limiting_Counts_High, Background, Data_Input=Data_Input)
     Theta_Intersection_L=Theta_Intersection_L_Low+Theta_Intersection_L_High
     Theta_Intersection_L.sort()
-    print("Theta_Intersection_L: ", Theta_Intersection_L)
-    Theta_A, Limiting_Counts_A=Limiting_Counts_Interpolation(Background)
+    #print("Theta_Intersection_L: ", Theta_Intersection_L)
+    ###Theta_A, Limiting_Counts_A=Limiting_Counts_Interpolation(Background, Data_Input)
     Limiting_Counts_Data=pd.DataFrame({'Theta': Theta_A, 'Limiting_Counts': Limiting_Counts_A})
     Limiting_Counts_Data=Limiting_Counts_Data.dropna()
     Theta_A=Limiting_Counts_Data['Theta']
     Limiting_Counts_A=Limiting_Counts_Data['Limiting_Counts']
-    print("Limiting_Counts_A: ", Limiting_Counts_A)
+    #print("Limiting_Counts_A: ", Limiting_Counts_A)
     #Inital_Limiting_Counts=Limiting_Counts_A[Limiting_Counts_A["Theta"]==0]
     #Limiting_Counts_A=Limiting_Counts_A.dropna()
     Inital_Theta=Theta_A.values[0]
     Inital_Limiting_Counts=Limiting_Counts_A.values[0]
-    print("Inital_Limiting_Counts: ", Inital_Limiting_Counts)
+    #print("Inital_Limiting_Counts: ", Inital_Limiting_Counts)
     ##if((Inital_Limiting_Counts>Limiting_Counts_Low) and (Inital_Limiting_Counts<Limiting_Counts_High)):
     if((Inital_Limiting_Counts>=Limiting_Counts_Low) and (Inital_Limiting_Counts<Limiting_Counts_High)):
         Theta_Intersection_L=[Inital_Theta]+Theta_Intersection_L
     Final_Theta=Theta_A.values[-1]
     Final_Limiting_Counts=Limiting_Counts_A.values[-1]
-    print("Final_Limiting_Counts: ", Final_Limiting_Counts)
+    #print("Final_Limiting_Counts: ", Final_Limiting_Counts)
     ##if((Final_Limiting_Counts>Limiting_Counts_Low) and (Final_Limiting_Counts<Limiting_Counts_High)):
     if((Final_Limiting_Counts>Limiting_Counts_Low) and (Final_Limiting_Counts<=Limiting_Counts_High)):
         Theta_Intersection_L=Theta_Intersection_L+[Final_Theta]
-    print("Theta_Intersection_L After: ", Theta_Intersection_L)
+    #print("Theta_Intersection_L After: ", Theta_Intersection_L)
     Theta_Intersection_HL=[]
     if(len(Theta_Intersection_L)>0):
         for i in range(0,len(Theta_Intersection_L)-1, 2):
@@ -437,6 +478,70 @@ def Limiting_Counts_Annuli_Calc(Limiting_Counts_Low, Limiting_Counts_High, Backg
             Theta_Intersection_HL.append(Cur_Set)
     return Theta_Intersection_HL
 
+def Limiting_Count_Cut(Counts, Theta, Background, Data_Input="Marx_Source_Detection_Data.csv"):
+    if(isinstance(Data_Input,str)):
+        Data, Data_Grouped, Data_Grouped_Mean, Data_Grouped_Sum=Process_Data(Data_Input)
+    else:
+        Data_Grouped_Mean=Data_Input
+    Theta_Interpolated_A, Interpolated_Limiting_Counts_A=Limiting_Counts_Interpolation(Background, Data_Input=Data_Input)
+    #Flux_Cut_Bool=False
+    if((np.nan not in Interpolated_Limiting_Counts_A) and (Counts>=Interpolated_Limiting_Counts_A.max())):
+        return True
+    elif((np.nan not in Interpolated_Limiting_Counts_A) and (Counts<=Interpolated_Limiting_Counts_A.min())):
+        return False
+    else:
+        Theta_to_Limiting_Counts=Data_Interpolation(Theta_Interpolated_A, Interpolated_Limiting_Counts_A)
+        Limting_Counts=Theta_to_Limiting_Counts(Theta)
+        if(Counts>=Limting_Counts):
+            return True
+        else:
+            return False
+        """
+        Limiting_Counts_Data=pd.DataFrame({'Theta': Theta_Interpolated_A, 'Limiting_Counts': Interpolated_Limiting_Counts_A})
+        Limiting_Counts_Data=Limiting_Counts_Data.dropna()
+        Theta_A=Limiting_Counts_Data["Theta"]
+        Limiting_Counts_A=Limiting_Counts_Data["Limiting_Counts"]
+        Theta_L=list(Theta_A)
+        #Nearest_Counts_L=[]
+        for i in range(0,len(Theta_L)-1):
+            Low_Row=Limiting_Counts_Data.iloc[[i]]
+            High_Row=Limiting_Counts_Data.iloc[[i+1]]
+            #print("Low_Row: ", Low_Row)
+            #print("High_Row: ", High_Row)
+            Theta_Low=Low_Row["Theta"].values[0]
+            Limiting_Counts_Low=Low_Row["Limiting_Counts"].values[0]
+            #Limiting_Counts_Low=Low_Row.get('Limiting_Counts')
+            #print("Limiting_Counts_Low: ", Limiting_Counts_Low)
+            #print("type(Limiting_Counts_Low): ", type(Limiting_Counts_Low))
+            Theta_High=High_Row["Theta"].values[0]
+            Limiting_Counts_High=High_Row["Limiting_Counts"].values[0]
+            #Limiting_Counts_High=High_Row.get('Limiting_Counts')
+            #print("Limiting_Counts_High: ", Limiting_Counts_High)
+            #if((Limiting_Counts>Limiting_Counts_Low) and (Limiting_Counts<Limiting_Counts_High)):
+            if((Theta>Theta_Low) and (Theta<Theta_High)):
+                #print("Inside")
+                #Nearest_Backgrounds_L.append([Limiting_Counts_Low,Limiting_Counts_High])
+                #Nearest_Counts_L.append([[Theta_Low,Limiting_Counts_Low],[Theta_High,Limiting_Counts_High]])
+                #Interpolated_Theta_L=[]
+                #for Nearest_Counts in Nearest_Counts_L:
+                Nearest_Counts=[[Theta_Low,Limiting_Counts_Low],[Theta_High,Limiting_Counts_High]]
+                Low_Point=Nearest_Counts[0]
+                Theta_Low=Low_Point[0]
+                Limiting_Counts_Low=Low_Point[1]
+                High_Point=Nearest_Counts[1]
+                Theta_High=High_Point[0]
+                Limiting_Counts_High=High_Point[1]
+                Slope=(Limiting_Counts_High-Limiting_Counts_Low)/(Theta_High-Theta_Low) #m=(y2-y1)/(x2-x1)
+                #Slope=(Theta_High-Theta_Low)/(Limiting_Counts_High-Limiting_Counts_Low) #m=(y2-y1)/(x2-x1)
+                print("Slope: ", Slope)
+                #y=m(x-x1)+y1
+                #Cur_Interpolated_Theta=Slope*(Limiting_Counts-Limiting_Counts_Low)+Theta_Low
+                Cur_Interpolated_Limiting_Counts=Slope*(Theta-Theta_Low)+Limiting_Counts_Low
+                #return Cur_Interpolated_Limiting_Counts
+                if(Counts>=Cur_Interpolated_Limiting_Counts):
+                    return True
+                #Flux_Cut_Bool
+        """
 
 def Limiting_Counts_Plot(Background_L, Fpath):
     Color_L=['b','g','r','c','m','y','orange']
@@ -444,7 +549,7 @@ def Limiting_Counts_Plot(Background_L, Fpath):
     for i in range(0,len(Background_L)):
         Background=Background_L[i]
         ###Theta_A, Limiting_Counts_A=Limiting_Counts_Calc(Background, Data_Grouped_Mean)
-        Theta_A, Limiting_Counts_A=Limiting_Counts_Interpolation(Background)
+        Theta_A, Limiting_Counts_A=Limiting_Counts_Interpolation(Background, Data_Input=Fpath)
         #print("Limiting_Counts_A: ", Limiting_Counts_A)
         ##Label_Str=str("{:0.0E}".format(Background))
         ##Label_Str.replace("-0", "-")
@@ -578,6 +683,7 @@ def Detection_Threshold_Count_Range_Calc(Fpath, Save_Output_Bool=False):
 #Limiting_Counts_Plot([1E-1,1E-2,1E-3,1E-4,25E-3,5E-1,9E-1], "Marx_Source_Detection_Data.csv")
 #Limiting_Counts_Plot([9E-1,1E-1,25E-3,1E-2,1E-3,1E-4], "Marx_Source_Detection_Data.csv")
 #Limiting_Counts_Plot([1E-1,25E-3,1E-2,1E-3,1E-4], "Marx_Source_Detection_Data.csv")
+#Limiting_Counts_Plot([5E-1,1E-1,25E-3,1E-2,1E-3,1E-4], "Marx_Source_Detection_Data.csv")
 #print(Limiting_Counts_to_Theta(10,1E-2, "Marx_Source_Detection_Data.csv"))
 #print(Limiting_Counts_to_Theta(10,25E-3, "Marx_Source_Detection_Data.csv"))
 #print(Limiting_Counts_to_Theta(10,1E-3, "Marx_Source_Detection_Data.csv"))
@@ -594,4 +700,10 @@ def Detection_Threshold_Count_Range_Calc(Fpath, Save_Output_Bool=False):
 #print(Limiting_Counts_Annuli_Calc(43, 44, 1E-2))
 #print(Limiting_Counts_Annuli_Calc(6, 44, 1E-2))
 #print(Limiting_Counts_Annuli_Calc(44, 45, 1E-2))
-print(Limiting_Counts_Annuli_Calc(11, 12, 1E-2))
+#print(Limiting_Counts_Annuli_Calc(11, 12, 1E-2))
+#print(Limiting_Counts_Annuli_Calc(10, 20, None))
+#print(Limiting_Counts_Annuli_Calc(10, 20, 0.03810609062818638))
+#print(Limiting_Counts_Annuli_Calc(20, 30, 0.03810609062818638))
+#print(Limiting_Count_Cut(20,5.5,25E-3))
+#print(Limiting_Count_Cut(5,5.5,25E-3))
+#print(Limiting_Count_Cut(20,9.5,25E-3))
